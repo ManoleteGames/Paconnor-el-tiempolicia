@@ -1,0 +1,1029 @@
+#include "../engine.h"
+#include "dos.h"
+#include "fcntl.h"
+#include "string.h"
+#include "unistd.h"
+#include "file.h"
+
+/** FILE :: Seek files offset inside a DAT file (custom format similar to WAD)
+ *  - File name must be a 17 char max.
+ *  - Max. 64 files inside DAT file
+ *  - Returns offset (long)
+ */
+long FILE_GetAssetOffset(int fd, const char *filename) {
+
+	byte line = 0;
+	char name[17];//name of the file inside DAT
+	bool found = false;
+	word result;
+	long offset = 0;//LDAT_Offset
+
+	//Seek data
+	lseek(fd, 32, SEEK_SET);// Jump first 2 lines of .DAT file
+
+	while (!found) {// Read 16 byte lines of a total of 64 lines
+		if (!_dos_read(fd, name, 16, &result)) {
+			// If strings matches returns 0
+			if (!stricmp(name, filename)) { found = true; }// Returns 0 if strings are equal
+		} else {
+			_dos_close(fd);
+			sprintf(engine.system_error_message1, "FILE_GetAssetOffset function error");
+			sprintf(engine.system_error_message2, "Unable to find asset file %s offset", filename);
+			sprintf(engine.system_error_message3, "Reading error");
+			Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+		}
+
+		line++;
+		// last line
+		if (line == 64) {
+			_dos_close(fd);
+			sprintf(engine.system_error_message1, "FILE_GetAssetOffset function error");
+			sprintf(engine.system_error_message2, "Unable to find asset file %s offset", filename);
+			sprintf(engine.system_error_message3, "Last line reached");
+			Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+		}
+	}
+	_dos_read(fd, &offset, sizeof(offset), &result);
+	return offset;
+}
+
+/** FILE :: Seek files offset inside a DAT file (custom format similar to WAD)
+ *  - File name must be a 17 char max.
+ *  - Max. 64 files inside DAT file
+ *  - Returns offset (long)
+ */
+dword FILE_SeekAssetOffset(FILE *fp, const char *filename) {
+	unsigned char line = 0;
+	char name[17];//name of the file inside DAT
+	unsigned char data_name = 0;
+	dword offset = 0;//LDAT_Offset
+
+	//Check LDAT file
+	//Seek data
+	fseek(fp, 32, SEEK_SET);// Check first line of names inside the .DAT
+
+	while (data_name == 0) {// Read 16 byte lines of a total of 64 lines
+		memset(name, 0, 17);
+
+		fgets(name, 17, fp);// Get filename
+
+		if (!stricmp(name, filename)) data_name = 1;// Returns 0 if strings are equal
+		else
+			fseek(fp, 16, SEEK_CUR);// Go to next line
+
+		line++;
+		if (line == 64) {
+			fclose(fp);
+			sprintf(engine.system_error_message1, "FILE_SeekAssetOffset function error");
+			sprintf(engine.system_error_message2, "Unable to find asset file %s offset", filename);
+			sprintf(engine.system_error_message3, "Last line reached");
+			Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+		}
+	}
+
+	fread(&offset, sizeof(offset), 1, fp);//read offset of file in DAT file
+
+	return offset;
+}
+
+/** FILE :: Seek files offset inside a DAT file (custom format similar to WAD)
+ *  - File name must be a 17 char max.
+ *  - Max. 64 files inside DAT file
+ *  - Returns offset (long)
+ */
+dword FILE_SeekAssetLength(FILE *fp, const char *filename) {
+	unsigned char line = 0;
+	char name[17];//name of the file inside DAT
+	unsigned char data_name = 0;
+	dword offset = 0;// DAT_Offset
+	dword length = 0;// data length
+
+	//Check LDAT file
+	//Seek data
+	fseek(fp, 32, SEEK_SET);// Check first line of names inside the .DAT
+
+	while (data_name == 0) {// Read 16 byte lines of a total of 64 lines
+		memset(name, 0, 17);
+
+		fgets(name, 17, fp);// Get filename
+
+		if (!stricmp(name, filename)) data_name = 1;// Returns 0 if strings are equal
+		else
+			fseek(fp, 16, SEEK_CUR);// Go to next line
+
+		line++;
+		if (line == 64) {
+			fclose(fp);
+			sprintf(engine.system_error_message1, "FILE_SeekAssetOffset function error");
+			sprintf(engine.system_error_message2, "Unable to find asset file %s offset", filename);
+			sprintf(engine.system_error_message3, "Last line reached");
+			Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+		}
+	}
+
+	fread(&offset, sizeof(offset), 1, fp);//read offset of file in DAT file
+	fread(&length, sizeof(length), 1, fp);//read offset of file in DAT file
+
+	return length;
+}
+
+/** FILE :: Loads binary image 
+ */
+void FILE_LoadBinaryImage(const char *dat_name, const char *asset_name, byte *buffer) {
+	int file_handler;
+	long offset;
+	word bytesRead;
+
+	_dos_creat("test.txt", 0, &file_handler);
+
+	if (_dos_open("test.txt", O_RDONLY, &file_handler)) {
+		sprintf(engine.system_error_message1, "FILE_LoadBinaryImage function error %d", errno);
+		sprintf(engine.system_error_message2, "Unable to open txt file");
+		sprintf(engine.system_error_message3, "Asset file %s", asset_name);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_BINARY_FILE);
+	}
+	_dos_close(file_handler);
+
+	if (_dos_open(dat_name, O_RDONLY, &file_handler)) {
+		sprintf(engine.system_error_message1, "FILE_LoadBinaryImage function error");
+		sprintf(engine.system_error_message2, "Unable to open DAT file %s ", dat_name);
+		sprintf(engine.system_error_message3, "Asset file %s", asset_name);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_BINARY_FILE);
+	}
+
+	offset = FILE_GetAssetOffset(file_handler, asset_name);
+	if (offset == 0) {
+		_dos_close(file_handler);
+		sprintf(engine.system_error_message1, "FILE_LoadBinaryImage function error");
+		sprintf(engine.system_error_message2, "Invalid offset for file %s ", asset_name);
+		sprintf(engine.system_error_message3, "DAT file %s", dat_name);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_BINARY_FILE);
+	}
+	// Move pointer to offset
+	lseek(file_handler, offset, SEEK_SET);
+	_dos_read(file_handler, buffer, 4000, &bytesRead);
+	_dos_close(file_handler);
+}
+
+/* PCX Image reader
+ * - Reads a 256 colors pcx file inside a .DAT file
+ * - Image must as maximum as 352x200 pixels
+ * - Image must be 8 bits per pixel
+ * - Sets image information on inout buffer
+*/
+void FILE_LoadPCXImage(const char *dat_name, const char *asset_name, byte *buffer, long size, byte *pal, word *width, word *height) {
+
+	int fileHandler;
+	long image_size, offset, l;
+	int i, j, cnt;
+	word result;
+	byte ident;// must be 0x0A for PCX file
+	byte version;
+	byte encoding;
+	byte bitsPerPixel;
+	byte check_byte;
+	byte chr, color;
+	word xMin, xMax, yMin, yMax, w, h;
+
+	if (_dos_open(dat_name, O_RDONLY, &fileHandler)) {
+		sprintf(engine.system_error_message1, "FILE_LoadPCXImage function error");
+		sprintf(engine.system_error_message2, "Unable to open DAT file %s ", dat_name);
+		sprintf(engine.system_error_message3, "");
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+
+	offset = FILE_GetAssetOffset(fileHandler, asset_name);
+	if (offset == 0) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXImage function error");
+		sprintf(engine.system_error_message2, "Invalid offset inside DAT file %s ", dat_name);
+		sprintf(engine.system_error_message3, "Asset file %s", asset_name);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+	// Move pointer to offset
+	lseek(fileHandler, offset, SEEK_SET);
+
+	//Read PCX header
+	_dos_read(fileHandler, &ident, sizeof(ident), &result);
+	if (ident != 0x0A) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXImage function error");
+		sprintf(engine.system_error_message2, "Error found on PCX identifier %x on file %s ", ident, asset_name);
+		sprintf(engine.system_error_message3, "Ident found %x, ident expected 0x0A", ident);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+	_dos_read(fileHandler, &version, sizeof(version), &result);
+	_dos_read(fileHandler, &encoding, sizeof(encoding), &result);
+
+	if (encoding != 1) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXImage function error");
+		sprintf(engine.system_error_message2, "Not RLE encoding file %s ", asset_name);
+		sprintf(engine.system_error_message3, "Encoding found %u, encoding expected 1", encoding);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+	_dos_read(fileHandler, &bitsPerPixel, sizeof(bitsPerPixel), &result);
+	if (bitsPerPixel != 8) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXImage function error");
+		sprintf(engine.system_error_message2, "Not 8 bits per pixel image file %s ", asset_name);
+		sprintf(engine.system_error_message3, "bpx found %u, bpx expected 8", bitsPerPixel);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+	xMin = 0;
+	_dos_read(fileHandler, &xMin, 2, &result);
+	yMin = 0;
+	_dos_read(fileHandler, &yMin, 2, &result);
+	xMax = 0;
+	_dos_read(fileHandler, &xMax, 2, &result);
+	yMax = 0;
+	_dos_read(fileHandler, &yMax, 2, &result);
+
+	// Calculate image width and heigth
+	w = xMax - xMin + 1;
+	*width = w;
+	h = yMax - yMin + 1;
+	*height = h;
+
+	/*if (w > 320) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXImage function error");
+		sprintf(engine.system_error_message2, "Excesive width on image file %s ", asset_name);
+		sprintf(engine.system_error_message3, "Image width %u, Max. expected 320", w);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+	if (h > 200) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXImage function error");
+		sprintf(engine.system_error_message2, "Excesive height on image file %s ", asset_name);
+		sprintf(engine.system_error_message3, "Image height %u, Max. expected 200", h);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}*/
+	image_size = (long) w * h;
+
+	if (image_size > size) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXImage function error");
+		sprintf(engine.system_error_message2, "Excesive image size of file %s ", asset_name);
+		sprintf(engine.system_error_message3, "Image size %ld, Max. expected %ld", image_size, size);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+
+	// Skip some data with no use in this case, like hDpi, vDpi, EGA palette, planes, bytes per line, palette info, device width and device heigth
+	lseek(fileHandler, 116, SEEK_CUR);
+
+	// Get image data
+	l = 0;
+	while (l < image_size) {
+		// Get value
+		_dos_read(fileHandler, &chr, sizeof(chr), &result);
+		if (0xC0 == (0xC0 & chr)) {// is it a RLE repeater
+			cnt = 0x3F & chr;      // Get count
+			_dos_read(fileHandler, &chr, sizeof(chr), &result);
+			for (i = 0; i < cnt; i++) {
+				buffer[l] = chr;
+				l++;
+			}
+		} else {// not a RLE...just a single color
+			buffer[l] = chr;
+			l++;
+		}
+	}
+
+	// Get 256 colour palette
+	// - Pallete data starts with value 0x0C, so lets go and search it
+	/*_dos_read(fileHandler, &check_byte, sizeof(check_byte), &result);
+	if (check_byte != 12) {
+		_dos_close(fileHandler);
+		sprintf(system_error_message1, "FILE_LoadPCXImage function error");
+		sprintf(system_error_message2, "Expected a 256 color image on file %s ", asset_name);
+		sprintf(system_error_message3, "Check byte error found %u, Expected 12", check_byte);
+		Error(system_error_message1, system_error_message2, system_error_message3, ERROR_FILE);
+	}
+
+	for (i = 0; i < 255; i++) {
+		for (j = 0; j < 3; j++) {
+			if (_dos_read(fileHandler, &color, 1, &result)) {
+				_dos_close(fileHandler);
+				sprintf(system_error_message1, "FILE_LoadPCXImage function error");
+				sprintf(system_error_message2, "Error reading palette color on file %s ", asset_name);
+				sprintf(system_error_message3, "Palette color number %u", i);
+				Error(system_error_message1, system_error_message2, system_error_message3, ERROR_FILE);
+			}
+			if (color == EOF) {
+				_dos_close(fileHandler);
+				sprintf(system_error_message1, "FILE_LoadPCXImage function error");
+				sprintf(system_error_message2, "Error reading palette color on file %s ", asset_name);
+				sprintf(system_error_message3, "EOF found when reading palette color number %u", i);
+				Error(system_error_message1, system_error_message2, system_error_message3, ERROR_FILE);
+			} else {
+				*pal++ = color >> 2;
+			}
+		}
+	}*/
+
+	_dos_close(fileHandler);
+}
+
+/* PCX Tileset
+ * - Reads a 256 colors pcx file inside a .DAT file
+ * - Image must as maximum as 352x416 pixels
+ * - Image must be 8 bits per pixel
+ * - Sets image information on inout buffer
+*/
+void FILE_LoadPCXTileset(const char *dat_name, const char *asset_name, byte *buffer, long size, word *width, word *height) {
+
+	int fileHandler;
+	dword image_size, offset, l;
+	int i, cnt;
+	word result;
+	byte ident;// must be 0x0A for PCX file
+	byte version;
+	byte encoding;
+	byte bitsPerPixel;
+	byte chr;
+	word xMin, xMax, yMin, yMax, w, h;
+
+	if (_dos_open(dat_name, O_RDONLY, &fileHandler)) {
+		sprintf(engine.system_error_message1, "FILE_LoadPCXTileset function error");
+		sprintf(engine.system_error_message2, "Unable to open DAT file %s ", dat_name);
+		sprintf(engine.system_error_message3, "");
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+
+	offset = FILE_GetAssetOffset(fileHandler, asset_name);
+	if (offset == 0) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXTileset function error");
+		sprintf(engine.system_error_message2, "Invalid offset inside DAT file %s ", dat_name);
+		sprintf(engine.system_error_message3, "Asset file %s", asset_name);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+
+	// Move pointer to offset
+	lseek(fileHandler, offset, SEEK_SET);
+
+	//Read PCX header
+	_dos_read(fileHandler, &ident, sizeof(ident), &result);
+	if (ident != 0x0A) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXImage function error");
+		sprintf(engine.system_error_message2, "Error found on PCX identifier %x on file %s ", ident, asset_name);
+		sprintf(engine.system_error_message3, "Ident found %x, ident expected 0x0A", ident);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+	_dos_read(fileHandler, &version, sizeof(version), &result);
+	_dos_read(fileHandler, &encoding, sizeof(encoding), &result);
+
+	if (encoding != 1) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXImage function error");
+		sprintf(engine.system_error_message2, "Not RLE encoding file %s ", asset_name);
+		sprintf(engine.system_error_message3, "Encoding found %u, encoding expected 1", encoding);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+	_dos_read(fileHandler, &bitsPerPixel, sizeof(bitsPerPixel), &result);
+	if (bitsPerPixel != 8) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXImage function error");
+		sprintf(engine.system_error_message2, "Not 8 bits per pixel image file %s ", asset_name);
+		sprintf(engine.system_error_message3, "bpx found %u, bpx expected 8", bitsPerPixel);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+	xMin = 0;
+	_dos_read(fileHandler, &xMin, 2, &result);
+	yMin = 0;
+	_dos_read(fileHandler, &yMin, 2, &result);
+	xMax = 0;
+	_dos_read(fileHandler, &xMax, 2, &result);
+	yMax = 0;
+	_dos_read(fileHandler, &yMax, 2, &result);
+
+	// Calculate image width and heigth
+	w = xMax - xMin + 1;
+	*width = w;
+	h = yMax - yMin + 1;
+	*height = h;
+
+	if (w > 320) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXImage function error");
+		sprintf(engine.system_error_message2, "Excesive width on image file %s ", asset_name);
+		sprintf(engine.system_error_message3, "Image width %u, Max. expected 320", w);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+	if (h > 416) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXImage function error");
+		sprintf(engine.system_error_message2, "Excesive height on image file %s ", asset_name);
+		sprintf(engine.system_error_message3, "Image height %u, Max. expected 200", h);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+	image_size = (long) w * h;
+
+	if (image_size > size) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXImage function error");
+		sprintf(engine.system_error_message2, "Excesive image size of file %s ", asset_name);
+		sprintf(engine.system_error_message3, "Image size %ld, Max. expected %ld", image_size, size);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+
+	// Skip some data with no use in this case, like hDpi, vDpi, EGA palette, planes, bytes per line, palette info, device width and device heigth
+	lseek(fileHandler, 116, SEEK_CUR);
+
+	// Get image data
+	l = 0;
+	while (l < image_size) {
+		// Get value
+		_dos_read(fileHandler, &chr, sizeof(chr), &result);
+		if (0xC0 == (0xC0 & chr)) {// is it a RLE repeater
+			cnt = 0x3F & chr;      // Get count
+			_dos_read(fileHandler, &chr, sizeof(chr), &result);
+			for (i = 0; i < cnt; i++) {
+				buffer[l] = chr;
+				l++;
+			}
+		} else {// not a RLE...just a single color
+			buffer[l] = chr;
+			l++;
+		}
+	}
+
+	_dos_close(fileHandler);
+}
+/** FILE :: Load PCX Sprite
+ *  - Loads PCX data from a image file inside DAT file and transfer it to a buffer
+ *  - inputs:
+ *     o DAT filename
+ *     o PCX filename inside DAT file
+ *     o Graphics buffer address
+ *     o Graphics file size (file width * file height) in pixels
+ *     o Palette color offset
+ *  - inouts
+ *     o Image width in pixels
+ *     o Image height in pixels 
+ */
+void FILE_LoadPCXSprite(const char *dat_name, const char *asset_name, byte *buffer, long size, word *width, word *height, int palette_offset) {
+
+	int fileHandler;
+	long image_size, offset;
+	int i, l, cnt;
+	word result;
+	byte ident;// must be 0x0A for PCX file
+	byte version, encoding, bitsPerPixel;
+	byte chr;
+	word xMin, xMax, yMin, yMax, w, h;
+
+	if (_dos_open(dat_name, O_RDONLY, &fileHandler)) {
+		sprintf(engine.system_error_message1, "FILE_LoadPCXSprite function error");
+		sprintf(engine.system_error_message2, "Unable to open DAT file %s ", dat_name);
+		sprintf(engine.system_error_message3, "");
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+
+	offset = FILE_GetAssetOffset(fileHandler, asset_name);
+	if (offset == 0) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXSprite function error");
+		sprintf(engine.system_error_message2, "Unable to find offset inside DAT file %s ", dat_name);
+		sprintf(engine.system_error_message3, "Asset file %s", asset_name);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+	// Move pointer to offset
+	lseek(fileHandler, offset, SEEK_SET);
+
+	//Read PCX header
+	_dos_read(fileHandler, &ident, sizeof(ident), &result);
+	if (ident != 0x0A) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXSprite function error");
+		sprintf(engine.system_error_message2, "Error found on PCX identifier %x on file %s ", ident, asset_name);
+		sprintf(engine.system_error_message3, "Ident found %x, ident expected 0x0A", ident);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+	_dos_read(fileHandler, &version, sizeof(version), &result);
+	_dos_read(fileHandler, &encoding, sizeof(encoding), &result);
+
+	if (encoding != 1) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXSprite function error");
+		sprintf(engine.system_error_message2, "Not RLE encoding file %s ", asset_name);
+		sprintf(engine.system_error_message3, "Encoding found %u, encoding expected 1", encoding);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+	_dos_read(fileHandler, &bitsPerPixel, sizeof(bitsPerPixel), &result);
+	if (bitsPerPixel != 8) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXSprite function error");
+		sprintf(engine.system_error_message2, "Not 8 bits per pixel image file %s ", asset_name);
+		sprintf(engine.system_error_message3, "bpx found %u, bpx expected 8", bitsPerPixel);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+	xMin = 0;
+	_dos_read(fileHandler, &xMin, 2, &result);
+	yMin = 0;
+	_dos_read(fileHandler, &yMin, 2, &result);
+	xMax = 0;
+	_dos_read(fileHandler, &xMax, 2, &result);
+	yMax = 0;
+	_dos_read(fileHandler, &yMax, 2, &result);
+
+	// Calculate image width and heigth
+	w = xMax - xMin + 1;
+	*width = w;
+	h = yMax - yMin + 1;
+	*height = h;
+
+	if (w > 448) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXSprite function error");
+		sprintf(engine.system_error_message2, "Excesive width on image file %s ", asset_name);
+		sprintf(engine.system_error_message3, "Image width %u, Max. expected 448", w);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+	if (h > 288) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXSprite function error");
+		sprintf(engine.system_error_message2, "Excesive height on image file %s ", asset_name);
+		sprintf(engine.system_error_message3, "Image height %u, Max. expected 200", h);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+	image_size = (long) w * h;
+
+	if (image_size > size) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXSprite function error");
+		sprintf(engine.system_error_message2, "Excesive image size of file %s ", asset_name);
+		sprintf(engine.system_error_message3, "Image size %ld, Max. expected %ld", image_size, size);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+
+	// Skip some data with no use in this case, like hDpi, vDpi, EGA palette, planes, bytes per line, palette info, device width and device heigth
+	lseek(fileHandler, 116, SEEK_CUR);
+
+	// Get image data
+	l = 0;
+	while (l < image_size) {
+		// Get value
+		_dos_read(fileHandler, &chr, sizeof(chr), &result);
+		if (0xC0 == (0xC0 & chr)) {// is it a RLE repeater
+			cnt = 0x3F & chr;      // Get count
+			_dos_read(fileHandler, &chr, sizeof(chr), &result);
+			for (i = 0; i < cnt; i++) {
+				buffer[l] = chr + palette_offset;
+				l++;
+			}
+		} else {// not a RLE...just a single color
+			buffer[l] = chr + palette_offset;
+			l++;
+		}
+	}
+
+	_dos_close(fileHandler);
+}
+
+/** FILE :: Load map
+ *  - File format CSV
+ */
+void FILE_LoadMap_CSV(const char *dat_name, int *back, int *fore, int *mask, int *col, int *event_hspot, int size) {
+	FILE *f;
+	int tile;
+	word index;
+	dword offset;
+
+	// Open DAT file and search TMX file inside
+	f = fopen(dat_name, "rb");
+	if (!f) {
+		sprintf(engine.system_error_message1, "FILE_LoadMap_CSV function error");
+		sprintf(engine.system_error_message2, "Unable to open DAT file %s ", dat_name);
+		sprintf(engine.system_error_message3, "");
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+	// Load background tiles
+	offset = FILE_SeekAssetOffset(f, "m_back.csv");
+	fseek(f, offset, SEEK_SET);// Set file pointer at the begining of the file
+	// Read layer data
+	for (index = 0; index < size; index++) {
+		fscanf(f, "%d,", &tile);// get the tile number
+		if (tile != -1) back[index] = tile;
+		else
+			back[index] = 0;
+	}
+
+	// Load foreground tiles
+	offset = FILE_SeekAssetOffset(f, "m_fore.csv");
+	fseek(f, offset, SEEK_SET);// Set file pointer at the begining of the file
+	// Read layer data
+	for (index = 0; index < size; index++) {
+		fscanf(f, "%d,", &tile);// get the tile number
+		if (tile != -1) fore[index] = tile;
+		else
+			fore[index] = 0;
+	}
+
+	// Load mask tiles
+	offset = FILE_SeekAssetOffset(f, "m_mask.csv");
+	fseek(f, offset, SEEK_SET);// Set file pointer at the begining of the file
+	// Read layer data
+	for (index = 0; index < size; index++) {
+		fscanf(f, "%d,", &tile);// get the tile number
+		if (tile != -1) mask[index] = tile;
+		else
+			mask[index] = 0;
+	}
+
+	// Load colission tiles
+	offset = FILE_SeekAssetOffset(f, "m_col.csv");
+	fseek(f, offset, SEEK_SET);// Set file pointer at the begining of the file
+	// Read layer data
+	for (index = 0; index < size; index++) {
+		fscanf(f, "%d,", &tile);// get the tile number
+		if (tile != -1) col[index] = tile;
+		else
+			col[index] = 0;
+	}
+
+	// Load event tiles
+	offset = FILE_SeekAssetOffset(f, "m_event.csv");
+	fseek(f, offset, SEEK_SET);// Set file pointer at the begining of the file
+	// Read layer data
+	for (index = 0; index < size; index++) {
+		fscanf(f, "%d,", &tile);// get the tile number
+		if (tile != -1) event_hspot[index] = (tile & 0xFF) << 8;
+		else
+			event_hspot[index] = 0;
+	}
+
+	// Load hotspot tiles
+	offset = FILE_SeekAssetOffset(f, "m_hspot.csv");
+	fseek(f, offset, SEEK_SET);// Set file pointer at the begining of the file
+	// Read layer data
+	for (index = 0; index < size; index++) {
+		fscanf(f, "%d,", &tile);// get the tile number
+		event_hspot[index] = event_hspot[index] | (tile & 0xFF);
+
+		if (tile != -1) event_hspot[index] = event_hspot[index] | (tile & 0xFF);
+		else
+			event_hspot[index] = event_hspot[index] | 0;
+	}
+
+
+	fclose(f);
+}
+
+/** FILE :: Load palette
+ *  - Palette format PCX
+ */
+void FILE_LoadPCXPalette(const char *dat_name, const char *asset_name, byte *buffer, long size) {
+	int fileHandler;
+	long offset;
+	int i, j;
+	word result;
+	byte ident;// must be 0x0A for PCX file
+	byte version;
+	byte encoding;
+	byte bitsPerPixel;
+	byte color;
+	byte chr;
+
+	if (_dos_open(dat_name, O_RDONLY, &fileHandler)) {
+		sprintf(engine.system_error_message1, "FILE_LoadPCXPalette function error");
+		sprintf(engine.system_error_message2, "Unable to open DAT file %s ", dat_name);
+		sprintf(engine.system_error_message3, "");
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+
+	offset = FILE_GetAssetOffset(fileHandler, asset_name);
+	if (offset == 0) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXPalette function error");
+		sprintf(engine.system_error_message2, "Unable to find offset inside DAT file %s ", dat_name);
+		sprintf(engine.system_error_message3, "Asset file %s", asset_name);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+	// Move pointer to offset
+	lseek(fileHandler, offset, SEEK_SET);
+
+	//Read PCX header
+	_dos_read(fileHandler, &ident, sizeof(ident), &result);
+	if (ident != 0x0A) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXPalette function error");
+		sprintf(engine.system_error_message2, "Error found on PCX identifier %x on file %s ", ident, asset_name);
+		sprintf(engine.system_error_message3, "Ident found %x, ident expected 0x0A", ident);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+	_dos_read(fileHandler, &version, sizeof(version), &result);
+	_dos_read(fileHandler, &encoding, sizeof(encoding), &result);
+
+	if (encoding != 1) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXPalette function error");
+		sprintf(engine.system_error_message2, "Not RLE encoding file %s ", asset_name);
+		sprintf(engine.system_error_message3, "Encoding found %u, encoding expected 1", encoding);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+	_dos_read(fileHandler, &bitsPerPixel, sizeof(bitsPerPixel), &result);
+	if (bitsPerPixel != 8) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXPalette function error");
+		sprintf(engine.system_error_message2, "Not 8 bits per pixel image file %s ", asset_name);
+		sprintf(engine.system_error_message3, "bpx found %u, bpx expected 8", bitsPerPixel);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+
+	// Jump to special char identifier
+	lseek(fileHandler, 444, SEEK_CUR);
+	_dos_read(fileHandler, &chr, 1, &result);
+
+	if (chr != 0x0C) {
+		_dos_close(fileHandler);
+		sprintf(engine.system_error_message1, "FILE_LoadPCXPalette function error");
+		sprintf(engine.system_error_message2, "Error trying to find special char on image file %s ", asset_name);
+		sprintf(engine.system_error_message3, "Char found %u, char expected 0x0C", chr);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+
+	for (i = 0; i < 255; i++) {
+		for (j = 0; j < 3; j++) {
+			if (_dos_read(fileHandler, &color, 1, &result)) {
+				_dos_close(fileHandler);
+				sprintf(engine.system_error_message1, "FILE_LoadPCXPalette function error");
+				sprintf(engine.system_error_message2, "Error reading palette color on file %s ", asset_name);
+				sprintf(engine.system_error_message3, "Palette color number %u", i);
+				Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+			}
+			if (color == EOF) {
+				_dos_close(fileHandler);
+				sprintf(engine.system_error_message1, "FILE_LoadPCXImage function error");
+				sprintf(engine.system_error_message2, "Error reading palette color on file %s ", asset_name);
+				sprintf(engine.system_error_message3, "EOF found when reading palette color number %u", i);
+				Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+			} else {
+				*buffer++ = color >> 2;
+			}
+		}
+	}
+
+	_dos_close(fileHandler);
+}
+
+
+/** FILE :: Load text from txt file
+ * - Reads a TXT file inside a .DAT file
+ * - Text lines must start with '#<line_number>'
+ * - Text lines must finish with '$'
+ * - String is returned as a pointer
+ */
+int FILE_LoadText(const char *dat_name, const char *asset_name, int line, unsigned char *str) {
+	FILE *f;
+	bool found;
+	word line_readed;
+	byte line_counter;
+	dword offset;
+	char c;
+	int length;
+
+	// Open DAT file and search txt file inside
+	f = fopen(dat_name, "rb");
+	if (!f) {
+		sprintf(engine.system_error_message1, "FILE_LoadText function error");
+		sprintf(engine.system_error_message2, "Unable to open DAT file %s ", dat_name);
+		sprintf(engine.system_error_message3, "");
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+
+	// Search asset file
+	offset = FILE_SeekAssetOffset(f, asset_name);
+	fseek(f, offset, SEEK_SET);// Set file pointer at the begining of the file
+	if (offset == 0) {
+		fclose(f);
+		sprintf(engine.system_error_message1, "FILE_LoadText function error");
+		sprintf(engine.system_error_message2, "Unable to find offset inside DAT file %s ", dat_name);
+		sprintf(engine.system_error_message3, "Asset file %s", asset_name);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+
+	found = false;
+	line_counter = 0;
+
+	while (!found) {
+		//
+		// fscanf(f, "#%d# %[^$] %[^\n]\n", &line_readed, str);
+		fscanf(f, "#%d#", &line_readed);
+		//fscanf(f, "%[^$]", str);
+		fgets(str, 40, f);
+		if (line_readed == line) {
+			found = true;
+			length = strlen(str) - 2;
+			fclose(f);
+			return length;
+		}
+		line_counter++;
+		if (line_counter == 99) {
+			fclose(f);
+			sprintf(engine.system_error_message1, "FILE_LoadText function error");
+			sprintf(engine.system_error_message2, "Line %d not found", line);
+			sprintf(engine.system_error_message3, "Asset file %s", asset_name);
+			Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+		}//
+	}
+
+	fclose(f);
+	return 0;
+}
+
+//This converts a 16bit number from little-endian (Motorola) to big-endian
+//(Intel) format
+unsigned int L2B16(unsigned int L) {
+	return ((L & 0xFF) << 8) + (L >> 8);
+}
+
+//This converts a 32bit number from little-endian (Motorola) to big-endian
+//(Intel) format
+long L2B32(long L) {
+	long b;
+	unsigned char T;
+
+	b = 0;
+	for (T = 0; T <= 3; T++) {
+		b = (b << 8) + (L & 0xFF);
+		L >>= 8;
+	}
+	return b;
+}
+
+void FILE_LoadInstruments(const char *dat_name, const char *asset_name, byte *inst1, byte *inst2, byte *inst3, byte *inst4, byte *inst5, byte *inst6, byte *inst7, byte *inst8, byte *inst9, byte *inst10, byte *inst11) {
+	FILE *f;
+	dword offset;
+
+	// Open DAT file and search txt file inside
+	f = fopen(dat_name, "rb");
+	if (!f) {
+		sprintf(engine.system_error_message1, "FILE_LoadInstruments function error");
+		sprintf(engine.system_error_message2, "Unable to open DAT file %s ", dat_name);
+		sprintf(engine.system_error_message3, "");
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+
+	// Search asset file
+	offset = FILE_SeekAssetOffset(f, asset_name);
+	fseek(f, offset + 1, SEEK_SET);// Set file pointer at the begining of the file
+	if (offset == 0) {
+		fclose(f);
+		sprintf(engine.system_error_message1, "FILE_LoadInstruments function error");
+		sprintf(engine.system_error_message2, "Unable to find offset inside DAT file %s ", dat_name);
+		sprintf(engine.system_error_message3, "Asset file %s", asset_name);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+
+
+	fread(inst1, 128, 1, f);
+	fread(inst2, 128, 1, f);
+	fread(inst3, 128, 1, f);
+	fread(inst4, 128, 1, f);
+	fread(inst5, 128, 1, f);
+	fread(inst6, 128, 1, f);
+	fread(inst7, 128, 1, f);
+	fread(inst8, 128, 1, f);
+	fread(inst9, 128, 1, f);
+	fread(inst10, 128, 1, f);
+	fread(inst11, 128, 1, f);
+	fclose(f);
+}
+
+void FILE_LoadMidiSong(const char *dat_name, const char *asset_name) {
+	FILE *f;
+	dword offset;
+	int i;
+	MIDIFileHeader header;
+	MIDITrackHeader track_header;
+
+	// Open DAT file and search txt file inside
+	f = fopen(dat_name, "rb");
+	if (!f) {
+		sprintf(engine.system_error_message1, "FILE_LoadMidiSong function error");
+		sprintf(engine.system_error_message2, "Unable to open DAT file %s ", dat_name);
+		sprintf(engine.system_error_message3, "");
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+
+	// Search asset file
+	offset = FILE_SeekAssetOffset(f, asset_name);
+	fseek(f, offset, SEEK_SET);// Set file pointer at the begining of the file
+	if (offset == 0) {
+		fclose(f);
+		sprintf(engine.system_error_message1, "FILE_LoadMidiSong function error");
+		sprintf(engine.system_error_message2, "Unable to find offset inside DAT file %s ", dat_name);
+		sprintf(engine.system_error_message3, "Asset file %s", asset_name);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+
+	//Read in the header
+	fread(&header, 14, 1, f);
+	//If the first four bytes do not constiture "MTHd", this is not a MIDI file
+	if (header.mthd == 0x6468544D) {
+		//If the header size is other than 6, this is an unknown
+		//type of MIDI file
+		if (L2B32(header.size) == 6) {
+			//Convert file format identifier
+			header.format = L2B16(header.format);
+			//If it is an asynchronous file (type 2), I don't know how to play it
+			if (header.format != 2) {
+				//Store the tempo of the file
+				midi_song.tempo = L2B16(header.ticks_x_note);
+				//Store the number of tracks in the file
+				midi_song.tracks_number = L2B16(header.tracks_number);
+				if (header.format == 0) midi_song.tracks_number = 1;
+				//When we reach this, we can start loading
+				for (i = 1; i <= midi_song.tracks_number; i++) {
+					//Load track header
+					fread(&track_header, 8, 1, f);
+					//If the first 4 bytes do not form "MTrk", the track is invalid
+					if (track_header.mtrk != 0x6B72544D) {
+						sprintf(engine.system_error_message1, "FILE_LoadMidiSong function error");
+						sprintf(engine.system_error_message2, "Track header error %s ", dat_name);
+						sprintf(engine.system_error_message3, "Asset file %s", asset_name);
+						Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+					}
+
+					//We need to convert little-endian to big endian
+					midi_song.track_size[i] = L2B32(track_header.size);
+
+					//TrackData[CurrentTrack] = (char *) malloc(TrackSize[CurrentTrack]);
+					midi_song.track_data[i] = MM_PushChunk(midi_song.track_size[i], CT_MUSIC);
+
+					fread((char *) midi_song.track_data[i], midi_song.track_size[i], 1, f);
+				}
+			} else {
+				fclose(f);
+				sprintf(engine.system_error_message1, "FILE_LoadMidiSong function error");
+				sprintf(engine.system_error_message2, "Asyncronous midi song %s ", dat_name);
+				sprintf(engine.system_error_message3, "Asset file %s", asset_name);
+				Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+			}
+		} else {
+			fclose(f);
+			sprintf(engine.system_error_message1, "FILE_LoadMidiSong function error");
+			sprintf(engine.system_error_message2, "MIDI header size <> 6 %s ", dat_name);
+			sprintf(engine.system_error_message3, "Asset file %s", asset_name);
+			Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+		}
+	} else {
+		fclose(f);
+		sprintf(engine.system_error_message1, "FILE_LoadMidiSong function error");
+		sprintf(engine.system_error_message2, "Wrong midi header id %s ", dat_name);
+		sprintf(engine.system_error_message3, "Asset file %s", asset_name);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+
+	fclose(f);
+}
+
+byte *FILE_LoadA2MSongInfo(const char *dat_name, const char *asset_name, dword *size) {
+
+	FILE *f;
+	dword offset;
+	dword filesize;
+	byte *buffer;
+
+	// Open DAT file and search txt file inside
+	f = fopen(dat_name, "rb");
+	if (!f) {
+		sprintf(engine.system_error_message1, "FILE_LoadA2MSongInfo function error");
+		sprintf(engine.system_error_message2, "Unable to open DAT file %s ", dat_name);
+		sprintf(engine.system_error_message3, "");
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+
+	// Search asset file
+	offset = FILE_SeekAssetOffset(f, asset_name);
+	if (offset == 0) {
+		fclose(f);
+		sprintf(engine.system_error_message1, "FILE_LoadA2MSongInfo function error");
+		sprintf(engine.system_error_message2, "Unable to find offset inside DAT file %s ", dat_name);
+		sprintf(engine.system_error_message3, "Asset file %s", asset_name);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+
+	// Get file length
+	filesize = FILE_SeekAssetLength(f, asset_name);
+	if (filesize == 0) {
+		fclose(f);
+		sprintf(engine.system_error_message1, "FILE_LoadA2MSongInfo function error");
+		sprintf(engine.system_error_message2, "Unable to find length inside DAT file %s ", dat_name);
+		sprintf(engine.system_error_message3, "Asset file %s", asset_name);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+	*size = filesize;
+	fseek(f, offset, SEEK_SET);// Set file pointer at the begining of the file
+
+	buffer = MM_PushChunk(filesize, CT_TEMPORARY);
+
+	// read file data
+	fread(buffer, filesize, 1, f);
+	fclose(f);
+
+	return buffer;
+}

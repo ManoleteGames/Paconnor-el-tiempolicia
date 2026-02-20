@@ -1,0 +1,2 @@
+#define ADLIB_FM_PORT 0x388
+#define ADLIB_FM_DATA 0x389

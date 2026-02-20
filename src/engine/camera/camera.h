@@ -1,0 +1,8 @@
+#define CAM_OFFSET_X 140
+#define CAM_OFFSET_Y 80
+
+
+#define CAM_VISIBLE_WIDTH 320
+#define CAM_VISIBLE_HEIGHT 208
+
+#define CAM_SPEED 1

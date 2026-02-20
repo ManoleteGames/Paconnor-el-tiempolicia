@@ -1,0 +1,2 @@
+#define UI_PANEL_WIDTH
+#define UI_PANEL_HEIGHT
