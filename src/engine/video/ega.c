@@ -40,3 +40,10 @@ void EGA_ImageToVRAM(byte *buffer, int width, int height) {
 
 	//enable();
 }
+
+/** EGA :: Check graphics card compatibility
+ *  - Returns true if a EGA compatible card is detected
+ */
+bool EGA_CheckGraphicsCard(void) {
+	return false;
+}

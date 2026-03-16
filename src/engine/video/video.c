@@ -12,9 +12,18 @@ Video video;
  *  - Allocate video memory
  */
 void VIDEO_Init(void) {
-	video.selected_mode = 1;// Default to VGA
 
-	switch (video.selected_mode) {
+	engine.VIDEO_SelectedMode = 99;
+
+	// Select video mode by priority
+	if (engine.VGA_Present) engine.VIDEO_SelectedMode = 1;// Default to VGA
+	else if (engine.EGA_Present)
+		engine.VIDEO_SelectedMode = 0;// EGA
+	else
+		engine.VIDEO_SelectedMode = 2;// CGA
+
+
+	switch (engine.VIDEO_SelectedMode) {
 		case 0:// EGA
 			// Screen buffers. Must be the same size as the EGA resolution
 			video.screen_width = EGA_RESOLUTION_WIDTH;
@@ -62,7 +71,7 @@ void VIDEO_Init(void) {
  */
 void VIDEO_TimerHandler(void) {
 	// Depending on the video mode, call the correct function
-	switch (video.selected_mode) {
+	switch (engine.VIDEO_SelectedMode) {
 		case 0:// EGA
 
 			break;
@@ -129,7 +138,7 @@ void VIDEO_PCXImageToVRAM(const char *dat_name, const char *asset_name, int size
 	FILE_LoadPCXImage(dat_name, asset_name, data_loaded, size, &width, &height);
 
 	// Depending on the video mode, call the correct function
-	switch (video.selected_mode) {
+	switch (engine.VIDEO_SelectedMode) {
 		case 0:// EGA
 			EGA_ImageToVRAM(data_loaded, width, height);
 			break;
@@ -674,7 +683,7 @@ void VIDEO_DrawSpriteToScreenBufferRLE(SpriteGraphic *spr_graphics, Sprite spr) 
  */
 void VIDEO_SetPalette(byte *palette) {
 	// Depending on the video mode, call the correct function
-	switch (video.selected_mode) {
+	switch (engine.VIDEO_SelectedMode) {
 		case 0:// EGA
 			VGA_SetPalette(palette);
 			break;
@@ -697,7 +706,7 @@ void VIDEO_SetPalette(byte *palette) {
  */
 void VIDEO_ClearPalette(void) {
 	// Depending on the video mode, call the correct function
-	switch (video.selected_mode) {
+	switch (engine.VIDEO_SelectedMode) {
 		case 0:// EGA
 			VGA_ClearPalette();
 			break;
@@ -720,7 +729,7 @@ void VIDEO_ClearPalette(void) {
  */
 void VIDEO_ClearScreen(void) {
 	// Depending on the video mode, call the correct function
-	switch (video.selected_mode) {
+	switch (engine.VIDEO_SelectedMode) {
 		case 0:// EGA
 			memset(video.screen_buffer[VIDEO_SCREEN_BUFFER_BACK], 0, 320 * 200);
 			VGA_ClearScreen();
@@ -796,7 +805,7 @@ bool VIDEO_AwaitFadedOut(void) {
  */
 void VIDEO_FadeIn(int speed) {
 	// Depending on the video mode, call the correct function
-	switch (video.selected_mode) {
+	switch (engine.VIDEO_SelectedMode) {
 		case 0:// EGA
 			VGA_FadeIn(speed);
 			break;
@@ -819,7 +828,7 @@ void VIDEO_FadeIn(int speed) {
  */
 void VIDEO_FadeOut(int speed) {
 	// Depending on the video mode, call the correct function
-	switch (video.selected_mode) {
+	switch (engine.VIDEO_SelectedMode) {
 		case 0:// EGA
 			VGA_FadeOut(speed);
 			break;

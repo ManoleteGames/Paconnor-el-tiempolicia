@@ -1,7 +1,6 @@
 #include "../engine.h"
 #include "adlib.h"
 
-bool adlib_present;
 Adlib adlib;
 
 /**************************************************************************

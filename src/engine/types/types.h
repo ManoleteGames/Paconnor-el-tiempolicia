@@ -14,13 +14,39 @@ typedef signed char sbyte;
 typedef struct {
 	bool debug_mode;
 	bool good_mode;
+
+	bool dosVersionOK;
+	bool memOK;
+	bool videoOK;
+	bool audioOK;
+	bool mouseOK;
+
 	bool loading;
 	bool logo;
 	bool sequence;
 	bool ingame;
 	bool exit_game;
-
 	int scene;
+
+	// Audio
+	bool AUDIO_Initialized;
+	int AUDIO_SelectedMode;
+	bool ADLIB_present;
+	bool SPEAKER_present;
+	bool SB_Present;
+
+	// Memory
+	bool MM_Initialized;
+
+	// Mouse
+	bool MOUSE_initialized;
+	bool MOUSE_present;
+
+	// Video
+	bool VGA_Present;
+	bool EGA_Present;
+	bool CGA_Present;
+	int VIDEO_SelectedMode;
 
 	char system_error_message1[80];
 	char system_error_message3[80];
@@ -126,12 +152,6 @@ typedef struct {
 } ChatPanel;
 
 typedef struct {
-
-	bool vga_present;
-	bool ega_present;
-	bool cga_present;
-
-	int selected_mode;// 0 = EGA, 1 = VGA, 2 = CGA
 
 	int screen_width, screen_height;
 	byte *screen_buffer[3];
@@ -562,11 +582,12 @@ typedef struct {
 
 typedef struct {
 
-	int buffer[25];
-	int current_note;
+	int buffer[51];
+	int note;
+	int note_index;
 	int note_duration;
 	int note_time;
-	bool playing;
+	bool play, playing_note;
 
 } SoundEffect;
 

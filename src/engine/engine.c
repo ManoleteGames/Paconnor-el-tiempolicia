@@ -79,9 +79,8 @@ static bool GetMemInfo(void) {
 static bool GetAvailableVideo(void) {
 
 	// Check VGA
-	video.vga_present = VGA_CheckGraphicsCard();
-	//sleep(1);
-	if (video.vga_present) {
+	engine.VGA_Present = VGA_CheckGraphicsCard();
+	if (engine.VGA_Present) {
 		ScreenSetCursor(9, 6);
 		printf("%u", 1);
 		ScreenSetCursor(9, 23);
@@ -94,14 +93,18 @@ static bool GetAvailableVideo(void) {
 		printf(" ...................................... Not found. \n");
 		return false;
 	}
+
+	// Check EGA
+	engine.EGA_Present = EGA_CheckGraphicsCard();
+	engine.CGA_Present = CGA_CheckGraphicsCard();
 }
 
 /** ENGINE :: Checks if mouse is available
  */
 static bool GetAvailableMouse(void) {
-	mouse_present = MOUSE_CheckIfAvailable();
+	engine.MOUSE_present = MOUSE_CheckIfAvailable();
 	//sleep(1);
-	if (mouse_present) {
+	if (engine.MOUSE_present) {
 		ScreenSetCursor(13, 6);
 		printf("%u", 1);
 		ScreenSetCursor(13, 21);
@@ -119,9 +122,9 @@ static bool GetAvailableMouse(void) {
 /** ENGINE :: Checks if there is any compatible sound card
  */
 static bool GetAvailableAudio(void) {
-	adlib_present = AUDIO_CheckAdlib();
+	engine.ADLIB_present = AUDIO_CheckAdlib();
 
-	if (adlib_present) {
+	if (engine.ADLIB_present) {
 		ScreenSetCursor(14, 6);
 		printf("%u", 1);
 		ScreenSetCursor(14, 25);
@@ -133,9 +136,9 @@ static bool GetAvailableAudio(void) {
 		printf(" .................................Not available. \n");
 	}
 
-	sblaster_present = AUDIO_CheckSoundBlaster();
+	engine.SB_Present = AUDIO_CheckSoundBlaster();
 
-	if (sblaster_present) {
+	if (engine.SB_Present) {
 		ScreenSetCursor(15, 6);
 		printf("%u", 1);
 		ScreenSetCursor(15, 27);
@@ -148,6 +151,8 @@ static bool GetAvailableAudio(void) {
 	}
 
 	// PC Speaker is always here for you!
+	engine.SPEAKER_present = true;
+
 	return true;
 }
 
@@ -291,11 +296,6 @@ static void InitSubsystems(void) {
  * - All system initialization
  */
 void InitEngine(void) {
-	bool dosVersionOK;
-	bool memOK;
-	bool videoOK;
-	bool audioOK;
-	bool mouseOK;
 
 	system("cls");
 
@@ -325,11 +325,11 @@ void InitEngine(void) {
 	ScreenSetCursor(21, 25);
 	printf(" ...please wait...");
 
-	dosVersionOK = GetDosVersion();// Get and check DOS version
-	memOK = GetMemInfo();          // Get free memory
-	videoOK = GetAvailableVideo(); // Check vga/ega/cga video available
-	mouseOK = GetAvailableMouse(); // Check if mouse is available
-	audioOK = GetAvailableAudio(); // Check adlib/soundblaster audio available
+	engine.dosVersionOK = GetDosVersion();// Get and check DOS version
+	engine.memOK = GetMemInfo();          // Get free memory
+	engine.videoOK = GetAvailableVideo(); // Check vga/ega/cga video available
+	engine.mouseOK = GetAvailableMouse(); // Check if mouse is available
+	engine.audioOK = GetAvailableAudio(); // Check adlib/soundblaster audio available
 
 	ScreenSetCursor(21, 25);
 	SetDelayTime(1000);
@@ -338,35 +338,35 @@ void InitEngine(void) {
 	};
 	printf(" ...process done...");
 
-	if (!dosVersionOK) {
+	if (!engine.dosVersionOK) {
 		sprintf(engine.system_error_message1, "DOS version not supported");
 		sprintf(engine.system_error_message2, " ");
 		sprintf(engine.system_error_message3, " ");
 		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_SYSTEM);
 	}
 
-	if (!memOK) {
+	if (!engine.memOK) {
 		sprintf(engine.system_error_message1, "Not enought RAM memory");
 		sprintf(engine.system_error_message2, " ");
 		sprintf(engine.system_error_message3, " ");
 		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_MEMORY);
 	}
 
-	if (!videoOK) {
+	if (!engine.videoOK) {
 		sprintf(engine.system_error_message1, "Video device not supported");
 		sprintf(engine.system_error_message2, " ");
 		sprintf(engine.system_error_message3, " ");
 		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_VIDEO);
 	}
 
-	if (!audioOK) {
+	if (!engine.audioOK) {
 		sprintf(engine.system_error_message1, "Audio device not supported");
 		sprintf(engine.system_error_message2, " ");
 		sprintf(engine.system_error_message3, " ");
 		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_SOUND);
 	}
 
-	if (!mouseOK) {
+	if (!engine.mouseOK) {
 		sprintf(engine.system_error_message1, "Mouse not available");
 		sprintf(engine.system_error_message2, " ");
 		sprintf(engine.system_error_message3, " ");
@@ -466,25 +466,4 @@ void Update(int player_follow) {
 
 	LimitFPS(28);
 	engine.sample_time = TIMER_GetMilliseconds() - start_time;
-
-	//ENEMY_DrawHitPixels(enemy[0]);
-	//ENEMY_DrawColissionPixels(enemy[1]);
-	//ENEMY_DrawColissionPixels(enemy[2]);
-
-	//ACTOR_DrawColissionPixels();
-	//ACTOR_DrawHitPixels();
-
-
-	// Update map with the new cam position
-
-
-	////////// GRAPHICS UPDATE ////////////
-	//GFX_AsyncRotatePalette();
-	//GFX_AsyncFadeInFromPalette();
-	//GFX_AsyncFadeOutFromPalette();
-
-	// Update video
-
-
-	//if (waitCyclesTarget > 0) { waitCyclesCounter++; }
 }

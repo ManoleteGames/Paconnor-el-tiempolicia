@@ -2,8 +2,6 @@
 #include "../engine.h"
 #include "mem.h"
 
-bool MM_Initialized = false;
-
 word mmChunkSizes[MM_MAX_NUM_CHUNKS];
 ChunkType mmChunkTypes[MM_MAX_NUM_CHUNKS];
 
@@ -17,7 +15,7 @@ word mmChunksUsed;
 void MM_Init(void) {
 	int i;
 
-	if (!MM_Initialized) {
+	if (!engine.MM_Initialized) {
 		// Clear chunck data and set all chunks as temporary
 		for (i = 0; i < MM_MAX_NUM_CHUNKS; ++i) {
 			mmChunkSizes[i] = 0;
@@ -36,14 +34,14 @@ void MM_Init(void) {
 		mmMemUsed = 0;
 	}
 
-	MM_Initialized = true;
+	engine.MM_Initialized = true;
 }
 
 /** MEM :: Memory manager shutdown
  *   - Free all allocated memory
  */
 void MM_Shutdown(void) {
-	if (MM_Initialized) {
+	if (engine.MM_Initialized) {
 		// Free memory
 		free(mmRawMem);
 	}

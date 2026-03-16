@@ -9,6 +9,13 @@ byte *CGA;
 void CGA_VSync(void) {
 }
 
+/** CGA :: Check graphics card compatibility
+ *  - Returns true if a CGA compatible card is detected
+ */
+bool CGA_CheckGraphicsCard(void) {
+	return false;
+}
+
 /** CGA :: Draws screen buffer on Video memory
  *  - Draws an entire screen buffer on video ram 
  */

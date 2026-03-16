@@ -4,9 +4,10 @@
 #define IRS_SPEAKER 0x1C
 
 #define AUDIO_GUN_EFFECT 1
-#define AUDIO_EXPLOSSION 2
-
-#define PTI_CH2 0x42
+#define AUDIO_PUNCH_EFFECT 2
+#define AUDIO_KICK_EFFECT 3
+#define AUDIO_EXPLOSSION 10
+#define AUDIO_ACTOR_DEAD 20
 
 //Flat              Whole         Sharp}
 #define C 0

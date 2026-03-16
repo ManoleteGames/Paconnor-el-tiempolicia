@@ -116,12 +116,14 @@ void VIDEO_ChatToScreenBuffer(ChatPanel *panel);
 /// CGA.C //
 extern byte *CGA;
 void CGA_VSync(void);
+bool CGA_CheckGraphicsCard(void);
 void CGA_ScreenMainBufferToVRAM(void);
 void CGA_ImageToVRAM(byte *buffer, int width, int height);
 
 /// EGA.C //
 extern byte *EGA;
 void EGA_VSync(void);
+bool EGA_CheckGraphicsCard(void);
 void EGA_ScreenMainBufferToVRAM(void);
 void EGA_ImageToVRAM(byte *buffer, int width, int height);
 
@@ -267,7 +269,6 @@ void KEYB_Init(void);
 void KEYB_Free(void);
 
 /// MEM.c //
-extern bool MM_Initialized;
 extern dword mmMemTotal;
 extern dword mmMemUsed;
 extern word mmChunksUsed;
@@ -277,8 +278,6 @@ void *MM_PushChunk(word size, ChunkType type);
 void MM_PopChunks(ChunkType type);
 
 /// MOUSE.c //
-extern bool mouse_present;
-extern bool mouse_initialized;
 extern MouseData cursor;
 void MOUSE_Init(void);
 void MOUSE_Shutdown(void);
@@ -305,7 +304,6 @@ void ACTOR_DrawHitPixels(void);
 word ISQRT(dword n);
 
 /// AUDIO.c //
-extern bool AUDIO_Initialized;
 extern Song song;
 void AUDIO_Init(void);
 void AUDIO_Shutdown(void);
@@ -330,7 +328,6 @@ void A2M_Stop(void);
 extern A2M_SONGINFO songinfo;
 
 /// SBLASTER.C //
-extern bool sblaster_present;
 extern SBlaster sblaster;
 bool SB_Check(void);
 void SB_Init(void);
@@ -344,12 +341,12 @@ word SB_GetDSPVersion(void);
 byte SB_TestLoDMA(void);
 
 /// ADLIB.c //
-extern bool adlib_present;
 extern Adlib adlib;
 bool ADLIB_CheckFMInstalled(void);
 
 /// SPEAKER.c //
 extern int speaker_note[96];
+void SPK_Init(void);
 void SPK_Unmute(void);
 void SPK_Mute(void);
 void SPK_Sound(int freq);

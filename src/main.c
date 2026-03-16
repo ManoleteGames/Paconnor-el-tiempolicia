@@ -4,6 +4,7 @@
 * (c) 2025-2026 by J.Martin
 ***********************************************/
 
+#include "engine/audio/audio.h"
 #include "engine/engine.h"
 #include "engine/types/types.h"
 #include <stdio.h>

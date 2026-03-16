@@ -1220,24 +1220,25 @@ void ACTOR_Update(void) {
 		gfx_sprite_stack[actor.sprite_num].animation_end = false;
 		gfx_sprite_stack[actor.sprite_num].animation_loop = false;
 
-		AUDIO_PlaySound(AUDIO_GUN_EFFECT);
-
 		switch (actor.status_facing) {
 			case 1:// facing right
 				switch (actor.action_punch_combo) {
 					case 0:// first punch
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_RIGHT_PUNCH1_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 3;
+						AUDIO_PlaySound(AUDIO_PUNCH_EFFECT);
 						ACTOR_InitPunch(actor.pos_x + 32, actor.pos_y + 8);
 						break;
 					case 1:
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_RIGHT_PUNCH2_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 2;
+						AUDIO_PlaySound(AUDIO_PUNCH_EFFECT);
 						ACTOR_InitPunch(actor.pos_x + 32, actor.pos_y + 8);
 						break;
 					case 2:
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_RIGHT_KICK_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 3;
+						AUDIO_PlaySound(AUDIO_KICK_EFFECT);
 						ACTOR_InitKick(actor.pos_x + 32, actor.pos_y + 8);
 						break;
 				}
@@ -1249,16 +1250,19 @@ void ACTOR_Update(void) {
 					case 0:// first punch
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_RIGHT_PUNCH1_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 3;
+						AUDIO_PlaySound(AUDIO_PUNCH_EFFECT);
 						ACTOR_InitPunch(actor.pos_x - 8, actor.pos_y + 6);
 						break;
 					case 1:
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_RIGHT_PUNCH2_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 2;
+						AUDIO_PlaySound(AUDIO_PUNCH_EFFECT);
 						ACTOR_InitPunch(actor.pos_x - 8, actor.pos_y + 6);
 						break;
 					case 2:
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_RIGHT_KICK_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 3;
+						AUDIO_PlaySound(AUDIO_KICK_EFFECT);
 						ACTOR_InitKick(actor.pos_x - 8, actor.pos_y + 6);
 						break;
 				}
@@ -1270,16 +1274,19 @@ void ACTOR_Update(void) {
 					case 0:// first punch
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_DOWN_PUNCH1_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 3;
+						AUDIO_PlaySound(AUDIO_PUNCH_EFFECT);
 						ACTOR_InitPunch(actor.pos_x + 8, actor.pos_y + 30);
 						break;
 					case 1:
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_DOWN_PUNCH2_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 2;
+						AUDIO_PlaySound(AUDIO_PUNCH_EFFECT);
 						ACTOR_InitPunch(actor.pos_x + 8, actor.pos_y + 30);
 						break;
 					case 2:
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_DOWN_KICK_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 3;
+						AUDIO_PlaySound(AUDIO_KICK_EFFECT);
 						ACTOR_InitKick(actor.pos_x + 8, actor.pos_y + 30);
 						break;
 				}
@@ -1291,16 +1298,19 @@ void ACTOR_Update(void) {
 					case 0:// first punch
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_DOWN_RIGHT_PUNCH1_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 3;
+						AUDIO_PlaySound(AUDIO_PUNCH_EFFECT);
 						ACTOR_InitPunch(actor.pos_x + 30, actor.pos_y + 30);
 						break;
 					case 1:
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_DOWN_RIGHT_PUNCH2_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 2;
+						AUDIO_PlaySound(AUDIO_PUNCH_EFFECT);
 						ACTOR_InitPunch(actor.pos_x + 30, actor.pos_y + 30);
 						break;
 					case 2:
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_DOWN_RIGHT_KICK_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 3;
+						AUDIO_PlaySound(AUDIO_KICK_EFFECT);
 						ACTOR_InitKick(actor.pos_x + 30, actor.pos_y + 30);
 						break;
 				}
@@ -1312,16 +1322,19 @@ void ACTOR_Update(void) {
 					case 0:// first punch
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_DOWN_RIGHT_PUNCH1_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 3;
+						AUDIO_PlaySound(AUDIO_PUNCH_EFFECT);
 						ACTOR_InitPunch(actor.pos_x - 2, actor.pos_y + 32);
 						break;
 					case 1:
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_DOWN_RIGHT_PUNCH2_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 2;
+						AUDIO_PlaySound(AUDIO_PUNCH_EFFECT);
 						ACTOR_InitPunch(actor.pos_x - 2, actor.pos_y + 32);
 						break;
 					case 2:
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_DOWN_RIGHT_KICK_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 3;
+						AUDIO_PlaySound(AUDIO_KICK_EFFECT);
 						ACTOR_InitKick(actor.pos_x - 2, actor.pos_y + 32);
 						break;
 				}
@@ -1333,16 +1346,19 @@ void ACTOR_Update(void) {
 					case 0:// first punch
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_UP_PUNCH1_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 3;
+						AUDIO_PlaySound(AUDIO_PUNCH_EFFECT);
 						ACTOR_InitPunch(actor.pos_x + 12, actor.pos_y - 8);
 						break;
 					case 1:
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_UP_PUNCH2_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 2;
+						AUDIO_PlaySound(AUDIO_PUNCH_EFFECT);
 						ACTOR_InitPunch(actor.pos_x + 12, actor.pos_y - 8);
 						break;
 					case 2:
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_UP_KICK_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 3;
+						AUDIO_PlaySound(AUDIO_KICK_EFFECT);
 						ACTOR_InitKick(actor.pos_x + 12, actor.pos_y - 8);
 						break;
 				}
@@ -1354,16 +1370,19 @@ void ACTOR_Update(void) {
 					case 0:// first punch
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_UP_RIGHT_PUNCH1_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 3;
+						AUDIO_PlaySound(AUDIO_PUNCH_EFFECT);
 						ACTOR_InitPunch(actor.pos_x + 32, actor.pos_y - 6);
 						break;
 					case 1:
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_UP_RIGHT_PUNCH2_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 2;
+						AUDIO_PlaySound(AUDIO_PUNCH_EFFECT);
 						ACTOR_InitPunch(actor.pos_x + 32, actor.pos_y - 6);
 						break;
 					case 2:
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_UP_RIGHT_KICK_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 3;
+						AUDIO_PlaySound(AUDIO_KICK_EFFECT);
 						ACTOR_InitKick(actor.pos_x + 32, actor.pos_y - 6);
 						break;
 				}
@@ -1375,16 +1394,19 @@ void ACTOR_Update(void) {
 					case 0:// first punch
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_UP_RIGHT_PUNCH1_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 3;
+						AUDIO_PlaySound(AUDIO_PUNCH_EFFECT);
 						ACTOR_InitPunch(actor.pos_x, actor.pos_y - 2);
 						break;
 					case 1:
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_UP_RIGHT_PUNCH2_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 2;
+						AUDIO_PlaySound(AUDIO_PUNCH_EFFECT);
 						ACTOR_InitPunch(actor.pos_x, actor.pos_y - 2);
 						break;
 					case 2:
 						gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_UP_RIGHT_KICK_BASE_FRAME;
 						gfx_sprite_stack[actor.sprite_num].animation_frames = 3;
+						AUDIO_PlaySound(AUDIO_KICK_EFFECT);
 						ACTOR_InitKick(actor.pos_x, actor.pos_y - 2);
 						break;
 				}
@@ -1580,6 +1602,7 @@ void ACTOR_Update(void) {
 			gfx_sprite_stack[actor.sprite_num].animation_base_frame = ACTOR_DIE_BASE_FRAME;
 			gfx_sprite_stack[actor.sprite_num].animation_inverted = false;
 
+			AUDIO_PlaySound(AUDIO_ACTOR_DEAD);
 			GFX_SetPanelPortait(&gfx_actor_status_panel, 2);
 		}
 
@@ -1591,101 +1614,105 @@ void ACTOR_Update(void) {
 
 	// loop position calculation
 	if (actor.action_loop) {
-		switch (actor.movement) {
-			case 1:// loop right
-				actor.x_FP += actor.speed_horizontal_loop_FP;
-				actor.pos_x = actor.x_FP >> FP;
-				if (ACTOR_CheckRightColission()) {
-					actor.x_FP -= actor.speed_horizontal_loop_FP;
-					actor.pos_x = actor.x_FP >> FP;
-				}
-				break;
-			case 2:// loop left
-				actor.x_FP -= actor.speed_horizontal_loop_FP;
-				actor.pos_x = actor.x_FP >> FP;
-				if (ACTOR_CheckLeftColission()) {
+		if (!gfx_sprite_stack[actor.sprite_num].animation_end) {
+			switch (actor.movement) {
+				case 1:// loop right
 					actor.x_FP += actor.speed_horizontal_loop_FP;
 					actor.pos_x = actor.x_FP >> FP;
-				}
-				break;
-			case 4:// loop down
-				actor.y_FP += actor.speed_vertical_loop_FP;
-				actor.pos_y = actor.y_FP >> FP;
-				if (ACTOR_CheckDownColission()) {
-					actor.y_FP -= actor.speed_vertical_loop_FP;
-					actor.pos_y = actor.y_FP >> FP;
-				}
-				break;
-			case 5:// loop down-right
-				actor.x_FP += actor.speed_diagonalh_loop_FP;
-				actor.y_FP += actor.speed_diagonalv_loop_FP;
-				actor.pos_x = actor.x_FP >> FP;
-				actor.pos_y = actor.y_FP >> FP;
-				if (ACTOR_CheckDownColission()) {
-					actor.y_FP -= actor.speed_diagonalv_loop_FP;
-					actor.pos_y = actor.y_FP >> FP;
-				}
-				if (ACTOR_CheckRightColission()) {
-					actor.x_FP -= actor.speed_diagonalh_loop_FP;
+					if (ACTOR_CheckRightColission()) {
+						actor.x_FP -= actor.speed_horizontal_loop_FP;
+						actor.pos_x = actor.x_FP >> FP;
+					}
+					break;
+				case 2:// loop left
+					actor.x_FP -= actor.speed_horizontal_loop_FP;
 					actor.pos_x = actor.x_FP >> FP;
-				}
-				break;
-			case 6:// loop down-left
-				actor.x_FP -= actor.speed_diagonalh_loop_FP;
-				actor.y_FP += actor.speed_diagonalv_loop_FP;
-				actor.pos_x = actor.x_FP >> FP;
-				actor.pos_y = actor.y_FP >> FP;
-				if (ACTOR_CheckDownColission()) {
-					actor.y_FP -= actor.speed_diagonalv_loop_FP;
-					actor.pos_y = actor.y_FP >> FP;
-				}
-				if (ACTOR_CheckLeftColission()) {
-					actor.x_FP += actor.speed_diagonalh_loop_FP;
-					actor.pos_x = actor.x_FP >> FP;
-				}
-				break;
-			case 8:// loop up
-				actor.y_FP -= actor.speed_vertical_loop_FP;
-				actor.pos_y = actor.y_FP >> FP;
-				if (ACTOR_CheckUpColission()) {
+					if (ACTOR_CheckLeftColission()) {
+						actor.x_FP += actor.speed_horizontal_loop_FP;
+						actor.pos_x = actor.x_FP >> FP;
+					}
+					break;
+				case 4:// loop down
 					actor.y_FP += actor.speed_vertical_loop_FP;
 					actor.pos_y = actor.y_FP >> FP;
-				}
-				break;
-			case 9:// loop up-right
-				actor.x_FP += actor.speed_diagonalh_loop_FP;
-				actor.y_FP -= actor.speed_diagonalv_loop_FP;
-				actor.pos_x = actor.x_FP >> FP;
-				actor.pos_y = actor.y_FP >> FP;
-				if (ACTOR_CheckUpColission()) {
-					actor.y_FP += actor.speed_diagonalv_loop_FP;
-					actor.pos_y = actor.y_FP >> FP;
-				}
-				if (ACTOR_CheckRightColission()) {
-					actor.x_FP -= actor.speed_diagonalh_loop_FP;
-					actor.pos_x = actor.x_FP >> FP;
-				}
-				break;
-			case 10:// loop up-left
-				actor.x_FP -= actor.speed_diagonalh_loop_FP;
-				actor.y_FP -= actor.speed_diagonalv_loop_FP;
-				actor.pos_x = actor.x_FP >> FP;
-				actor.pos_y = actor.y_FP >> FP;
-				if (ACTOR_CheckUpColission()) {
-					actor.y_FP += actor.speed_diagonalv_loop_FP;
-					actor.pos_y = actor.y_FP >> FP;
-				}
-				if (ACTOR_CheckLeftColission()) {
+					if (ACTOR_CheckDownColission()) {
+						actor.y_FP -= actor.speed_vertical_loop_FP;
+						actor.pos_y = actor.y_FP >> FP;
+					}
+					break;
+				case 5:// loop down-right
 					actor.x_FP += actor.speed_diagonalh_loop_FP;
+					actor.y_FP += actor.speed_diagonalv_loop_FP;
 					actor.pos_x = actor.x_FP >> FP;
-				}
-				break;
+					actor.pos_y = actor.y_FP >> FP;
+					if (ACTOR_CheckDownColission()) {
+						actor.y_FP -= actor.speed_diagonalv_loop_FP;
+						actor.pos_y = actor.y_FP >> FP;
+					}
+					if (ACTOR_CheckRightColission()) {
+						actor.x_FP -= actor.speed_diagonalh_loop_FP;
+						actor.pos_x = actor.x_FP >> FP;
+					}
+					break;
+				case 6:// loop down-left
+					actor.x_FP -= actor.speed_diagonalh_loop_FP;
+					actor.y_FP += actor.speed_diagonalv_loop_FP;
+					actor.pos_x = actor.x_FP >> FP;
+					actor.pos_y = actor.y_FP >> FP;
+					if (ACTOR_CheckDownColission()) {
+						actor.y_FP -= actor.speed_diagonalv_loop_FP;
+						actor.pos_y = actor.y_FP >> FP;
+					}
+					if (ACTOR_CheckLeftColission()) {
+						actor.x_FP += actor.speed_diagonalh_loop_FP;
+						actor.pos_x = actor.x_FP >> FP;
+					}
+					break;
+				case 8:// loop up
+					actor.y_FP -= actor.speed_vertical_loop_FP;
+					actor.pos_y = actor.y_FP >> FP;
+					if (ACTOR_CheckUpColission()) {
+						actor.y_FP += actor.speed_vertical_loop_FP;
+						actor.pos_y = actor.y_FP >> FP;
+					}
+					break;
+				case 9:// loop up-right
+					actor.x_FP += actor.speed_diagonalh_loop_FP;
+					actor.y_FP -= actor.speed_diagonalv_loop_FP;
+					actor.pos_x = actor.x_FP >> FP;
+					actor.pos_y = actor.y_FP >> FP;
+					if (ACTOR_CheckUpColission()) {
+						actor.y_FP += actor.speed_diagonalv_loop_FP;
+						actor.pos_y = actor.y_FP >> FP;
+					}
+					if (ACTOR_CheckRightColission()) {
+						actor.x_FP -= actor.speed_diagonalh_loop_FP;
+						actor.pos_x = actor.x_FP >> FP;
+					}
+					break;
+				case 10:// loop up-left
+					actor.x_FP -= actor.speed_diagonalh_loop_FP;
+					actor.y_FP -= actor.speed_diagonalv_loop_FP;
+					actor.pos_x = actor.x_FP >> FP;
+					actor.pos_y = actor.y_FP >> FP;
+					if (ACTOR_CheckUpColission()) {
+						actor.y_FP += actor.speed_diagonalv_loop_FP;
+						actor.pos_y = actor.y_FP >> FP;
+					}
+					if (ACTOR_CheckLeftColission()) {
+						actor.x_FP += actor.speed_diagonalh_loop_FP;
+						actor.pos_x = actor.x_FP >> FP;
+					}
+					break;
+			}
 		}
-
 		// End of loop action
 		if (gfx_sprite_stack[actor.sprite_num].animation_end) {
-			actor.action_loop = false;
 			gfx_sprite_stack[actor.sprite_num].current_frame = 1;
+			actor.action_step++;
+			if (actor.action_step > 3) {
+				actor.action_loop = false;
+			}
 		}
 	}
 
@@ -1895,6 +1922,9 @@ void ACTOR_Update(void) {
 	if (actor.action_dead) {
 		if (gfx_sprite_stack[actor.sprite_num].animation_end) {
 			// end game
+			VIDEO_FadeOut(1);
+			engine.scene = 0;
+			engine.ingame = false;
 		}
 	}
 

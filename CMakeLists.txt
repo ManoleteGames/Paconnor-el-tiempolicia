@@ -29,58 +29,67 @@ add_custom_target(fonts
 
 add_custom_target(images
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/images/LOGO.DAT
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/images/logo/ILOGO.DAT
     ${CMAKE_BINARY_DIR}/
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/images/INTRO.DAT
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/images/menu/IMENU.DAT
     ${CMAKE_BINARY_DIR}/
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/images/ui/IUI.DAT
+    ${CMAKE_BINARY_DIR}/
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/images/scn0/ISCN0.DAT
+    ${CMAKE_BINARY_DIR}/    
 )
 
 add_custom_target(maps
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/maps/office/OFFICE.DAT
-    ${CMAKE_BINARY_DIR}/
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/maps/scn0/MAPSCN0.DAT
+    ${CMAKE_BINARY_DIR}/    
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/maps/sewer/SEWER.DAT
-    ${CMAKE_BINARY_DIR}/
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/maps/scn1/MAPSCN1.DAT
+    ${CMAKE_BINARY_DIR}/    
 )
 
-add_custom_target(sounds
+add_custom_target(sounds  
      COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sounds/MINTRO.DAT
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sounds/MSCENE0.DAT
     ${CMAKE_BINARY_DIR}/
-      COMMAND ${CMAKE_COMMAND} -E copy
+     COMMAND ${CMAKE_COMMAND} -E copy
     ${CMAKE_CURRENT_SOURCE_DIR}/assets/sounds/MSCENE1.DAT
     ${CMAKE_BINARY_DIR}/
 )
 
 add_custom_target(tilesets
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/tilesets/OFFICET.DAT
-    ${CMAKE_BINARY_DIR}/
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/tilesets/scn0/TSCN0.DAT
+    ${CMAKE_BINARY_DIR}/    
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/tilesets/SEWERT.DAT
-    ${CMAKE_BINARY_DIR}/
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/tilesets/scn1/TSCN1.DAT
+    ${CMAKE_BINARY_DIR}/    
 )
 
 add_custom_target(sprites
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/ACTOR.DAT
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/actor/ACTOR.DAT
     ${CMAKE_BINARY_DIR}/
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/CURSOR.DAT
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/cursor/CURSOR.DAT
     ${CMAKE_BINARY_DIR}/
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/MISC.DAT
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/misc/MISC.DAT
     ${CMAKE_BINARY_DIR}/
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/BULLETS.DAT
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/bullets/BULLETS.DAT
     ${CMAKE_BINARY_DIR}/
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/PANEL.DAT
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/panel/PANEL.DAT
     ${CMAKE_BINARY_DIR}/
-     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/ENEMY.DAT
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/enemies/ENEMY.DAT
+    ${CMAKE_BINARY_DIR}/
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/buttons/BUTTON.DAT
     ${CMAKE_BINARY_DIR}/
 )
 

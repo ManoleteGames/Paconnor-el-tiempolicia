@@ -2,9 +2,6 @@
 #include "mouse.h"
 #include <string.h>
 
-bool mouse_initialized;
-bool mouse_present;
-
 _go32_dpmi_registers mouse_regs;
 int old_mouse_handler_mask;
 int old_mouse_handler_seg;
@@ -42,7 +39,7 @@ void MOUSE_Init(void) {
 	__dpmi_regs r;
 	_go32_dpmi_seginfo mouse_seginfo;
 
-	if (!mouse_initialized) {
+	if (!engine.MOUSE_initialized) {
 		mouse_seginfo.pm_offset = (int) MOUSE_handler;
 
 		_go32_dpmi_allocate_real_mode_callback_retf(&mouse_seginfo,
@@ -65,14 +62,14 @@ void MOUSE_Init(void) {
 	cursor.left_click = false;
 	cursor.right_click = false;
 
-	mouse_initialized = true;
+	engine.MOUSE_initialized = true;
 }
 
 /** MOUSE :: Shutdown interrupt and free graphics 
  */
 void MOUSE_Shutdown(void) {
 	__dpmi_regs r;
-	if (mouse_initialized) {
+	if (engine.MOUSE_initialized) {
 		r.x.ax = 0xC;
 		r.x.cx = (short) old_mouse_handler_mask;
 		r.x.dx = (short) old_mouse_handler_off;
@@ -80,7 +77,7 @@ void MOUSE_Shutdown(void) {
 		__dpmi_int(0x33, &r);
 	}
 
-	mouse_initialized = false;
+	engine.MOUSE_initialized = false;
 }
 
 /** MOUSE :: Show cursor 
@@ -216,7 +213,7 @@ int MOUSE_CheckCursorColission(void) {
 }
 
 void MOUSE_Update(bool combat_mode) {
-	if (mouse_initialized) {
+	if (engine.MOUSE_initialized) {
 		gfx_sprite_stack[cursor.sprite_num].screen_pos_x = cursor.pos_x;
 		gfx_sprite_stack[cursor.sprite_num].screen_pos_y = cursor.pos_y;
 
