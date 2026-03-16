@@ -8,7 +8,7 @@ Particle particle[PARTICLE_MAX_PARTICLES];
  */
 /** ACTOR :: Initialize bullet
  */
-void PARTICLE_InitParticle(int graphics_id, int source_x, int source_y, int target_x, int target_y, int speed, int damage) {
+void PARTICLE_InitParticle(int graphics_id, int entity_id, int source_x, int source_y, int target_x, int target_y, int speed, int damage) {
 	int i;
 	int number;
 	int dx, dy;
@@ -25,7 +25,7 @@ void PARTICLE_InitParticle(int graphics_id, int source_x, int source_y, int targ
 
 	// Check if max bullets is reached
 	if (number == PARTICLE_MAX_PARTICLES - 1) {
-		Error("ACTOR_InitBullet function error", "Max number of bullets", "", ERROR_SYSTEM);
+		Error("PARTICLE_InitParticle function error", "Max number of bullets", "", ERROR_SYSTEM);
 	}
 
 	// Calculate target
@@ -63,7 +63,7 @@ void PARTICLE_InitParticle(int graphics_id, int source_x, int source_y, int targ
 	particle[number].graphics_id = graphics_id;
 
 	// Initialize bullet sprite
-	if (!GFX_InitSprite(particle[number].graphics_id, ENTITY_ID_EXPLOSION, number, &particle[number].sprite_num)) {
+	if (!GFX_InitSprite(particle[number].graphics_id, entity_id, number, &particle[number].sprite_num)) {
 		sprintf(engine.system_error_message1, "PARTICLE_InitParticle function error");
 		sprintf(engine.system_error_message2, "Cannot initialize particle %u sprite", number);
 		sprintf(engine.system_error_message3, " ");
@@ -191,7 +191,7 @@ void PARTICLE_UpdateParticles(void) {
 	int i, j;
 	int obj_number, enemy_number;
 
-	for (i = 0; i < ACTOR_MAX_BULLETS; i++) {
+	for (i = 0; i < PARTICLE_MAX_PARTICLES; i++) {
 		if (particle[i].loaded) {
 
 			// Not on target
@@ -212,30 +212,45 @@ void PARTICLE_UpdateParticles(void) {
 				// Check if hits something
 				particle[i].hit_on = PARTICLE_CheckParticleColission(particle[i]);
 
-				// Check hit on background, object or enemy
-				switch (particle[i].hit_on & 0x00FF) {
-					case ENTITY_ID_BACKGROUND:
-						// can be background
-						particle[i].on_target = true;
+				switch (gfx_sprite_stack[particle[i].sprite_num].entity_id) {
+					case ENTITY_ID_BLOOD:
+						// Check hit on background, object or enemy
+						switch (particle[i].hit_on & 0x00FF) {
+							case ENTITY_ID_BACKGROUND:
+								// can be background
+								particle[i].on_target = true;
+								break;
+						}
 						break;
-					case ENTITY_ID_BARREL:
-						particle[i].on_target = true;
-						// Get object number
-						obj_number = (particle[i].hit_on & 0xFF00) >> 8;
-						object[obj_number].is_hit = true;
-						object[obj_number].damage = particle[i].damage;
-						break;
-					case ENTITY_ID_ENEMY:
-						particle[i].on_target = true;
-						// Get enemy number
-						enemy_number = (particle[i].hit_on & 0xFF00) >> 8;
-						enemy[enemy_number].is_hit = true;
-						enemy[enemy_number].damage = particle[i].damage;
-						break;
-					case ENTITY_ID_ACTOR:
-						particle[i].on_target = true;
-						actor.is_hit = true;
-						actor.damage = particle[i].damage;
+					case ENTITY_ID_EXPLOSION:
+						// Check hit on background, object or enemy
+						switch (particle[i].hit_on & 0x00FF) {
+							case ENTITY_ID_BACKGROUND:
+								// can be background
+								particle[i].on_target = true;
+								break;
+							case ENTITY_ID_BARREL:
+								particle[i].on_target = true;
+								// Get object number
+								obj_number = (particle[i].hit_on & 0xFF00) >> 8;
+								object[obj_number].is_hit = true;
+								object[obj_number].damage = particle[i].damage;
+								break;
+							case ENTITY_ID_ENEMY:
+								particle[i].on_target = true;
+								// Get enemy number
+								enemy_number = (particle[i].hit_on & 0xFF00) >> 8;
+								enemy[enemy_number].is_hit = true;
+								enemy[enemy_number].damage = particle[i].damage;
+								break;
+							case ENTITY_ID_ACTOR:
+								particle[i].on_target = true;
+								actor.is_hit = true;
+								actor.damage = particle[i].damage;
+								break;
+							default:
+								break;
+						}
 						break;
 					default:
 						break;

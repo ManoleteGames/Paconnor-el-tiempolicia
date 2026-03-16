@@ -171,18 +171,17 @@ void FILE_LoadBinaryImage(const char *dat_name, const char *asset_name, byte *bu
  * - Image must be 8 bits per pixel
  * - Sets image information on inout buffer
 */
-void FILE_LoadPCXImage(const char *dat_name, const char *asset_name, byte *buffer, long size, byte *pal, word *width, word *height) {
+void FILE_LoadPCXImage(const char *dat_name, const char *asset_name, byte *buffer, long size, word *width, word *height) {
 
 	int fileHandler;
 	long image_size, offset, l;
-	int i, j, cnt;
+	int i, cnt;
 	word result;
 	byte ident;// must be 0x0A for PCX file
 	byte version;
 	byte encoding;
 	byte bitsPerPixel;
-	byte check_byte;
-	byte chr, color;
+	byte chr;
 	word xMin, xMax, yMin, yMax, w, h;
 
 	if (_dos_open(dat_name, O_RDONLY, &fileHandler)) {
@@ -289,38 +288,6 @@ void FILE_LoadPCXImage(const char *dat_name, const char *asset_name, byte *buffe
 			l++;
 		}
 	}
-
-	// Get 256 colour palette
-	// - Pallete data starts with value 0x0C, so lets go and search it
-	/*_dos_read(fileHandler, &check_byte, sizeof(check_byte), &result);
-	if (check_byte != 12) {
-		_dos_close(fileHandler);
-		sprintf(system_error_message1, "FILE_LoadPCXImage function error");
-		sprintf(system_error_message2, "Expected a 256 color image on file %s ", asset_name);
-		sprintf(system_error_message3, "Check byte error found %u, Expected 12", check_byte);
-		Error(system_error_message1, system_error_message2, system_error_message3, ERROR_FILE);
-	}
-
-	for (i = 0; i < 255; i++) {
-		for (j = 0; j < 3; j++) {
-			if (_dos_read(fileHandler, &color, 1, &result)) {
-				_dos_close(fileHandler);
-				sprintf(system_error_message1, "FILE_LoadPCXImage function error");
-				sprintf(system_error_message2, "Error reading palette color on file %s ", asset_name);
-				sprintf(system_error_message3, "Palette color number %u", i);
-				Error(system_error_message1, system_error_message2, system_error_message3, ERROR_FILE);
-			}
-			if (color == EOF) {
-				_dos_close(fileHandler);
-				sprintf(system_error_message1, "FILE_LoadPCXImage function error");
-				sprintf(system_error_message2, "Error reading palette color on file %s ", asset_name);
-				sprintf(system_error_message3, "EOF found when reading palette color number %u", i);
-				Error(system_error_message1, system_error_message2, system_error_message3, ERROR_FILE);
-			} else {
-				*pal++ = color >> 2;
-			}
-		}
-	}*/
 
 	_dos_close(fileHandler);
 }
@@ -535,7 +502,7 @@ void FILE_LoadPCXSprite(const char *dat_name, const char *asset_name, byte *buff
 	h = yMax - yMin + 1;
 	*height = h;
 
-	if (w > 448) {
+	/*if (w > 448) {
 		_dos_close(fileHandler);
 		sprintf(engine.system_error_message1, "FILE_LoadPCXSprite function error");
 		sprintf(engine.system_error_message2, "Excesive width on image file %s ", asset_name);
@@ -548,7 +515,7 @@ void FILE_LoadPCXSprite(const char *dat_name, const char *asset_name, byte *buff
 		sprintf(engine.system_error_message2, "Excesive height on image file %s ", asset_name);
 		sprintf(engine.system_error_message3, "Image height %u, Max. expected 200", h);
 		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
-	}
+	}*/
 	image_size = (long) w * h;
 
 	if (image_size > size) {
@@ -650,7 +617,7 @@ void FILE_LoadMap_CSV(const char *dat_name, int *back, int *fore, int *mask, int
 	// Read layer data
 	for (index = 0; index < size; index++) {
 		fscanf(f, "%d,", &tile);// get the tile number
-		if (tile != -1) event_hspot[index] = (tile & 0xFF) << 8;
+		if (tile != -1) event_hspot[index] = ((tile & 0xFF) + 1) << 8;
 		else
 			event_hspot[index] = 0;
 	}
@@ -661,11 +628,9 @@ void FILE_LoadMap_CSV(const char *dat_name, int *back, int *fore, int *mask, int
 	// Read layer data
 	for (index = 0; index < size; index++) {
 		fscanf(f, "%d,", &tile);// get the tile number
-		event_hspot[index] = event_hspot[index] | (tile & 0xFF);
-
-		if (tile != -1) event_hspot[index] = event_hspot[index] | (tile & 0xFF);
+		if (tile != -1) event_hspot[index] = event_hspot[index] | ((tile & 0xFF) + 1);
 		else
-			event_hspot[index] = event_hspot[index] | 0;
+			event_hspot[index] = event_hspot[index] & 0xFF00;
 	}
 
 
@@ -854,134 +819,7 @@ long L2B32(long L) {
 	return b;
 }
 
-void FILE_LoadInstruments(const char *dat_name, const char *asset_name, byte *inst1, byte *inst2, byte *inst3, byte *inst4, byte *inst5, byte *inst6, byte *inst7, byte *inst8, byte *inst9, byte *inst10, byte *inst11) {
-	FILE *f;
-	dword offset;
-
-	// Open DAT file and search txt file inside
-	f = fopen(dat_name, "rb");
-	if (!f) {
-		sprintf(engine.system_error_message1, "FILE_LoadInstruments function error");
-		sprintf(engine.system_error_message2, "Unable to open DAT file %s ", dat_name);
-		sprintf(engine.system_error_message3, "");
-		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
-	}
-
-	// Search asset file
-	offset = FILE_SeekAssetOffset(f, asset_name);
-	fseek(f, offset + 1, SEEK_SET);// Set file pointer at the begining of the file
-	if (offset == 0) {
-		fclose(f);
-		sprintf(engine.system_error_message1, "FILE_LoadInstruments function error");
-		sprintf(engine.system_error_message2, "Unable to find offset inside DAT file %s ", dat_name);
-		sprintf(engine.system_error_message3, "Asset file %s", asset_name);
-		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
-	}
-
-
-	fread(inst1, 128, 1, f);
-	fread(inst2, 128, 1, f);
-	fread(inst3, 128, 1, f);
-	fread(inst4, 128, 1, f);
-	fread(inst5, 128, 1, f);
-	fread(inst6, 128, 1, f);
-	fread(inst7, 128, 1, f);
-	fread(inst8, 128, 1, f);
-	fread(inst9, 128, 1, f);
-	fread(inst10, 128, 1, f);
-	fread(inst11, 128, 1, f);
-	fclose(f);
-}
-
-void FILE_LoadMidiSong(const char *dat_name, const char *asset_name) {
-	FILE *f;
-	dword offset;
-	int i;
-	MIDIFileHeader header;
-	MIDITrackHeader track_header;
-
-	// Open DAT file and search txt file inside
-	f = fopen(dat_name, "rb");
-	if (!f) {
-		sprintf(engine.system_error_message1, "FILE_LoadMidiSong function error");
-		sprintf(engine.system_error_message2, "Unable to open DAT file %s ", dat_name);
-		sprintf(engine.system_error_message3, "");
-		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
-	}
-
-	// Search asset file
-	offset = FILE_SeekAssetOffset(f, asset_name);
-	fseek(f, offset, SEEK_SET);// Set file pointer at the begining of the file
-	if (offset == 0) {
-		fclose(f);
-		sprintf(engine.system_error_message1, "FILE_LoadMidiSong function error");
-		sprintf(engine.system_error_message2, "Unable to find offset inside DAT file %s ", dat_name);
-		sprintf(engine.system_error_message3, "Asset file %s", asset_name);
-		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
-	}
-
-	//Read in the header
-	fread(&header, 14, 1, f);
-	//If the first four bytes do not constiture "MTHd", this is not a MIDI file
-	if (header.mthd == 0x6468544D) {
-		//If the header size is other than 6, this is an unknown
-		//type of MIDI file
-		if (L2B32(header.size) == 6) {
-			//Convert file format identifier
-			header.format = L2B16(header.format);
-			//If it is an asynchronous file (type 2), I don't know how to play it
-			if (header.format != 2) {
-				//Store the tempo of the file
-				midi_song.tempo = L2B16(header.ticks_x_note);
-				//Store the number of tracks in the file
-				midi_song.tracks_number = L2B16(header.tracks_number);
-				if (header.format == 0) midi_song.tracks_number = 1;
-				//When we reach this, we can start loading
-				for (i = 1; i <= midi_song.tracks_number; i++) {
-					//Load track header
-					fread(&track_header, 8, 1, f);
-					//If the first 4 bytes do not form "MTrk", the track is invalid
-					if (track_header.mtrk != 0x6B72544D) {
-						sprintf(engine.system_error_message1, "FILE_LoadMidiSong function error");
-						sprintf(engine.system_error_message2, "Track header error %s ", dat_name);
-						sprintf(engine.system_error_message3, "Asset file %s", asset_name);
-						Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
-					}
-
-					//We need to convert little-endian to big endian
-					midi_song.track_size[i] = L2B32(track_header.size);
-
-					//TrackData[CurrentTrack] = (char *) malloc(TrackSize[CurrentTrack]);
-					midi_song.track_data[i] = MM_PushChunk(midi_song.track_size[i], CT_MUSIC);
-
-					fread((char *) midi_song.track_data[i], midi_song.track_size[i], 1, f);
-				}
-			} else {
-				fclose(f);
-				sprintf(engine.system_error_message1, "FILE_LoadMidiSong function error");
-				sprintf(engine.system_error_message2, "Asyncronous midi song %s ", dat_name);
-				sprintf(engine.system_error_message3, "Asset file %s", asset_name);
-				Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
-			}
-		} else {
-			fclose(f);
-			sprintf(engine.system_error_message1, "FILE_LoadMidiSong function error");
-			sprintf(engine.system_error_message2, "MIDI header size <> 6 %s ", dat_name);
-			sprintf(engine.system_error_message3, "Asset file %s", asset_name);
-			Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
-		}
-	} else {
-		fclose(f);
-		sprintf(engine.system_error_message1, "FILE_LoadMidiSong function error");
-		sprintf(engine.system_error_message2, "Wrong midi header id %s ", dat_name);
-		sprintf(engine.system_error_message3, "Asset file %s", asset_name);
-		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
-	}
-
-	fclose(f);
-}
-
-byte *FILE_LoadA2MSongInfo(const char *dat_name, const char *asset_name, dword *size) {
+byte *FILE_LoadA2MSongInfo(const char *dat_name, const char *asset_name, dword *size, int mem_type) {
 
 	FILE *f;
 	dword offset;
@@ -1019,7 +857,7 @@ byte *FILE_LoadA2MSongInfo(const char *dat_name, const char *asset_name, dword *
 	*size = filesize;
 	fseek(f, offset, SEEK_SET);// Set file pointer at the begining of the file
 
-	buffer = MM_PushChunk(filesize, CT_TEMPORARY);
+	buffer = MM_PushChunk(filesize, mem_type);
 
 	// read file data
 	fread(buffer, filesize, 1, f);

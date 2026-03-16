@@ -1,4 +1,5 @@
 #include "../engine.h"
+#include <stdlib.h>
 #include "enemy.h"
 
 Enemy enemy[ENEMY_MAX_ENEMIES];
@@ -294,7 +295,7 @@ void ENEMY_UpdateBullets(int enemy_number) {
 									tileset_index = tile_data << 8;
 									MAP_DrawToVideoBuffer(tile_x, tile_y, MAP_TILE_WIDTH, MAP_TILE_HEIGHT, &map.layer_tiles[MAP_BACKGROUND_LAYER].buffer[tileset_index], video.map_buffer[MAP_BACKGROUND_LAYER]);
 
-									PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_ELECTRIC1, ((enemy[enemy_number].gun.bullet[i].pos_x >> 4) << 4) + 2, ((enemy[enemy_number].gun.bullet[i].pos_y >> 4) << 4) + 2, ((enemy[enemy_number].gun.bullet[i].pos_x >> 4) << 4) + 4, ((enemy[enemy_number].gun.bullet[i].pos_y >> 4) << 4) + 4, 1, 1);
+									PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_ELECTRIC1, ENTITY_ID_EMPTY, ((enemy[enemy_number].gun.bullet[i].pos_x >> 4) << 4) + 2, ((enemy[enemy_number].gun.bullet[i].pos_y >> 4) << 4) + 2, ((enemy[enemy_number].gun.bullet[i].pos_x >> 4) << 4) + 4, ((enemy[enemy_number].gun.bullet[i].pos_y >> 4) << 4) + 4, 1, 1);
 									enemy[enemy_number].gun.bullet[i].on_target = true;
 									break;
 								default:
@@ -306,7 +307,7 @@ void ENEMY_UpdateBullets(int enemy_number) {
 							// Get object number
 							obj_number = (enemy[enemy_number].gun.bullet[i].hit_on & 0xFF00) >> 8;
 							object[obj_number].is_hit = true;
-							object[obj_number].hit_by = ENTITY_ID_ACTOR_BULLET;
+							object[obj_number].hit_by = ENTITY_ID_ENEMY_BULLET;
 							object[obj_number].damage += enemy[enemy_number].gun.damage;
 							break;
 						case ENTITY_ID_ACTOR:
@@ -371,7 +372,7 @@ void ENEMY_SetGun(int enemy_number, int type, int graphics_id, int bullet_graphi
 		case ENEMY_GUN_BARE_HANDS:
 			enemy[enemy_number].gun.max_accuracy = 1;
 			enemy[enemy_number].gun.damage = 1;
-			enemy[enemy_number].gun.recoil_time = 5;
+			enemy[enemy_number].gun.recoil_time = 20;
 			enemy[enemy_number].gun.max_distance = 1;
 			enemy[enemy_number].gun.accurate = false;
 			enemy[enemy_number].gun.shoots = 1;
@@ -380,8 +381,8 @@ void ENEMY_SetGun(int enemy_number, int type, int graphics_id, int bullet_graphi
 		case ENEMY_GUN_PISTOL:
 			enemy[enemy_number].gun.max_accuracy = 4;
 			enemy[enemy_number].gun.damage = 2;
-			enemy[enemy_number].gun.recoil_time = 4;
-			enemy[enemy_number].gun.max_distance = 200;
+			enemy[enemy_number].gun.recoil_time = 15;
+			enemy[enemy_number].gun.max_distance = 50;
 			enemy[enemy_number].gun.accurate = true;
 			enemy[enemy_number].gun.shoots = 1;
 			enemy[enemy_number].gun.bullet_speed = 4;
@@ -429,14 +430,18 @@ void ENEMY_SetGun(int enemy_number, int type, int graphics_id, int bullet_graphi
 			Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_SYSTEM);
 			break;
 	}
+
+	enemy[enemy_number].shoot_range = enemy[enemy_number].gun.max_distance - (enemy[enemy_number].gun.max_distance >> 2);
 }
 
 /** ENEMY :: Initializes enemy data
  * - Sets default values for the enemy structure 
  */
-void ENEMY_Init(byte number, int x, int y, int facing, int graphics_id, int gun_type, int gun_graphics_id, int bullet_graphics_id) {
+void ENEMY_Init(byte number, int x, int y, int facing, int graphics_id, int gun_type, int gun_graphics_id, int bullet_graphics_id, int behavior, int life) {
 
 	enemy[number].is_loaded = true;
+
+	enemy[number].status_behavior = behavior;
 
 	enemy[number].pos_x = x;
 	enemy[number].pos_y = y;
@@ -447,24 +452,25 @@ void ENEMY_Init(byte number, int x, int y, int facing, int graphics_id, int gun_
 
 	enemy[number].status_facing = facing;
 
-	enemy[number].speed_horizontal_FP = ACTOR_SPEED << FP;
-	enemy[number].speed_vertical_FP = (ACTOR_SPEED << FP) - ((ACTOR_SPEED << FP) >> 3);
+	enemy[number].speed_horizontal_FP = ENEMY_SPEED << FP;
+	enemy[number].speed_vertical_FP = (ENEMY_SPEED << FP) - ((ENEMY_SPEED << FP) >> 3);
 	enemy[number].speed_diagonalv_FP = (enemy[number].speed_vertical_FP * 10) / 14;
 	enemy[number].speed_diagonalh_FP = (enemy[number].speed_horizontal_FP * 10) / 14;
 
-	enemy[number].speed = ACTOR_SPEED;
-	enemy[number].max_life = ACTOR_LIFE;
-	enemy[number].life = ACTOR_LIFE;
+	enemy[number].speed = ENEMY_SPEED;
+	enemy[number].max_life = life;
+	enemy[number].life = life;
 	enemy[number].damage = 0;
 	enemy[number].is_hit = false;
 
 	enemy[number].movement_allowed = true;
-	enemy[number].shoot_range = 100;
 	enemy[number].reaction_time = 70;
 
-	enemy[number].status_shoot = false;
-	enemy[number].status_stand = false;
-	enemy[number].status_walk = false;
+	enemy[number].action_shoot = false;
+	enemy[number].action_punch = false;
+	enemy[number].action_stand = false;
+	enemy[number].action_walk = false;
+	enemy[number].action_hit = false;
 
 	// Initialize enemy sprite
 	if (!GFX_InitSprite(graphics_id, ENTITY_ID_ENEMY, number, &enemy[number].sprite_num)) {
@@ -623,6 +629,29 @@ bool ENEMY_CheckUpColission(Enemy e) {
 		}
 	}
 
+	/////// ACTOR COLISSIONS ///////////
+	//Point 1
+	if (point1_x <= actor.pos_x + actor.colission_area.down_points[1][0]
+
+		&& point1_x >= actor.pos_x + actor.colission_area.down_points[0][0]
+
+		&& point1_y >= actor.pos_y + actor.colission_area.up_points[1][1]
+
+		&& point1_y <= actor.pos_y + actor.colission_area.down_points[1][1]) {
+		return true;
+	}
+
+	//Point 2
+	if (point2_x <= actor.pos_x + actor.colission_area.down_points[1][0]
+
+		&& point2_x >= actor.pos_x + actor.colission_area.down_points[0][0]
+
+		&& point2_y >= actor.pos_y + actor.colission_area.up_points[1][1]
+
+		&& point2_y <= actor.pos_y + actor.colission_area.down_points[1][1]) {
+		return true;
+	}
+
 	return false;
 }
 
@@ -669,6 +698,7 @@ bool ENEMY_CheckDownColission(Enemy e) {
 		}
 	}
 
+	/////// ENEMIES COLISSIONS ///////////
 	for (i = 0; i < ENEMY_MAX_ENEMIES; i++) {
 		if (enemy[i].is_loaded) {
 			if (gfx_sprite_stack[enemy[i].sprite_num].shown && (enemy[i].sprite_num != e.sprite_num)) {
@@ -695,6 +725,29 @@ bool ENEMY_CheckDownColission(Enemy e) {
 				}
 			}
 		}
+	}
+
+	/////// ACTOR COLISSIONS ///////////
+	//Point 1
+	if (point1_x <= actor.pos_x + actor.colission_area.up_points[1][0]
+
+		&& point1_x >= actor.pos_x + actor.colission_area.up_points[0][0]
+
+		&& point1_y >= actor.pos_y + actor.colission_area.up_points[1][1]
+
+		&& point1_y <= actor.pos_y + actor.colission_area.down_points[1][1]) {
+		return true;
+	}
+
+	//Point 2
+	if (point2_x <= actor.pos_x + actor.colission_area.up_points[1][0]
+
+		&& point2_x >= actor.pos_x + actor.colission_area.up_points[0][0]
+
+		&& point2_y >= actor.pos_y + actor.colission_area.up_points[1][1]
+
+		&& point2_y <= actor.pos_y + actor.colission_area.down_points[1][1]) {
+		return true;
 	}
 
 	return false;
@@ -768,6 +821,29 @@ bool ENEMY_CheckLeftColission(Enemy e) {
 				}
 			}
 		}
+	}
+
+	/////// ACTOR COLISSIONS ///////////
+	//Point 1
+	if (point1_x <= actor.pos_x + actor.colission_area.up_points[1][0]
+
+		&& point1_x >= actor.pos_x + actor.colission_area.up_points[0][0]
+
+		&& point1_y >= actor.pos_y + actor.colission_area.up_points[0][1]
+
+		&& point1_y <= actor.pos_y + actor.colission_area.down_points[1][1]) {
+		return true;
+	}
+
+	//Point 2
+	if (point2_x <= actor.pos_x + actor.colission_area.up_points[1][0]
+
+		&& point2_x >= actor.pos_x + actor.colission_area.up_points[0][0]
+
+		&& point2_y >= actor.pos_y + actor.colission_area.up_points[0][1]
+
+		&& point2_y <= actor.pos_y + actor.colission_area.down_points[1][1]) {
+		return true;
 	}
 
 	return false;
@@ -844,6 +920,29 @@ bool ENEMY_CheckRightColission(Enemy e) {
 		}
 	}
 
+	/////// ACTOR COLISSIONS ///////////
+	//Point 1
+	if (point1_x <= actor.pos_x + actor.colission_area.up_points[1][0]
+
+		&& point1_x >= actor.pos_x + actor.colission_area.up_points[0][0]
+
+		&& point1_y >= actor.pos_y + actor.colission_area.up_points[0][1]
+
+		&& point1_y <= actor.pos_y + actor.colission_area.down_points[1][1]) {
+		return true;
+	}
+
+	//Point 2
+	if (point2_x <= actor.pos_x + actor.colission_area.up_points[1][0]
+
+		&& point2_x >= actor.pos_x + actor.colission_area.up_points[0][0]
+
+		&& point2_y >= actor.pos_y + actor.colission_area.up_points[0][1]
+
+		&& point2_y <= actor.pos_y + actor.colission_area.down_points[1][1]) {
+		return true;
+	}
+
 	return false;
 }
 
@@ -855,601 +954,850 @@ void ENEMY_Update(void) {
 	int axis_x, axis_y, axis_relation;
 	int i;
 
+
 	// Calculate facing direction with enemy and actor positions
 	for (i = 0; i < ENEMY_MAX_ENEMIES; i++) {
 		if (enemy[i].is_loaded) {
 
-			// Set enemy warning after spots actor
-			if (gfx_sprite_stack[enemy[i].sprite_num].shown & !enemy[i].status_warning) {
-				switch (enemy[i].status_facing) {
-					case 1:// Right
-						if (actor.pos_x > enemy[i].pos_x) enemy[i].status_warning = true;
-						break;
-					case 2:// Left
-						if (actor.pos_x < enemy[i].pos_x) enemy[i].status_warning = true;
-						break;
-					case 4:// Down
-						if (actor.pos_y > enemy[i].pos_y) enemy[i].status_warning = true;
-						break;
-					case 5:// Down-right
-						if ((actor.pos_x > enemy[i].pos_x) && (actor.pos_y > (enemy[i].pos_y - 100))) enemy[i].status_warning = true;
-						break;
-					case 6:// Down-Left
-						if ((actor.pos_x < enemy[i].pos_x) && (actor.pos_y > (enemy[i].pos_y - 100))) enemy[i].status_warning = true;
-						break;
-					case 8:// Up
-						if (actor.pos_y < enemy[i].pos_y) enemy[i].status_warning = true;
-						break;
-					case 9:// Up-right
-						if ((actor.pos_x > enemy[i].pos_x) && (actor.pos_y < (enemy[i].pos_y + 100))) enemy[i].status_warning = true;
-						break;
-					case 10:// Up-left
-						if ((actor.pos_x < enemy[i].pos_x) && (actor.pos_y < (enemy[i].pos_y + 100))) enemy[i].status_warning = true;
-						break;
-					default:
-						break;
-				}
-			}
+			// Enemy on screen
+			if (gfx_sprite_stack[enemy[i].sprite_num].shown) {
 
-			// Set enemy warning if actor shoots
-			if (gfx_sprite_stack[enemy[i].sprite_num].shown & !enemy[i].status_warning) {
-				if (actor.status_shoot) {
-					enemy[i].status_warning = true;
-				}
-			}
+				// Calculate where enemy is facing
+				switch (enemy[i].status_behavior) {
+					case ENEMY_STATUS_SLEEP:
+						// Just stay where is actually facing
+						break;
+					case ENEMY_STATUS_WAKEUP:
+						// Just stay where is actually facing
+						break;
+					case ENEMY_STATUS_WARNING:
+					case ENEMY_STATUS_ALERT:
+						// Look at actor
+						enemy[i].status_facing = 0;
+						if (gfx_sprite_stack[actor.sprite_num].screen_pos_x <= gfx_sprite_stack[enemy[i].sprite_num].screen_pos_x) {// facing left
+							if (gfx_sprite_stack[actor.sprite_num].screen_pos_y <= gfx_sprite_stack[enemy[i].sprite_num].screen_pos_y) {
 
-			// Enemy is warned, face actor
-			if (enemy[i].status_warning) {
-				enemy[i].status_facing = 0;
-				if (gfx_sprite_stack[actor.sprite_num].screen_pos_x <= gfx_sprite_stack[enemy[i].sprite_num].screen_pos_x) {// facing left
-					if (gfx_sprite_stack[actor.sprite_num].screen_pos_y <= gfx_sprite_stack[enemy[i].sprite_num].screen_pos_y) {
-						axis_x = gfx_sprite_stack[enemy[i].sprite_num].screen_pos_x - gfx_sprite_stack[actor.sprite_num].screen_pos_x + 100;
-						axis_y = gfx_sprite_stack[enemy[i].sprite_num].screen_pos_y - gfx_sprite_stack[actor.sprite_num].screen_pos_y + 100;
-						axis_relation = axis_x / axis_y;
+								axis_x = gfx_sprite_stack[enemy[i].sprite_num].screen_pos_x - gfx_sprite_stack[actor.sprite_num].screen_pos_x + 1;
+								axis_y = gfx_sprite_stack[enemy[i].sprite_num].screen_pos_y - gfx_sprite_stack[actor.sprite_num].screen_pos_y + 1;
+								axis_relation = axis_x / axis_y;
 
-						if (axis_relation > 1) {// facing left
-							enemy[i].status_facing = enemy[i].status_facing | (1 << 1);
-						}// facing left
-						if (axis_relation == 1) {
-							enemy[i].status_facing = enemy[i].status_facing | (1 << 1);// facing left
-							enemy[i].status_facing = enemy[i].status_facing | (1 << 3);// facing up
+								if (axis_relation > 1) {// facing left
+									enemy[i].status_facing = enemy[i].status_facing | (1 << 1);
+								}// facing left
+								if (axis_relation == 1) {
+									enemy[i].status_facing = enemy[i].status_facing | (1 << 1);// facing left
+									enemy[i].status_facing = enemy[i].status_facing | (1 << 3);// facing up
+								}
+								if (axis_relation < 1) {// facing up
+									enemy[i].status_facing = enemy[i].status_facing | (1 << 3);
+								}// up
+							} else {
+								axis_x = gfx_sprite_stack[enemy[i].sprite_num].screen_pos_x - gfx_sprite_stack[actor.sprite_num].screen_pos_x + 100;
+								axis_y = gfx_sprite_stack[actor.sprite_num].screen_pos_y - gfx_sprite_stack[enemy[i].sprite_num].screen_pos_y + 100;
+								axis_relation = axis_x / axis_y;
+
+								if (axis_relation > 1) {// facing left
+									enemy[i].status_facing = enemy[i].status_facing | (1 << 1);
+								}
+								if (axis_relation == 1) {
+									enemy[i].status_facing = enemy[i].status_facing | (1 << 1);// facing left
+									enemy[i].status_facing = enemy[i].status_facing | (1 << 2);// facing down
+								}
+								if (axis_relation < 1) {
+									enemy[i].status_facing = enemy[i].status_facing | (1 << 2);// facing down
+								}
+							}
+						} else {//facing right
+							if (gfx_sprite_stack[actor.sprite_num].screen_pos_y <= gfx_sprite_stack[enemy[i].sprite_num].screen_pos_y) {
+								axis_x = gfx_sprite_stack[actor.sprite_num].screen_pos_x - gfx_sprite_stack[enemy[i].sprite_num].screen_pos_x + 1;
+								axis_y = gfx_sprite_stack[enemy[i].sprite_num].screen_pos_y - gfx_sprite_stack[actor.sprite_num].screen_pos_y + 1;
+								axis_relation = axis_x / axis_y;
+
+								if (axis_relation > 1) { enemy[i].status_facing = enemy[i].status_facing | 1; }// facing right
+								if (axis_relation == 1) {
+									enemy[i].status_facing = enemy[i].status_facing | 1;       // facing right
+									enemy[i].status_facing = enemy[i].status_facing | (1 << 3);// facing up
+								}
+								if (axis_relation < 1) { enemy[i].status_facing = enemy[i].status_facing | (1 << 3); }// up
+							} else {
+								axis_x = gfx_sprite_stack[actor.sprite_num].screen_pos_x - gfx_sprite_stack[enemy[i].sprite_num].screen_pos_x + 1;
+								axis_y = gfx_sprite_stack[actor.sprite_num].screen_pos_y - gfx_sprite_stack[enemy[i].sprite_num].screen_pos_y + 1;
+								axis_relation = axis_x / axis_y;
+
+								if (axis_relation > 1) { enemy[i].status_facing = enemy[i].status_facing | 1; }// facing right
+								if (axis_relation == 1) {
+									enemy[i].status_facing = enemy[i].status_facing | 1;       // facing right
+									enemy[i].status_facing = enemy[i].status_facing | (1 << 2);// facing down
+								}
+								if (axis_relation < 1) { enemy[i].status_facing = enemy[i].status_facing | (1 << 2); }// down
+							}
 						}
-						if (axis_relation < 1) {// facing up
-							enemy[i].status_facing = enemy[i].status_facing | (1 << 3);
-						}// up
-					} else {
-						axis_x = gfx_sprite_stack[enemy[i].sprite_num].screen_pos_x - gfx_sprite_stack[actor.sprite_num].screen_pos_x + 100;
-						axis_y = gfx_sprite_stack[actor.sprite_num].screen_pos_y - gfx_sprite_stack[enemy[i].sprite_num].screen_pos_y + 100;
-						axis_relation = axis_x / axis_y;
 
-						if (axis_relation > 1) {// facing left
-							enemy[i].status_facing = enemy[i].status_facing | (1 << 1);
+						break;
+				}
+
+				// Calculate behavior
+				switch (enemy[i].status_behavior) {
+					case ENEMY_STATUS_SLEEP:
+						// Set status warning if heards shoots
+						if (actor.action_shoot) {
+							enemy[i].status_behavior = ENEMY_STATUS_WAKEUP;
 						}
-						if (axis_relation == 1) {
-							enemy[i].status_facing = enemy[i].status_facing | (1 << 1);// facing left
-							enemy[i].status_facing = enemy[i].status_facing | (1 << 2);// facing down
-						}
-						if (axis_relation < 1) {
-							enemy[i].status_facing = enemy[i].status_facing | (1 << 2);// facing down
-						}
-					}
-				} else {//facing right
-					if (gfx_sprite_stack[actor.sprite_num].screen_pos_y <= gfx_sprite_stack[enemy[i].sprite_num].screen_pos_y) {
-						axis_x = gfx_sprite_stack[actor.sprite_num].screen_pos_x - gfx_sprite_stack[enemy[i].sprite_num].screen_pos_x + 1;
-						axis_y = gfx_sprite_stack[enemy[i].sprite_num].screen_pos_y - gfx_sprite_stack[actor.sprite_num].screen_pos_y + 1;
-						axis_relation = axis_x / axis_y;
-
-						if (axis_relation > 1) { enemy[i].status_facing = enemy[i].status_facing | 1; }// facing right
-						if (axis_relation == 1) {
-							enemy[i].status_facing = enemy[i].status_facing | 1;       // facing right
-							enemy[i].status_facing = enemy[i].status_facing | (1 << 3);// facing up
-						}
-						if (axis_relation < 1) { enemy[i].status_facing = enemy[i].status_facing | (1 << 3); }// up
-					} else {
-						axis_x = gfx_sprite_stack[actor.sprite_num].screen_pos_x - gfx_sprite_stack[enemy[i].sprite_num].screen_pos_x + 1;
-						axis_y = gfx_sprite_stack[actor.sprite_num].screen_pos_y - gfx_sprite_stack[enemy[i].sprite_num].screen_pos_y + 1;
-						axis_relation = axis_x / axis_y;
-
-						if (axis_relation > 1) { enemy[i].status_facing = enemy[i].status_facing | 1; }// facing right
-						if (axis_relation == 1) {
-							enemy[i].status_facing = enemy[i].status_facing | 1;       // facing right
-							enemy[i].status_facing = enemy[i].status_facing | (1 << 2);// facing down
-						}
-						if (axis_relation < 1) { enemy[i].status_facing = enemy[i].status_facing | (1 << 2); }// down
-					}
-				}
-			}
-
-			// Wait reaction time before get alarmed
-			if (enemy[i].status_warning && !enemy[i].status_alarm) {
-				unsigned char chr;
-
-				enemy[i].reaction_counter++;
-				if (enemy[i].reaction_counter > enemy[i].reaction_time) {
-					enemy[i].status_alarm = true;
-				}
-
-				chr = '!';
-				VIDEO_StringToScreenBuffer(gfx_sprite_stack[enemy[i].sprite_num].screen_pos_x + 16, gfx_sprite_stack[enemy[i].sprite_num].screen_pos_y - 8, 1, &chr);
-			}
-
-			// Enemy is alarmed, follow actor and shoot when on range
-			if (enemy[i].status_alarm) {
-				// Follow actor
-				movement = 0;
-				if (enemy[i].movement_allowed) {
-					if (gfx_sprite_stack[actor.sprite_num].screen_pos_y < (gfx_sprite_stack[enemy[i].sprite_num].screen_pos_y - enemy[i].shoot_range)) movement = movement | (1 << 3);// up
-					if (gfx_sprite_stack[actor.sprite_num].screen_pos_y > (gfx_sprite_stack[enemy[i].sprite_num].screen_pos_y + enemy[i].shoot_range)) movement = movement | (1 << 2);// down
-					if (gfx_sprite_stack[actor.sprite_num].screen_pos_x < (gfx_sprite_stack[enemy[i].sprite_num].screen_pos_x - enemy[i].shoot_range)) movement = movement | (1 << 1);// left
-					if (gfx_sprite_stack[actor.sprite_num].screen_pos_x > (gfx_sprite_stack[enemy[i].sprite_num].screen_pos_x + enemy[i].shoot_range)) movement = movement | (1);     // right
-				}
-
-				// In shoot range
-				if ((gfx_sprite_stack[actor.sprite_num].screen_pos_y >= (gfx_sprite_stack[enemy[i].sprite_num].screen_pos_y - enemy[i].shoot_range))
-
-					&& (gfx_sprite_stack[actor.sprite_num].screen_pos_y <= (gfx_sprite_stack[enemy[i].sprite_num].screen_pos_y + enemy[i].shoot_range))
-
-					&& (gfx_sprite_stack[actor.sprite_num].screen_pos_x >= (gfx_sprite_stack[enemy[i].sprite_num].screen_pos_x - enemy[i].shoot_range))
-
-					&& (gfx_sprite_stack[actor.sprite_num].screen_pos_x <= (gfx_sprite_stack[enemy[i].sprite_num].screen_pos_x + enemy[i].shoot_range))) {
-					enemy[i].in_shoot_range = true;
-				} else {
-					enemy[i].in_shoot_range = false;
-				}
-			}
-
-			// Check idle status
-			status_idle = !enemy[i].status_dead & !enemy[i].status_shoot;
-
-			//// ---------------- INITIALIZE ACTION ----------------
-
-			// shoot
-			if (status_idle && enemy[i].in_shoot_range) {
-				status_idle = false;
-				enemy[i].status_shoot = true;
-				enemy[i].status_walk = false;
-				enemy[i].status_stand = false;
-
-				enemy[i].movement = 0;
-				enemy[i].action_step = 0;
-				enemy[i].last_action = ACTOR_ACTION_SHOOT;
-
-				gfx_sprite_stack[enemy[i].sprite_num].animation_speed = ACTOR_ANIMATION_SPEED;
-				gfx_sprite_stack[enemy[i].sprite_num].animation_frames = 1;
-				gfx_sprite_stack[enemy[i].sprite_num].current_frame = 1;
-				gfx_sprite_stack[enemy[i].sprite_num].animation_end = false;
-				gfx_sprite_stack[enemy[i].sprite_num].animation_loop = false;
-
-				switch (enemy[i].status_facing) {
-					case 1:// facing right
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 12;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
 						break;
-					case 2:// facing left
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 12;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
-						break;
-					case 4:// facing down
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 24;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
-						break;
-					case 5:// facing down-right
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 18;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
-						break;
-					case 6:// facing down-left
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 18;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
-						break;
-					case 8:// facing up
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 0;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
-						break;
-					case 9:// facing up-right
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 6;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
-						break;
-					case 10:// facing up-left
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 6;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
-						break;
-					default:
-						break;
-				}
-			}
-
-			// walk
-			if (status_idle & (movement != 0)) {
-				enemy[i].status_walk = true;
-				enemy[i].status_shoot = false;
-				enemy[i].status_stand = false;
-
-				enemy[i].movement = movement;
-				enemy[i].action_step = 0;
-				enemy[i].last_action = ACTOR_ACTION_WALK;
-
-				gfx_sprite_stack[enemy[i].sprite_num].animation_speed = ACTOR_ANIMATION_SPEED;
-				gfx_sprite_stack[enemy[i].sprite_num].animation_frames = 4;
-				gfx_sprite_stack[enemy[i].sprite_num].animation_loop = true;
-				gfx_sprite_stack[enemy[i].sprite_num].animation_end = false;
-
-				switch (enemy[i].status_facing) {
-					case 1:// facing right
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 13;
-						break;
-					case 2:// facing left
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 13;
-						break;
-					case 4:// moving down
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 25;
-						break;
-					case 5:// moving down-right
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 19;
-						break;
-					case 6:// moving down-left
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 19;
-						break;
-					case 8:// moving up
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 1;
-						break;
-					case 9:// moving up-right
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 7;
-						break;
-					case 10:// moving up-left
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 7;
-						break;
-					default:
-						break;
-				}
-			}
-
-			// no action
-			if (status_idle & (movement == 0)) {
-				enemy[i].movement = 0;
-				enemy[i].action_step = 0;
-
-				if (!enemy[i].status_stand) {
-					enemy[i].idle_counter++;
-					if (enemy[i].idle_counter > ACTOR_IDLE_TICKS) {
-						enemy[i].status_stand = true;
-						enemy[i].last_action = 0;
-						enemy[i].idle_counter = 0;
-					}
-				}
-
-				switch (enemy[i].status_facing) {
-					case 1:// facing right
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 12;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
-						break;
-					case 2:// facing left
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 12;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
-						break;
-					case 4:// facing down
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 25;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
-						break;
-					case 5:// facing down-right
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 20;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
-						break;
-					case 6:// facing down-left
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 20;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
-						break;
-					case 8:// facing up
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 0;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
-						break;
-					case 9:// facing up-right
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 6;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
-						break;
-					case 10:// facing up-left
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 6;
-						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
-						break;
-					default:
-						break;
-				}
-
-				gfx_sprite_stack[enemy[i].sprite_num].animation_frames = 1;
-				gfx_sprite_stack[enemy[i].sprite_num].current_frame = 1;
-				gfx_sprite_stack[enemy[i].sprite_num].animation_speed = ACTOR_ANIMATION_SPEED;
-				gfx_sprite_stack[enemy[i].sprite_num].animation_loop = false;
-			}
-
-			// Check if is hit
-			if ((!enemy[i].status_dead) && enemy[i].is_hit) {
-				enemy[i].is_hit = false;
-
-				status_idle = false;
-				movement = 0;
-				enemy[i].status_shoot = false;
-				enemy[i].status_walk = false;
-
-				gfx_sprite_stack[enemy[i].sprite_num].blink = true;
-				if (enemy[i].damage > enemy[i].life) enemy[i].damage = enemy[i].life;
-				enemy[i].life -= enemy[i].damage;
-				// Check if hit by actor bullet and update enemy panel
-				switch (enemy[i].hit_by) {
-					case ENTITY_ID_ACTOR_BULLET:
-						GFX_SetPanelGraphics(&gfx_enemy_status_panel, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_LIFEBAR);
-						GFX_UpdatePanel(&gfx_enemy_status_panel, enemy[i].life, enemy[i].life + enemy[i].damage, enemy[i].max_life, 1);
-						gfx_enemy_status_panel.shown = true;
-						break;
-					default:
-						break;
-				}
-
-				if (enemy[i].life <= 0) {
-					enemy[i].life = 0;
-
-					enemy[i].status_dead = true;
-					enemy[i].status_shoot = false;
-					enemy[i].status_walk = false;
-					enemy[i].status_stand = false;
-
-					enemy[i].movement = 0;
-					enemy[i].shoot_accuracy = 0;
-					enemy[i].action_step = 0;
-					enemy[i].last_action = 0;
-
-					gfx_sprite_stack[enemy[i].sprite_num].animation_speed = 20;
-					gfx_sprite_stack[enemy[i].sprite_num].animation_frames = 4;
-					gfx_sprite_stack[enemy[i].sprite_num].current_frame = 0;
-
-					gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = 49;
-					gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
-					gfx_sprite_stack[enemy[i].sprite_num].animation_loop = false;
-					gfx_sprite_stack[enemy[i].sprite_num].animation_end = false;
-
-					GFX_SetPanelPortait(&gfx_enemy_status_panel, 2);
-				}
-				//actor.life_shown = true;
-				enemy[i].damage = 0;
-
-			} else {
-				gfx_sprite_stack[enemy[i].sprite_num].blink = false;
-			}
-			//// ---------------- POSITIONING ----------------
-
-			// Shooting and animation
-			if (enemy[i].status_shoot) {
-				switch (enemy[i].action_step) {
-					case 0:// Calculate target
-						enemy[i].shoot_x = actor.pos_x;
-						enemy[i].shoot_y = actor.pos_y;
-						enemy[i].gun.current_recoil = 0;
-						enemy[i].action_step++;
-						break;
-					case 1:// Shoot
-						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame += 5;
-						AUDIO_PlaySound(AUDIO_GUN_EFFECT);
+					case ENEMY_STATUS_WAKEUP:
+						// set status warning after spots actor
 						switch (enemy[i].status_facing) {
-							case 1:// facing right
-								ENEMY_InitBullet(i, enemy[i].pos_x + 32, enemy[i].pos_y + 8, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+							case 1:// Right
+								if (actor.pos_x > enemy[i].pos_x) enemy[i].status_behavior = ENEMY_STATUS_WARNING;
 								break;
-							case 2:// facing left
-								ENEMY_InitBullet(i, enemy[i].pos_x, enemy[i].pos_y + 8, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+							case 2:// Left
+								if (actor.pos_x < enemy[i].pos_x) enemy[i].status_behavior = ENEMY_STATUS_WARNING;
 								break;
-							case 4:// facing down
-								ENEMY_InitBullet(i, enemy[i].pos_x + 16, enemy[i].pos_y + 20, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+							case 4:// Down
+								if (actor.pos_y > enemy[i].pos_y) enemy[i].status_behavior = ENEMY_STATUS_WARNING;
 								break;
-							case 5:// moving down-right
-								ENEMY_InitBullet(i, enemy[i].pos_x + 18, enemy[i].pos_y + 16, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+							case 5:// Down-right
+								if ((actor.pos_x > enemy[i].pos_x) && (actor.pos_y > (enemy[i].pos_y - 100))) enemy[i].status_behavior = ENEMY_STATUS_WARNING;
 								break;
-							case 6:// moving down-left
-								ENEMY_InitBullet(i, enemy[i].pos_x + 6, enemy[i].pos_y + 16, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+							case 6:// Down-Left
+								if ((actor.pos_x < enemy[i].pos_x) && (actor.pos_y > (enemy[i].pos_y - 100))) enemy[i].status_behavior = ENEMY_STATUS_WARNING;
 								break;
-							case 8:// moving up
-								ENEMY_InitBullet(i, enemy[i].pos_x + 16, enemy[i].pos_y - 8, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+							case 8:// Up
+								if (actor.pos_y < enemy[i].pos_y) enemy[i].status_behavior = ENEMY_STATUS_WARNING;
 								break;
-							case 9:// moving up-right
-								ENEMY_InitBullet(i, enemy[i].pos_x + 25, enemy[i].pos_y - 1, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+							case 9:// Up-right
+								if ((actor.pos_x > enemy[i].pos_x) && (actor.pos_y < (enemy[i].pos_y + 100))) enemy[i].status_behavior = ENEMY_STATUS_WARNING;
 								break;
-							case 10:// moving up-left
-								ENEMY_InitBullet(i, enemy[i].pos_x + 6, enemy[i].pos_y - 1, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+							case 10:// Up-left
+								if ((actor.pos_x < enemy[i].pos_x) && (actor.pos_y < (enemy[i].pos_y + 100))) enemy[i].status_behavior = ENEMY_STATUS_WARNING;
 								break;
 							default:
 								break;
 						}
-						enemy[i].action_step++;
-						break;
-					case 2://
-						enemy[i].gun.current_recoil++;
-						if (enemy[i].gun.current_recoil >= enemy[i].gun.recoil_time) {
-							enemy[i].gun.current_recoil = 0;
-							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame -= 5;
-							enemy[i].action_step++;
+
+						// Set status warning if heards shoots
+						if (actor.action_shoot) {
+							enemy[i].status_behavior = ENEMY_STATUS_WARNING;
 						}
 						break;
-					case 3:// end
-						enemy[i].action_step = 0;
-						enemy[i].status_shoot = false;
-						enemy[i].action_step++;
+					case ENEMY_STATUS_WARNING:
+						unsigned char chr;
+						enemy[i].reaction_counter++;
+						if (enemy[i].reaction_counter > enemy[i].reaction_time) {
+							enemy[i].status_behavior = ENEMY_STATUS_ALERT;
+						}
+						chr = '!';
+						VIDEO_StringToScreenBuffer(gfx_sprite_stack[enemy[i].sprite_num].screen_pos_x + 16, gfx_sprite_stack[enemy[i].sprite_num].screen_pos_y - 8, &chr, FONT_SLIM_WHITE);
 						break;
-					default:
-						enemy[i].action_step = 0;
-						enemy[i].status_shoot = false;
+					case ENEMY_STATUS_ALERT:
+						// Stay alert
 						break;
 				}
-			}
 
-			// Walking and animation
-			if (enemy[i].status_walk) {
-				switch (enemy[i].movement) {
-					case 1:// moving right
-						enemy[i].x_FP += enemy[i].speed_horizontal_FP;
-						enemy[i].pos_x = enemy[i].x_FP >> FP;
-						if (ENEMY_CheckRightColission(enemy[i])) {
-							enemy[i].x_FP -= enemy[i].speed_horizontal_FP;
-							enemy[i].pos_x = enemy[i].x_FP >> FP;
-							if (actor.pos_y < enemy[i].pos_y) {
-								enemy[i].y_FP -= enemy[i].speed_vertical_FP;
-								enemy[i].pos_y = enemy[i].y_FP >> FP;
-								if (ENEMY_CheckUpColission(enemy[i])) {
-									enemy[i].y_FP += enemy[i].speed_vertical_FP;
-									enemy[i].pos_y = enemy[i].y_FP >> FP;
-								}
-							} else {
-								enemy[i].y_FP += enemy[i].speed_vertical_FP;
-								enemy[i].pos_y = enemy[i].y_FP >> FP;
-								if (ENEMY_CheckDownColission(enemy[i])) {
-									enemy[i].y_FP -= enemy[i].speed_vertical_FP;
-									enemy[i].pos_y = enemy[i].y_FP >> FP;
-								}
-							}
-						}
+				// Calculate movement
+				switch (enemy[i].status_behavior) {
+					case ENEMY_STATUS_SLEEP:
+					case ENEMY_STATUS_WAKEUP:
+					case ENEMY_STATUS_WARNING:
+						// do not move
 						break;
-					case 2:// moving left
-						enemy[i].x_FP -= enemy[i].speed_horizontal_FP;
-						enemy[i].pos_x = enemy[i].x_FP >> FP;
-						if (ENEMY_CheckLeftColission(enemy[i])) {
+					case ENEMY_STATUS_ALERT:
+						// Follow actor
+						movement = 0;
+						if (enemy[i].movement_allowed) {
+							if ((enemy[i].pos_y - enemy[i].shoot_range) > (actor.pos_y + gfx_sprite_stack[actor.sprite_num].height_px - 12)) movement = movement | (1 << 3);   // up
+							if ((enemy[i].pos_y + gfx_sprite_stack[enemy[i].sprite_num].height_px + enemy[i].shoot_range) < (actor.pos_y + 12)) movement = movement | (1 << 2);// down
+							if ((enemy[i].pos_x - enemy[i].shoot_range) > (actor.pos_x + gfx_sprite_stack[actor.sprite_num].width_px - 6)) movement = movement | (1 << 1);     // left
+							if ((enemy[i].pos_x + gfx_sprite_stack[enemy[i].sprite_num].width_px + enemy[i].shoot_range) < (actor.pos_x + 6)) movement = movement | (1);       // right
+						}
+
+						// In shoot range
+						if (movement == 0) enemy[i].in_shoot_range = true;
+						else
+							enemy[i].in_shoot_range = false;
+						break;
+				}
+
+				// Check idle status
+				status_idle = !enemy[i].action_dead & !enemy[i].action_shoot & !enemy[i].action_punch & !enemy[i].action_hit;
+
+				//// ---------------- INITIALIZE ACTION ----------------
+
+				// shoot
+				if (status_idle && enemy[i].in_shoot_range) {
+					status_idle = false;
+					enemy[i].action_shoot = true;
+					enemy[i].action_punch = false;
+					enemy[i].action_walk = false;
+					enemy[i].action_stand = false;
+
+					enemy[i].movement = 0;
+					enemy[i].action_step = 0;
+					enemy[i].last_action = ENEMY_ACTION_SHOOT;
+
+					gfx_sprite_stack[enemy[i].sprite_num].animation_speed = ENEMY_ANIMATION_SPEED;
+					gfx_sprite_stack[enemy[i].sprite_num].animation_frames = 1;
+					gfx_sprite_stack[enemy[i].sprite_num].current_frame = 1;
+					gfx_sprite_stack[enemy[i].sprite_num].animation_end = false;
+					gfx_sprite_stack[enemy[i].sprite_num].animation_loop = false;
+
+					switch (enemy[i].status_facing) {
+						case 1:// facing right
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_RIGHT_SHOOT_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							break;
+						case 2:// facing left
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_RIGHT_SHOOT_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
+							break;
+						case 4:// facing down
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_DOWN_SHOOT_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							break;
+						case 5:// facing down-right
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_DOWN_RIGHT_SHOOT_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							break;
+						case 6:// facing down-left
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_DOWN_RIGHT_SHOOT_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
+							break;
+						case 8:// facing up
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_UP_SHOOT_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							break;
+						case 9:// facing up-right
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_UP_RIGHT_SHOOT_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							break;
+						case 10:// facing up-left
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_UP_RIGHT_SHOOT_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
+							break;
+						default:
+							break;
+					}
+				}
+
+				// punch
+				if (status_idle && enemy[i].in_punch_range) {
+					status_idle = false;
+					enemy[i].action_punch = true;
+					enemy[i].action_shoot = false;
+					enemy[i].action_walk = false;
+					enemy[i].action_stand = false;
+
+					enemy[i].movement = 0;
+					enemy[i].action_step = 0;
+					enemy[i].last_action = ENEMY_ACTION_PUNCH;
+
+					gfx_sprite_stack[enemy[i].sprite_num].animation_speed = ENEMY_ANIMATION_SPEED;
+					gfx_sprite_stack[enemy[i].sprite_num].animation_frames = 1;
+					gfx_sprite_stack[enemy[i].sprite_num].current_frame = 1;
+					gfx_sprite_stack[enemy[i].sprite_num].animation_end = false;
+					gfx_sprite_stack[enemy[i].sprite_num].animation_loop = false;
+
+					switch (enemy[i].status_facing) {
+						case 1:// facing right
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_RIGHT_PUNCH_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							break;
+						case 2:// facing left
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_RIGHT_PUNCH_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
+							break;
+						case 4:// facing down
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_DOWN_PUNCH_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							break;
+						case 5:// facing down-right
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_DOWN_RIGHT_PUNCH_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							break;
+						case 6:// facing down-left
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_DOWN_RIGHT_PUNCH_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
+							break;
+						case 8:// facing up
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_UP_PUNCH_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							break;
+						case 9:// facing up-right
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_UP_RIGHT_PUNCH_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							break;
+						case 10:// facing up-left
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_UP_RIGHT_PUNCH_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
+							break;
+						default:
+							break;
+					}
+				}
+
+				// walk
+				if (status_idle & (movement != 0)) {
+					enemy[i].action_walk = true;
+					enemy[i].action_punch = false;
+					enemy[i].action_shoot = false;
+					enemy[i].action_stand = false;
+
+					enemy[i].movement = movement;
+					enemy[i].action_step = 0;
+					enemy[i].last_action = ENEMY_ACTION_WALK;
+
+					gfx_sprite_stack[enemy[i].sprite_num].animation_speed = ENEMY_ANIMATION_SPEED;
+					gfx_sprite_stack[enemy[i].sprite_num].animation_frames = 4;
+					gfx_sprite_stack[enemy[i].sprite_num].animation_loop = true;
+					gfx_sprite_stack[enemy[i].sprite_num].animation_end = false;
+
+					switch (enemy[i].status_facing) {
+						case 1:// facing right
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_RIGHT_WALK_BASE_FRAME;
+							break;
+						case 2:// facing left
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_RIGHT_WALK_BASE_FRAME;
+							break;
+						case 4:// moving down
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_DOWN_WALK_BASE_FRAME;
+							break;
+						case 5:// moving down-right
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_DOWN_RIGHT_WALK_BASE_FRAME;
+							break;
+						case 6:// moving down-left
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_DOWN_RIGHT_WALK_BASE_FRAME;
+							break;
+						case 8:// moving up
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_UP_WALK_BASE_FRAME;
+							break;
+						case 9:// moving up-right
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_UP_RIGHT_WALK_BASE_FRAME;
+							break;
+						case 10:// moving up-left
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_UP_RIGHT_WALK_BASE_FRAME;
+							break;
+						default:
+							break;
+					}
+				}
+
+				// no action
+				if (status_idle & (movement == 0)) {
+					enemy[i].movement = 0;
+					enemy[i].action_step = 0;
+
+					if (!enemy[i].action_stand) {
+						enemy[i].idle_counter++;
+						if (enemy[i].idle_counter > ENEMY_IDLE_TICKS) {
+							enemy[i].action_stand = true;
+							enemy[i].last_action = 0;
+							enemy[i].idle_counter = 0;
+						}
+					}
+
+					switch (enemy[i].status_facing) {
+						case 1:// facing right
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_RIGHT_STAND_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							break;
+						case 2:// facing left
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_RIGHT_STAND_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
+							break;
+						case 4:// facing down
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_DOWN_STAND_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							break;
+						case 5:// facing down-right
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_DOWN_RIGHT_STAND_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							break;
+						case 6:// facing down-left
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_DOWN_RIGHT_STAND_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
+							break;
+						case 8:// facing up
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_UP_STAND_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							break;
+						case 9:// facing up-right
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_UP_RIGHT_STAND_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							break;
+						case 10:// facing up-left
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_UP_RIGHT_STAND_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
+							break;
+						default:
+							break;
+					}
+
+					gfx_sprite_stack[enemy[i].sprite_num].animation_frames = 1;
+					gfx_sprite_stack[enemy[i].sprite_num].current_frame = 1;
+					gfx_sprite_stack[enemy[i].sprite_num].animation_speed = ENEMY_ANIMATION_SPEED;
+					gfx_sprite_stack[enemy[i].sprite_num].animation_loop = false;
+				}
+
+				// Check if is hit
+				if ((!enemy[i].action_dead) && enemy[i].is_hit) {
+					enemy[i].is_hit = false;
+					status_idle = false;
+					movement = 0;
+					enemy[i].action_hit = true;
+					enemy[i].action_punch = false;
+					enemy[i].action_shoot = false;
+					enemy[i].action_walk = false;
+					enemy[i].action_step = 0;
+
+					gfx_sprite_stack[enemy[i].sprite_num].blink = true;
+					if (enemy[i].damage > enemy[i].life) enemy[i].damage = enemy[i].life;
+					enemy[i].life -= enemy[i].damage;
+
+					switch (enemy[i].status_facing) {
+						case 1:// facing right
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_RIGHT_HIT_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							break;
+						case 2:// facing left
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_RIGHT_HIT_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
+							break;
+						case 4:// facing down
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_DOWN_HIT_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							break;
+						case 5:// facing down-right
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_DOWN_RIGHT_HIT_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							break;
+						case 6:// facing down-left
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_DOWN_RIGHT_HIT_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
+							break;
+						case 8:// facing up
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_UP_HIT_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							break;
+						case 9:// facing up-right
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_UP_RIGHT_HIT_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+							break;
+						case 10:// facing up-left
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_UP_RIGHT_HIT_BASE_FRAME;
+							gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = true;
+							break;
+						default:
+							break;
+					}
+
+					gfx_sprite_stack[enemy[i].sprite_num].animation_frames = 1;
+					gfx_sprite_stack[enemy[i].sprite_num].current_frame = 1;
+					gfx_sprite_stack[enemy[i].sprite_num].animation_speed = ENEMY_ANIMATION_SPEED;
+					gfx_sprite_stack[enemy[i].sprite_num].animation_loop = false;
+					gfx_sprite_stack[enemy[i].sprite_num].animation_end = false;
+
+					PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_BLOOD, ENTITY_ID_BLOOD, enemy[i].pos_x + 16, enemy[i].pos_y + 16, enemy[i].pos_x + (rand() % 32), enemy[i].pos_y + (rand() % 32), 2, 0);
+					PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_BLOOD, ENTITY_ID_BLOOD, enemy[i].pos_x + 16, enemy[i].pos_y + 16, enemy[i].pos_x + (rand() % 32), enemy[i].pos_y + (rand() % 32), 2, 0);
+
+					// Check if hit by actor bullet and update enemy panel
+					switch (enemy[i].hit_by) {
+						case ENTITY_ID_ACTOR_BULLET:
+							GFX_SetPanelGraphics(&gfx_enemy_status_panel, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_LIFEBAR);
+							GFX_UpdatePanel(&gfx_enemy_status_panel, enemy[i].life, enemy[i].life + enemy[i].damage, enemy[i].max_life, 1);
+							gfx_enemy_status_panel.shown = true;
+							break;
+						case ENTITY_ID_ACTOR_PUNCH:
+							GFX_SetPanelGraphics(&gfx_enemy_status_panel, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_LIFEBAR);
+							GFX_UpdatePanel(&gfx_enemy_status_panel, enemy[i].life, enemy[i].life + enemy[i].damage, enemy[i].max_life, 1);
+							gfx_enemy_status_panel.shown = true;
+							break;
+						case ENTITY_ID_ACTOR_KICK:
+							switch (enemy[i].status_facing) {
+								case 1:// facing right
+									enemy[i].pos_x = enemy[i].pos_x - 8;
+									break;
+								case 2:// facing left
+									enemy[i].pos_x = enemy[i].pos_x + 8;
+									break;
+								case 4:// facing down
+									enemy[i].pos_y = enemy[i].pos_y - 8;
+									break;
+								case 5:// facing down-right
+									enemy[i].pos_x = enemy[i].pos_x - 8;
+									enemy[i].pos_y = enemy[i].pos_y - 8;
+									break;
+								case 6:// facing down-left
+									enemy[i].pos_x = enemy[i].pos_x + 8;
+									enemy[i].pos_y = enemy[i].pos_y - 8;
+									break;
+								case 8:// facing up
+									enemy[i].pos_y = enemy[i].pos_y + 8;
+									break;
+								case 9:// facing up-right
+									enemy[i].pos_x = enemy[i].pos_x - 8;
+									enemy[i].pos_y = enemy[i].pos_y + 8;
+									break;
+								case 10:// facing up-left
+									enemy[i].pos_x = enemy[i].pos_x + 8;
+									enemy[i].pos_y = enemy[i].pos_y + 8;
+									break;
+								default:
+									break;
+							}
+							enemy[i].x_FP = enemy[i].pos_x << FP;
+							enemy[i].y_FP = enemy[i].pos_y << FP;
+							GFX_SetPanelGraphics(&gfx_enemy_status_panel, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_LIFEBAR);
+							GFX_UpdatePanel(&gfx_enemy_status_panel, enemy[i].life, enemy[i].life + enemy[i].damage, enemy[i].max_life, 1);
+							gfx_enemy_status_panel.shown = true;
+							break;
+						default:
+							break;
+					}
+
+					if (enemy[i].life <= 0) {
+						enemy[i].life = 0;
+
+						enemy[i].action_dead = true;
+						enemy[i].action_shoot = false;
+						enemy[i].action_walk = false;
+						enemy[i].action_stand = false;
+
+						enemy[i].movement = 0;
+						enemy[i].shoot_accuracy = 0;
+						enemy[i].action_step = 0;
+						enemy[i].last_action = 0;
+
+						gfx_sprite_stack[enemy[i].sprite_num].animation_speed = 20;
+						gfx_sprite_stack[enemy[i].sprite_num].animation_frames = 4;
+						gfx_sprite_stack[enemy[i].sprite_num].current_frame = 1;
+
+						gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame = ENEMY_DIE_BASE_FRAME;
+						gfx_sprite_stack[enemy[i].sprite_num].animation_inverted = false;
+						gfx_sprite_stack[enemy[i].sprite_num].animation_loop = false;
+						gfx_sprite_stack[enemy[i].sprite_num].animation_end = false;
+
+						GFX_SetPanelPortait(&gfx_enemy_status_panel, 2);
+					}
+
+					//actor.life_shown = true;
+					enemy[i].damage = 0;
+				} else {
+					gfx_sprite_stack[enemy[i].sprite_num].blink = false;
+				}
+
+				//// ---------------- ACTION ANIMATION ----------------
+
+				// Shooting and animation
+				if (enemy[i].action_shoot) {
+					switch (enemy[i].action_step) {
+						case 0:// Calculate target
+							enemy[i].shoot_x = actor.pos_x;
+							enemy[i].shoot_y = actor.pos_y;
+							enemy[i].gun.current_recoil = 0;
+							enemy[i].action_step++;
+							break;
+						case 1:// Shoot
+							AUDIO_PlaySound(AUDIO_GUN_EFFECT);
+							switch (enemy[i].status_facing) {
+								case 1:// facing right
+									ENEMY_InitBullet(i, enemy[i].pos_x + 32, enemy[i].pos_y + 8, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+									break;
+								case 2:// facing left
+									ENEMY_InitBullet(i, enemy[i].pos_x, enemy[i].pos_y + 8, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+									break;
+								case 4:// facing down
+									ENEMY_InitBullet(i, enemy[i].pos_x + 16, enemy[i].pos_y + 20, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+									break;
+								case 5:// moving down-right
+									ENEMY_InitBullet(i, enemy[i].pos_x + 18, enemy[i].pos_y + 16, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+									break;
+								case 6:// moving down-left
+									ENEMY_InitBullet(i, enemy[i].pos_x + 6, enemy[i].pos_y + 16, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+									break;
+								case 8:// moving up
+									ENEMY_InitBullet(i, enemy[i].pos_x + 16, enemy[i].pos_y - 8, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+									break;
+								case 9:// moving up-right
+									ENEMY_InitBullet(i, enemy[i].pos_x + 25, enemy[i].pos_y - 1, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+									break;
+								case 10:// moving up-left
+									ENEMY_InitBullet(i, enemy[i].pos_x + 6, enemy[i].pos_y - 1, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+									break;
+								default:
+									break;
+							}
+							enemy[i].action_step++;
+							break;
+						case 2://
+							enemy[i].gun.current_recoil++;
+							if (enemy[i].gun.current_recoil >= enemy[i].gun.recoil_time) {
+								enemy[i].gun.current_recoil = 0;
+								gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame++;
+								enemy[i].action_step++;
+							}
+							break;
+						case 3:// end
+							enemy[i].action_step = 0;
+							enemy[i].action_shoot = false;
+							enemy[i].action_step++;
+							break;
+						default:
+							enemy[i].action_step = 0;
+							enemy[i].action_shoot = false;
+							break;
+					}
+				}
+
+				// Puch and animation
+				if (enemy[i].action_punch) {
+					switch (enemy[i].action_step) {
+						case 0:// Calculate target
+							enemy[i].shoot_x = actor.pos_x;
+							enemy[i].shoot_y = actor.pos_y;
+							enemy[i].gun.current_recoil = 0;
+							enemy[i].action_step++;
+							break;
+						case 1:// Prepare to hit
+							enemy[i].gun.current_recoil++;
+							if (enemy[i].gun.current_recoil >= enemy[i].gun.recoil_time) {
+								enemy[i].gun.current_recoil = 0;
+								gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame++;
+								enemy[i].action_step++;
+							}
+							break;
+						case 2:
+							gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame++;
+							//AUDIO_PlaySound(AUDIO_PUNCH_EFFECT);
+							switch (enemy[i].status_facing) {
+								case 1:// facing right
+									ENEMY_InitBullet(i, enemy[i].pos_x + 32, enemy[i].pos_y + 8, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+									break;
+								case 2:// facing left
+									ENEMY_InitBullet(i, enemy[i].pos_x, enemy[i].pos_y + 8, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+									break;
+								case 4:// facing down
+									ENEMY_InitBullet(i, enemy[i].pos_x + 16, enemy[i].pos_y + 20, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+									break;
+								case 5:// moving down-right
+									ENEMY_InitBullet(i, enemy[i].pos_x + 18, enemy[i].pos_y + 16, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+									break;
+								case 6:// moving down-left
+									ENEMY_InitBullet(i, enemy[i].pos_x + 6, enemy[i].pos_y + 16, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+									break;
+								case 8:// moving up
+									ENEMY_InitBullet(i, enemy[i].pos_x + 16, enemy[i].pos_y - 8, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+									break;
+								case 9:// moving up-right
+									ENEMY_InitBullet(i, enemy[i].pos_x + 25, enemy[i].pos_y - 1, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+									break;
+								case 10:// moving up-left
+									ENEMY_InitBullet(i, enemy[i].pos_x + 6, enemy[i].pos_y - 1, enemy[i].shoot_x, enemy[i].shoot_y, enemy[i].shoot_accuracy);
+									break;
+								default:
+									break;
+							}
+							enemy[i].action_step++;
+							break;
+						case 3://
+							enemy[i].gun.current_recoil++;
+							if (enemy[i].gun.current_recoil >= enemy[i].gun.recoil_time) {
+								enemy[i].gun.current_recoil = 0;
+								gfx_sprite_stack[enemy[i].sprite_num].animation_base_frame++;
+								enemy[i].action_step++;
+							}
+							break;
+						case 4:// end
+							enemy[i].action_step = 0;
+							enemy[i].action_punch = false;
+							enemy[i].action_step++;
+							break;
+						default:
+							enemy[i].action_step = 0;
+							enemy[i].action_punch = false;
+							break;
+					}
+				}
+
+				// Walking and animation
+				if (enemy[i].action_walk) {
+					switch (enemy[i].movement) {
+						case 1:// moving right
 							enemy[i].x_FP += enemy[i].speed_horizontal_FP;
 							enemy[i].pos_x = enemy[i].x_FP >> FP;
-							if (actor.pos_y < enemy[i].pos_y) {
-								enemy[i].y_FP -= enemy[i].speed_vertical_FP;
-								enemy[i].pos_y = enemy[i].y_FP >> FP;
-								if (ENEMY_CheckUpColission(enemy[i])) {
-									enemy[i].y_FP += enemy[i].speed_vertical_FP;
-									enemy[i].pos_y = enemy[i].y_FP >> FP;
-								}
-							} else {
-								enemy[i].y_FP += enemy[i].speed_vertical_FP;
-								enemy[i].pos_y = enemy[i].y_FP >> FP;
-								if (ENEMY_CheckDownColission(enemy[i])) {
+							if (ENEMY_CheckRightColission(enemy[i])) {
+								enemy[i].x_FP -= enemy[i].speed_horizontal_FP;
+								enemy[i].pos_x = enemy[i].x_FP >> FP;
+								if (actor.pos_y < enemy[i].pos_y) {
 									enemy[i].y_FP -= enemy[i].speed_vertical_FP;
 									enemy[i].pos_y = enemy[i].y_FP >> FP;
+									if (ENEMY_CheckUpColission(enemy[i])) {
+										enemy[i].y_FP += enemy[i].speed_vertical_FP;
+										enemy[i].pos_y = enemy[i].y_FP >> FP;
+									}
+								} else {
+									enemy[i].y_FP += enemy[i].speed_vertical_FP;
+									enemy[i].pos_y = enemy[i].y_FP >> FP;
+									if (ENEMY_CheckDownColission(enemy[i])) {
+										enemy[i].y_FP -= enemy[i].speed_vertical_FP;
+										enemy[i].pos_y = enemy[i].y_FP >> FP;
+									}
 								}
 							}
-						}
-						break;
-					case 4:// moving down
-						enemy[i].y_FP += enemy[i].speed_vertical_FP;
-						enemy[i].pos_y = enemy[i].y_FP >> FP;
-						if (ENEMY_CheckDownColission(enemy[i])) {
-							enemy[i].y_FP -= enemy[i].speed_vertical_FP;
-							enemy[i].pos_y = enemy[i].y_FP >> FP;
-							if (actor.pos_x < enemy[i].pos_x) {
-								enemy[i].x_FP -= enemy[i].speed_horizontal_FP;
-								enemy[i].pos_x = enemy[i].x_FP >> FP;
-								if (ENEMY_CheckLeftColission(enemy[i])) {
-									enemy[i].x_FP += enemy[i].speed_horizontal_FP;
-									enemy[i].pos_x = enemy[i].x_FP >> FP;
-								}
-							} else {
+							break;
+						case 2:// moving left
+							enemy[i].x_FP -= enemy[i].speed_horizontal_FP;
+							enemy[i].pos_x = enemy[i].x_FP >> FP;
+							if (ENEMY_CheckLeftColission(enemy[i])) {
 								enemy[i].x_FP += enemy[i].speed_horizontal_FP;
 								enemy[i].pos_x = enemy[i].x_FP >> FP;
-								if (ENEMY_CheckRightColission(enemy[i])) {
-									enemy[i].x_FP -= enemy[i].speed_horizontal_FP;
-									enemy[i].pos_x = enemy[i].x_FP >> FP;
+								if (actor.pos_y < enemy[i].pos_y) {
+									enemy[i].y_FP -= enemy[i].speed_vertical_FP;
+									enemy[i].pos_y = enemy[i].y_FP >> FP;
+									if (ENEMY_CheckUpColission(enemy[i])) {
+										enemy[i].y_FP += enemy[i].speed_vertical_FP;
+										enemy[i].pos_y = enemy[i].y_FP >> FP;
+									}
+								} else {
+									enemy[i].y_FP += enemy[i].speed_vertical_FP;
+									enemy[i].pos_y = enemy[i].y_FP >> FP;
+									if (ENEMY_CheckDownColission(enemy[i])) {
+										enemy[i].y_FP -= enemy[i].speed_vertical_FP;
+										enemy[i].pos_y = enemy[i].y_FP >> FP;
+									}
 								}
 							}
-						}
-						break;
-					case 5:// moving down-right
-						enemy[i].x_FP += enemy[i].speed_diagonalh_FP;
-						enemy[i].y_FP += enemy[i].speed_diagonalv_FP;
-						enemy[i].pos_x = enemy[i].x_FP >> FP;
-						enemy[i].pos_y = enemy[i].y_FP >> FP;
-						if (ENEMY_CheckDownColission(enemy[i])) {
-							enemy[i].y_FP -= enemy[i].speed_diagonalv_FP;
-							enemy[i].pos_y = enemy[i].y_FP >> FP;
-						}
-						if (ENEMY_CheckRightColission(enemy[i])) {
-							enemy[i].x_FP -= enemy[i].speed_diagonalh_FP;
-							enemy[i].pos_x = enemy[i].x_FP >> FP;
-						}
-						break;
-					case 6:// moving down-left
-						enemy[i].x_FP -= enemy[i].speed_diagonalh_FP;
-						enemy[i].y_FP += enemy[i].speed_diagonalv_FP;
-						enemy[i].pos_x = enemy[i].x_FP >> FP;
-						enemy[i].pos_y = enemy[i].y_FP >> FP;
-						if (ENEMY_CheckDownColission(enemy[i])) {
-							enemy[i].y_FP -= enemy[i].speed_diagonalv_FP;
-							enemy[i].pos_y = enemy[i].y_FP >> FP;
-						}
-						if (ENEMY_CheckLeftColission(enemy[i])) {
-							enemy[i].x_FP += enemy[i].speed_diagonalh_FP;
-							enemy[i].pos_x = enemy[i].x_FP >> FP;
-						}
-						break;
-					case 8:// moving up
-						enemy[i].y_FP -= enemy[i].speed_vertical_FP;
-						enemy[i].pos_y = enemy[i].y_FP >> FP;
-						if (ENEMY_CheckUpColission(enemy[i])) {
+							break;
+						case 4:// moving down
 							enemy[i].y_FP += enemy[i].speed_vertical_FP;
 							enemy[i].pos_y = enemy[i].y_FP >> FP;
-							if (actor.pos_x < enemy[i].pos_x) {
-								enemy[i].x_FP -= enemy[i].speed_horizontal_FP;
-								enemy[i].pos_x = enemy[i].x_FP >> FP;
-								if (ENEMY_CheckLeftColission(enemy[i])) {
-									enemy[i].x_FP += enemy[i].speed_horizontal_FP;
-									enemy[i].pos_x = enemy[i].x_FP >> FP;
-								}
-							} else {
-								enemy[i].x_FP += enemy[i].speed_horizontal_FP;
-								enemy[i].pos_x = enemy[i].x_FP >> FP;
-								if (ENEMY_CheckRightColission(enemy[i])) {
+							if (ENEMY_CheckDownColission(enemy[i])) {
+								enemy[i].y_FP -= enemy[i].speed_vertical_FP;
+								enemy[i].pos_y = enemy[i].y_FP >> FP;
+								if (actor.pos_x < enemy[i].pos_x) {
 									enemy[i].x_FP -= enemy[i].speed_horizontal_FP;
 									enemy[i].pos_x = enemy[i].x_FP >> FP;
+									if (ENEMY_CheckLeftColission(enemy[i])) {
+										enemy[i].x_FP += enemy[i].speed_horizontal_FP;
+										enemy[i].pos_x = enemy[i].x_FP >> FP;
+									}
+								} else {
+									enemy[i].x_FP += enemy[i].speed_horizontal_FP;
+									enemy[i].pos_x = enemy[i].x_FP >> FP;
+									if (ENEMY_CheckRightColission(enemy[i])) {
+										enemy[i].x_FP -= enemy[i].speed_horizontal_FP;
+										enemy[i].pos_x = enemy[i].x_FP >> FP;
+									}
 								}
 							}
-						}
-						break;
-					case 9:// moving up-right
-						enemy[i].x_FP += enemy[i].speed_diagonalh_FP;
-						enemy[i].y_FP -= enemy[i].speed_diagonalv_FP;
-						enemy[i].pos_x = enemy[i].x_FP >> FP;
-						enemy[i].pos_y = enemy[i].y_FP >> FP;
-						if (ENEMY_CheckUpColission(enemy[i])) {
-							enemy[i].y_FP += enemy[i].speed_diagonalv_FP;
-							enemy[i].pos_y = enemy[i].y_FP >> FP;
-						}
-						if (ENEMY_CheckRightColission(enemy[i])) {
-							enemy[i].x_FP -= enemy[i].speed_diagonalh_FP;
-							enemy[i].pos_x = enemy[i].x_FP >> FP;
-						}
-						break;
-					case 10:// moving up-left
-						enemy[i].x_FP -= enemy[i].speed_diagonalh_FP;
-						enemy[i].y_FP -= enemy[i].speed_diagonalv_FP;
-						enemy[i].pos_x = enemy[i].x_FP >> FP;
-						enemy[i].pos_y = enemy[i].y_FP >> FP;
-						if (ENEMY_CheckUpColission(enemy[i])) {
-							enemy[i].y_FP += enemy[i].speed_diagonalv_FP;
-							enemy[i].pos_y = enemy[i].y_FP >> FP;
-						}
-						if (ENEMY_CheckLeftColission(enemy[i])) {
+							break;
+						case 5:// moving down-right
 							enemy[i].x_FP += enemy[i].speed_diagonalh_FP;
+							enemy[i].y_FP += enemy[i].speed_diagonalv_FP;
 							enemy[i].pos_x = enemy[i].x_FP >> FP;
-						}
-						break;
-					default:
-						break;
+							enemy[i].pos_y = enemy[i].y_FP >> FP;
+							if (ENEMY_CheckDownColission(enemy[i])) {
+								enemy[i].y_FP -= enemy[i].speed_diagonalv_FP;
+								enemy[i].pos_y = enemy[i].y_FP >> FP;
+							}
+							if (ENEMY_CheckRightColission(enemy[i])) {
+								enemy[i].x_FP -= enemy[i].speed_diagonalh_FP;
+								enemy[i].pos_x = enemy[i].x_FP >> FP;
+							}
+							break;
+						case 6:// moving down-left
+							enemy[i].x_FP -= enemy[i].speed_diagonalh_FP;
+							enemy[i].y_FP += enemy[i].speed_diagonalv_FP;
+							enemy[i].pos_x = enemy[i].x_FP >> FP;
+							enemy[i].pos_y = enemy[i].y_FP >> FP;
+							if (ENEMY_CheckDownColission(enemy[i])) {
+								enemy[i].y_FP -= enemy[i].speed_diagonalv_FP;
+								enemy[i].pos_y = enemy[i].y_FP >> FP;
+							}
+							if (ENEMY_CheckLeftColission(enemy[i])) {
+								enemy[i].x_FP += enemy[i].speed_diagonalh_FP;
+								enemy[i].pos_x = enemy[i].x_FP >> FP;
+							}
+							break;
+						case 8:// moving up
+							enemy[i].y_FP -= enemy[i].speed_vertical_FP;
+							enemy[i].pos_y = enemy[i].y_FP >> FP;
+							if (ENEMY_CheckUpColission(enemy[i])) {
+								enemy[i].y_FP += enemy[i].speed_vertical_FP;
+								enemy[i].pos_y = enemy[i].y_FP >> FP;
+								if (actor.pos_x < enemy[i].pos_x) {
+									enemy[i].x_FP -= enemy[i].speed_horizontal_FP;
+									enemy[i].pos_x = enemy[i].x_FP >> FP;
+									if (ENEMY_CheckLeftColission(enemy[i])) {
+										enemy[i].x_FP += enemy[i].speed_horizontal_FP;
+										enemy[i].pos_x = enemy[i].x_FP >> FP;
+									}
+								} else {
+									enemy[i].x_FP += enemy[i].speed_horizontal_FP;
+									enemy[i].pos_x = enemy[i].x_FP >> FP;
+									if (ENEMY_CheckRightColission(enemy[i])) {
+										enemy[i].x_FP -= enemy[i].speed_horizontal_FP;
+										enemy[i].pos_x = enemy[i].x_FP >> FP;
+									}
+								}
+							}
+							break;
+						case 9:// moving up-right
+							enemy[i].x_FP += enemy[i].speed_diagonalh_FP;
+							enemy[i].y_FP -= enemy[i].speed_diagonalv_FP;
+							enemy[i].pos_x = enemy[i].x_FP >> FP;
+							enemy[i].pos_y = enemy[i].y_FP >> FP;
+							if (ENEMY_CheckUpColission(enemy[i])) {
+								enemy[i].y_FP += enemy[i].speed_diagonalv_FP;
+								enemy[i].pos_y = enemy[i].y_FP >> FP;
+							}
+							if (ENEMY_CheckRightColission(enemy[i])) {
+								enemy[i].x_FP -= enemy[i].speed_diagonalh_FP;
+								enemy[i].pos_x = enemy[i].x_FP >> FP;
+							}
+							break;
+						case 10:// moving up-left
+							enemy[i].x_FP -= enemy[i].speed_diagonalh_FP;
+							enemy[i].y_FP -= enemy[i].speed_diagonalv_FP;
+							enemy[i].pos_x = enemy[i].x_FP >> FP;
+							enemy[i].pos_y = enemy[i].y_FP >> FP;
+							if (ENEMY_CheckUpColission(enemy[i])) {
+								enemy[i].y_FP += enemy[i].speed_diagonalv_FP;
+								enemy[i].pos_y = enemy[i].y_FP >> FP;
+							}
+							if (ENEMY_CheckLeftColission(enemy[i])) {
+								enemy[i].x_FP += enemy[i].speed_diagonalh_FP;
+								enemy[i].pos_x = enemy[i].x_FP >> FP;
+							}
+							break;
+						default:
+							break;
+					}
+
+					enemy[i].action_walk = false;
 				}
 
-				enemy[i].status_walk = false;
-			}
+				// Is hit
+				if (enemy[i].action_hit) {
+					enemy[i].action_step++;
+					if (enemy[i].action_step >= 20) enemy[i].action_hit = false;
+				}
 
-			// Check if is dead
-			if (enemy[i].status_dead) {
-				if (gfx_sprite_stack[enemy[i].sprite_num].animation_end) {
+				// Check if is dead
+				if (enemy[i].action_dead) {
+					if (gfx_sprite_stack[enemy[i].sprite_num].animation_end) {
 
-					gfx_sprite_stack[enemy[i].sprite_num].loaded = false;
-					gfx_sprite_stack[enemy[i].sprite_num].shown = false;
-					enemy[i].is_loaded = false;
+						gfx_sprite_stack[enemy[i].sprite_num].loaded = false;
+						gfx_sprite_stack[enemy[i].sprite_num].shown = false;
+						enemy[i].is_loaded = false;
+					}
 				}
 			}
 
@@ -1460,5 +1808,12 @@ void ENEMY_Update(void) {
 			// Update bullets
 			ENEMY_UpdateBullets(i);
 		}
+	}
+}
+
+void ENEMY_UnloadEnemies(void) {
+	int i;
+	for (i = 0; i < ENEMY_MAX_ENEMIES; i++) {
+		enemy[i].is_loaded = false;
 	}
 }

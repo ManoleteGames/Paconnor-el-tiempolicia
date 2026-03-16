@@ -15,6 +15,8 @@ byte kbBindingCombat;
 
 static _go32_dpmi_seginfo old_handler, new_handler;
 
+/** KEYB :: Keyboard interrupt handler
+ */
 static void KEYB_Handler(void) {
 	kbLastScancode = inportb(0x60);
 	// Ignore extended multi-byte scancodes (introduced with the IBM PS/2 line).
@@ -32,6 +34,9 @@ static void KEYB_Handler(void) {
 	outportb(0x20, 0x20);
 }
 
+/** KEYB :: Keyboard Initialization
+ *  - Initializes keyboard interrupt
+ */
 void KEYB_Init(void) {
 	if (!KEYB_Initialized) {
 		_go32_dpmi_get_protected_mode_interrupt_vector(KEYB_IRS, &old_handler);

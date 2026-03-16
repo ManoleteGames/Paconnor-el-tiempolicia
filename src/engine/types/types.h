@@ -14,6 +14,13 @@ typedef signed char sbyte;
 typedef struct {
 	bool debug_mode;
 	bool good_mode;
+	bool loading;
+	bool logo;
+	bool sequence;
+	bool ingame;
+	bool exit_game;
+
+	int scene;
 
 	char system_error_message1[80];
 	char system_error_message3[80];
@@ -30,6 +37,10 @@ typedef struct {
 	dword fps_old_time;
 	dword start_time;
 	dword sample_time;
+
+	int interrupt_time_ms;
+	int delay_time_ms;
+
 } System;
 
 typedef struct {
@@ -94,6 +105,27 @@ typedef struct {
 } StatusPanel;
 
 typedef struct {
+	int timeout;
+	int current_time;
+
+	int portait_graphics_id;
+	int portait_x, portait_y;
+	int portait_frame;
+	bool portait_inverted;
+
+	int chat_graphics_id;
+	int chat_x, chat_y;
+	int chat_frame;
+	bool chat_inverted;
+
+	char line[3][40];
+
+	int pos_x;
+	int pos_y;
+
+} ChatPanel;
+
+typedef struct {
 
 	bool vga_present;
 	bool ega_present;
@@ -103,10 +135,22 @@ typedef struct {
 
 	int screen_width, screen_height;
 	byte *screen_buffer[3];
-	int *screen_chunks_buffer[3];
 
 	byte *map_buffer[3];
 	word map_buffer_width, map_buffer_height;
+
+	bool fading_in_async;
+	bool faded_in;
+	bool fading_out_async;
+	bool faded_out;
+	int fading_speed;
+	int fading_step;
+	bool rotate_palette_async;
+	int rotate_first_index;
+	int rotate_last_index;
+	int rotate_speed;
+
+
 } Video;
 
 typedef struct {
@@ -217,7 +261,11 @@ typedef struct {
 typedef struct {
 	bool show_description;
 	bool show_speech;
+	bool freeze;
 	bool pause;
+	bool exit_request;
+	int button_pressed;
+
 	byte name_length;
 	byte speech_length;
 	byte speech_timeout;
@@ -315,6 +363,33 @@ typedef struct {
 } Object;
 
 typedef struct {
+	bool is_loaded;
+	byte type;
+
+	int pos_x, pos_y;
+
+	int steps;
+	int current_step;
+
+	int num_sprite;
+} Effect;
+
+typedef struct {
+	bool is_loaded;
+	byte type;
+
+	int pos_x, pos_y;
+
+	byte hit_by;
+
+	int steps;
+	int current_step;
+	int num_sprite;
+
+	HitArea hit_area;
+} Button;
+
+typedef struct {
 	bool accurate;
 	byte type;
 	byte max_accuracy;
@@ -325,17 +400,21 @@ typedef struct {
 	byte bullet_speed;
 	int max_distance;
 	int graphics_id;
+	int effect_graphics_id;
 	Bullet bullet[64];
 } Gun;
 
 typedef struct {
-	bool status_shoot;
-	bool status_punch;
-	bool status_loop;
-	bool status_walk;
-	bool status_stand;
-	bool status_dying;
-	bool status_dead;
+	bool action_shoot;
+	bool action_punch;
+	bool action_loop;
+	bool action_walk;
+	bool action_stand;
+	bool action_dying;
+	bool action_dead;
+	bool action_hit;
+	byte action_punch_combo;
+
 
 	bool is_hit;
 	bool life_shown;
@@ -395,12 +474,14 @@ typedef struct {
 	bool is_loaded;
 	bool is_hit;
 
-	bool status_shoot;
-	bool status_walk;
-	bool status_stand;
-	bool status_dead;
-	bool status_warning;
-	bool status_alarm;
+	bool action_shoot;
+	bool action_punch;
+	bool action_walk;
+	bool action_stand;
+	bool action_hit;
+	bool action_dead;
+
+	int status_behavior;
 
 	bool status_facing_up;
 	bool status_facing_up_right;
@@ -437,7 +518,8 @@ typedef struct {
 	int action_step;
 
 	bool in_shoot_range;
-	byte shoot_range;
+	bool in_punch_range;
+	int shoot_range;
 	int shoot_x, shoot_y;
 	byte shoot_accuracy;
 	byte shoot_recoil_time;
@@ -455,8 +537,10 @@ typedef struct {
 } Enemy;
 
 typedef enum {
+	CT_ENGINE,
 	CT_PALETTE,
 	CT_FONT,
+	CT_GRAPHICS,
 	CT_VIDEO_BUFFER,
 	CT_MOUSE,
 	CT_TILES,
@@ -468,8 +552,8 @@ typedef enum {
 	CT_MUSIC,
 	CT_TEMPORARY,
 	CT_CZONE,
-	CT_MASKED_TILES = 9,
-	CT_INTRO_SOUND_FX = 13,
+	CT_MASKED_TILES,
+	CT_INTRO_SOUND_FX,
 } ChunkType;
 
 typedef struct {
@@ -492,43 +576,6 @@ typedef struct {
 	dword current_time;
 	dword end_time;// When the callback should be called
 } Timeout;
-
-//The MIDI File's header
-typedef struct {
-	long mthd;// 6468544Dh = "MTHd"
-	long size;
-	unsigned short int format;
-	unsigned short int tracks_number;
-	unsigned short int ticks_x_note;
-} MIDIFileHeader;
-
-//The header of a track
-typedef struct {
-	long mtrk;//6B72544Dh = "MTrk"
-	long size;
-} MIDITrackHeader;
-
-typedef struct {
-	unsigned short int tempo;
-	unsigned short int tracks_number;
-	word track_size[64];
-	char *track_data[64];
-	byte last_command[64];
-	long waiting_for[64];
-	word next_byte_ptr[64];
-	byte instrument[16];
-	long counter;
-	byte voices;
-	byte channel[15], NoteNumber[15], NoteVelocity[15];
-	long activated[15];
-	bool play;
-	byte note_off_data[18][2];
-	int volume;
-	long tick_counter;
-	long clock_ticks;
-	char in_use[15];
-
-} MIDI_Song;
 
 typedef struct {
 	bool loaded;
@@ -560,6 +607,25 @@ typedef struct {
 
 
 } Song;
+
+typedef struct {
+	byte *data;
+	word char_width;
+	word char_height;
+} Font;
+
+typedef struct {
+	byte *palette_shown;
+	byte *palette_loaded;
+	Font font[4];
+	byte *image_buffer1;
+	word image_buffer1_width;
+	word image_buffer1_height;
+	byte *image_buffer2;
+	word image_buffer2_width;
+	word image_buffer2_height;
+
+} Graphics;
 
 
 #endif

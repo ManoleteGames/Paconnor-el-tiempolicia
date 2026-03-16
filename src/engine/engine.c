@@ -7,7 +7,7 @@
 
 System engine;
 
-/** Gets DOS version and evaluates if it is below the minimum required
+/** ENGINE :: Gets DOS version and evaluates if it is below the minimum required
  */
 static bool GetDosVersion(void) {
 	word version;
@@ -40,7 +40,7 @@ static bool GetDosVersion(void) {
 	}
 }
 
-/** Gets memory information and evaluates if it is enought RAM memory
+/** ENINE :: Gets memory information and evaluates if it is enought RAM memory
  */
 static bool GetMemInfo(void) {
 	word totalMem;
@@ -74,7 +74,7 @@ static bool GetMemInfo(void) {
 	}
 }
 
-/** Gets video card information and evaluates its compatibility
+/** ENGINE :: Gets video card information and evaluates its compatibility
  */
 static bool GetAvailableVideo(void) {
 
@@ -96,7 +96,7 @@ static bool GetAvailableVideo(void) {
 	}
 }
 
-/** Checks if mouse is available
+/** ENGINE :: Checks if mouse is available
  */
 static bool GetAvailableMouse(void) {
 	mouse_present = MOUSE_CheckIfAvailable();
@@ -116,7 +116,7 @@ static bool GetAvailableMouse(void) {
 	}
 }
 
-/** Checks if there is any compatible sound card
+/** ENGINE :: Checks if there is any compatible sound card
  */
 static bool GetAvailableAudio(void) {
 	adlib_present = AUDIO_CheckAdlib();
@@ -151,7 +151,7 @@ static bool GetAvailableAudio(void) {
 	return true;
 }
 
-/** Awaits a key being pressed
+/** ENGINE :: Awaits a key being pressed and released
  */
 void AwaitInput(void) {
 	while (ANY_KEY_PRESSED()) {
@@ -187,7 +187,6 @@ void ExitDos(void) {
 	// Show bye bye image
 	VIDEO_BinaryImageToVRAM("BINARIES.DAT", "SHUTDOWN.BIN");// Show engine loading screen
 	ScreenSetCursor(22, 1);
-	sleep(2);
 	exit(0);
 }
 
@@ -245,7 +244,19 @@ void Error(const char *quit_message1, const char *quit_message2, const char *qui
 	exit(exit_code);
 }
 
-/* Initialize all systems
+/* ENGINE :: Sets asyncronous delay time
+ */
+void SetDelayTime(int time) {
+	engine.delay_time_ms = time;
+}
+
+// ENGINE :: Waits delay time is elapsed
+bool AwaitDelayTime(void) {
+	if (engine.delay_time_ms > 0) return false;
+	return true;
+}
+
+/* ENGINE :: Initialize all systems
  * - Momory manager
  * - Mouse initialization
  * - Memory reservation
@@ -254,13 +265,14 @@ static void InitSubsystems(void) {
 
 	system("cls");
 
-	MM_Init();                         // Initialize memory manager
-	MOUSE_Init();                      // Install custom mouse interrupt handler
-	GFX_Init();                        // Initialize graphics
-	AUDIO_Init();                      // Initialize audio
-	MAP_Init();                        // Initialize map
-	VIDEO_Init();                      // Initialize video
-	CAM_Init();                        // Initialize camera
+	MM_Init();   // Initialize memory manager
+	MOUSE_Init();// Install custom mouse interrupt handler
+	GFX_Init();  // Initialize graphics
+	AUDIO_Init();// Initialize audio
+	MAP_Init();  // Initialize map
+	VIDEO_Init();// Initialize video
+	CAM_Init();  // Initialize camera
+	VGA_ClearPalette();
 	VGA_SetMode(VIDEO_GRAPHICS_MODE);  // Set graphics mode
 	MOUSE_RestrictZone(0, 320, 0, 199);// Restrict mouse zone
 
@@ -272,11 +284,9 @@ static void InitSubsystems(void) {
 	kbBindingJump = SCANCODE_SPACE;
 	kbBindingFire = SCANCODE_0;
 	kbBindingCombat = SCANCODE_C;
-
-	engine.fps_old_time = 0;
 }
 
-/* Initialize engine
+/* ENGINE :: Initialize engine
  * - Set evironment variables
  * - All system initialization
  */
@@ -288,6 +298,9 @@ void InitEngine(void) {
 	bool mouseOK;
 
 	system("cls");
+
+	engine.fps_old_time = 0;
+	engine.loading = false;
 
 	VGA_HideCursor();// Hide cursor
 
@@ -319,9 +332,11 @@ void InitEngine(void) {
 	audioOK = GetAvailableAudio(); // Check adlib/soundblaster audio available
 
 	ScreenSetCursor(21, 25);
-	printf(" ...press any key...");
-	delay(100);
-	//AwaitInput();
+	SetDelayTime(1000);
+	while (!AwaitDelayTime()) {
+		// just wait
+	};
+	printf(" ...process done...");
 
 	if (!dosVersionOK) {
 		sprintf(engine.system_error_message1, "DOS version not supported");
@@ -404,18 +419,18 @@ void UpdateStatusPannel(void) {
 	char dword_string[10];
 
 	sprintf(dword_string, "%08ld\n", engine.sample_time);
-	VIDEO_StringToScreenBuffer(8, 0, 8, dword_string);
+	VIDEO_StringToScreenBuffer(8, 0, dword_string, FONT_SLIM_WHITE);
 	sprintf(int_string, "%04d\n", engine.fps);
-	VIDEO_StringToScreenBuffer(8, 8, 4, int_string);
+	VIDEO_StringToScreenBuffer(8, 8, int_string, FONT_SLIM_WHITE);
 
 	sprintf(int_string, "%04d\n", engine.debug1_INT);
-	VIDEO_StringToScreenBuffer(8, 16, 4, int_string);
+	VIDEO_StringToScreenBuffer(8, 16, int_string, FONT_SLIM_WHITE);
 	sprintf(int_string, "%04d\n", engine.debug2_INT);
-	VIDEO_StringToScreenBuffer(8, 24, 4, int_string);
+	VIDEO_StringToScreenBuffer(8, 24, int_string, FONT_SLIM_WHITE);
 	sprintf(int_string, "%04d\n", engine.debug3_INT);
-	VIDEO_StringToScreenBuffer(8, 32, 4, int_string);
+	VIDEO_StringToScreenBuffer(8, 32, int_string, FONT_SLIM_WHITE);
 	sprintf(int_string, "%04d\n", engine.debug4_INT);
-	VIDEO_StringToScreenBuffer(8, 40, 4, int_string);
+	VIDEO_StringToScreenBuffer(8, 40, int_string, FONT_SLIM_WHITE);
 }
 
 void Update(int player_follow) {
@@ -429,27 +444,24 @@ void Update(int player_follow) {
 	// Draws screen buffer to video ram
 	VIDEO_ScreenBufferToVRAM();
 
-	FPS();                                                                      // Calculate fps
-	if (!ui.pause) CAM_MainPositionControl(player_follow, &map.update_required);// Place new cam position
+	FPS();                                                                       // Calculate fps
+	if (!ui.freeze) CAM_MainPositionControl(player_follow, &map.update_required);// Place new cam position
 	MAP_Update();
 	VIDEO_MapBufferToScreenBuffer();// Fills a second buffer with the area shown
 
-	VIDEO_PanelToScreenBuffer(&gfx_actor_status_panel);
-	VIDEO_PanelToScreenBuffer(&gfx_enemy_status_panel);
-
 	// Update
 	MOUSE_Update(actor.mode_combat);
-	if (!ui.pause) ACTOR_Update();
-	if (!ui.pause) OBJECT_UpdateObjects();
-	if (!ui.pause) PARTICLE_UpdateParticles();
-	if (!ui.pause) ENEMY_Update();
+	if (!ui.freeze) ACTOR_Update();
+	if (!ui.freeze) OBJECT_UpdateObjects();
+	if (!ui.freeze) EFFECT_UpdateEffects();
+	if (!ui.freeze) PARTICLE_UpdateParticles();
+	if (!ui.freeze) ENEMY_Update();
 
 	// Draw all sprites and effects
-	GFX_UpdateSprites();
+	if (!ui.freeze) GFX_UpdateSprites();
 	GFX_DrawSprites();
 
-	UI_UpdateUI();
-
+	UI_UpdateUI(actor.mode_combat);
 	UpdateStatusPannel();// Draws status pannel on the screen buffer
 
 	LimitFPS(28);

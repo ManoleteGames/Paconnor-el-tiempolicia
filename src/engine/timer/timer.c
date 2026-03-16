@@ -14,7 +14,22 @@ void TIMER_Callback(byte param) {
 		case TIMER_AUDIO_CALLBACK:
 			AUDIO_TimerHandler();
 			break;
-		case 1:
+		case TIMER_VIDEO_CALLBACK:
+			VIDEO_TimerHandler();
+			break;
+		case TIMER_MISC_CALLBACK:
+			if (engine.logo & kbKeyState[SCANCODE_ESC]) {
+				SetDelayTime(0);
+				AUDIO_StopSong();
+				engine.logo = false;
+				VIDEO_FadeOut(1);
+			}
+			if (engine.sequence & kbKeyState[SCANCODE_ESC]) {
+				SetDelayTime(0);
+				AUDIO_StopSong();
+				engine.sequence = false;
+				VIDEO_FadeOut(1);
+			}
 			break;
 		default:
 			break;
@@ -28,17 +43,25 @@ static void TimerHandler(void) {
 
 	// Check each registered timeout
 	for (int i = 0; i < MAX_TIMERS; i++) {
-		//timeouts[i].current_time += 55;
 		timeouts[i].current_time += 1;
 		if (timeouts[i].callback && (timeouts[i].current_time >= timeouts[i].end_time)) {
 			timeouts[i].current_time = 0;
 			timeouts[i].callback(timeouts[i].param);
 		}
 	}
+
+	// evaluate delay time
+	if (engine.delay_time_ms > 0) engine.delay_time_ms--;
+
 	enable();
 	outportb(0x20, 0x20);// End-of-interrupt (EOI) signal to PIC
 }
 
+/** TIMER :: TIMER_Init
+ *  - Sets PIT timer interrupt at a custom frecuency
+ *  - Sets second timer callback for audio issues
+ *  - Sets third timer callback for video effects
+ */
 void TIMER_Init(void) {
 	dword new_freq;
 
@@ -55,6 +78,7 @@ void TIMER_Init(void) {
 		// - by default 18.2 Hz wich is 55 ms. aprox.
 		// - 10 ms -> 100 Hz
 		// - 1 ms. -> 1000 Hz
+		engine.interrupt_time_ms = 1;
 		new_freq = 1193182 / (dword) 1000;
 		outportb(0x43, 0x36);
 
@@ -68,7 +92,13 @@ void TIMER_Init(void) {
 	TIMER_Initialized = true;
 
 	// Initialize audio callback
-	TIMER_SetTimeout(TIMER_Callback, TIMER_AUDIO_CALLBACK, 20);
+	TIMER_SetTimeout(TIMER_Callback, TIMER_AUDIO_CALLBACK, TIMER_AUDIO_TIME);
+
+	// Initialize video callback
+	TIMER_SetTimeout(TIMER_Callback, TIMER_VIDEO_CALLBACK, TIMER_VIDEO_TIME);
+
+	// Initialize misc callback
+	TIMER_SetTimeout(TIMER_Callback, TIMER_MISC_CALLBACK, TIMER_MISC_TIME);
 }
 
 void TIMER_Shutdown(void) {

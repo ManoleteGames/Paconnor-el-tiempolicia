@@ -3,15 +3,15 @@
 #include "../video/vga.h"
 #include "string.h"
 
-byte *gfxPaletteShown;
-byte *gfxPaletteLoaded;
-byte *gfxFont;
+//byte *gfxPaletteShown;
+//byte *gfxPaletteLoaded;
+//byte *gfxFont;
+
+Graphics gfx;
 
 StatusPanel gfx_actor_status_panel;
 StatusPanel gfx_enemy_status_panel;
-
-//int gfx_stack_index;
-//byte gfx_sprites_stack[MAX_SPRITES];
+ChatPanel gfx_chat_panel;
 
 int gfx_sprites_priority_index;
 byte gfx_sprites_priority_stack[SPRITE_MAX_STACK];
@@ -21,20 +21,37 @@ Sprite gfx_sprite_stack[SPRITE_MAX_STACK];
 /** GFX :: Initialize graphics
  */
 void GFX_Init(void) {
-	printf(" Initializing Graphics... \n");
-
 	// Reserve memory for palette
-	gfxPaletteShown = MM_PushChunk(256 * 3, CT_PALETTE);
-	gfxPaletteLoaded = MM_PushChunk(256 * 3, CT_PALETTE);
+	gfx.palette_shown = MM_PushChunk(256 * 3, CT_ENGINE);
+	gfx.palette_loaded = MM_PushChunk(256 * 3, CT_ENGINE);
+
+	// Reserve memory for image buffer 1
+	gfx.image_buffer1 = MM_PushChunk(360 * 240, CT_ENGINE);
+	gfx.image_buffer1_width = 0;
+	gfx.image_buffer1_height = 0;
+	// Reserve memory for image buffer 2
+	gfx.image_buffer2 = MM_PushChunk(360 * 240, CT_ENGINE);
+	gfx.image_buffer2_width = 0;
+	gfx.image_buffer2_height = 0;
 
 	// Reserve memory for font
-	gfxFont = MM_PushChunk(FONT_GFX_WIDTH * FONT_GFX_HEIGHT, CT_FONT);
+	gfx.font[0].data = MM_PushChunk(FONT_SLIM_GFX_WIDTH * FONT_SLIM_GFX_HEIGHT, CT_ENGINE);
+	gfx.font[1].data = MM_PushChunk(FONT_SLIM_GFX_WIDTH * FONT_SLIM_GFX_HEIGHT, CT_ENGINE);
+	gfx.font[2].data = MM_PushChunk(FONT_BIG_GFX_WIDTH * FONT_BIG_GFX_HEIGHT, CT_ENGINE);
+	gfx.font[3].data = MM_PushChunk(FONT_BIG_GFX_WIDTH * FONT_BIG_GFX_HEIGHT, CT_ENGINE);
+
+	// Load default fonts
+	GFX_LoadFont("FONTS.DAT", "SLIMB.PCX", 128 * 32, 8, 8, FONT_SLIM_BLACK);
+	GFX_LoadFont("FONTS.DAT", "SLIMW.PCX", 128 * 32, 8, 8, FONT_SLIM_WHITE);
+	GFX_LoadFont("FONTS.DAT", "BIGB.PCX", 256 * 64, 16, 16, FONT_BIG_BLACK);
+	GFX_LoadFont("FONTS.DAT", "BIGW.PCX", 256 * 64, 16, 16, FONT_BIG_WHITE);
 }
 
 /** GFX :: Shutdown graphics
  */
 void GFX_Shutdown(void) {
 	// Free all chunks
+	MM_PopChunks(CT_GRAPHICS);
 	MM_PopChunks(CT_FONT);
 	MM_PopChunks(CT_PALETTE);
 }
@@ -118,16 +135,9 @@ void GFX_LoadSpriteGraphicsRLE(const char *dat_name, const char *asset_name, int
 	byte *s, *d;
 	byte *dataLoaded;
 
-	gfx_sprite_graphics_stack[id].buffer = MM_PushChunk(width_px * height_px * num_frames, CT_SPRITE);
-	gfx_sprite_graphics_stack[id].frame_offset = MM_PushChunk(num_frames << 1, CT_SPRITE);
-	gfx_sprite_graphics_stack[id].row_offset = MM_PushChunk((num_frames * height_px) << 1, CT_SPRITE);
-
-	dataLoaded = MM_PushChunk(width_px * height_px * num_frames, CT_TEMPORARY);
-
 	// Check validity of sprite number
 	if ((id < 0) || (id >= SPRITE_MAX_GRAPHICS)) {
-		MM_PopChunks(CT_TEMPORARY);
-		sprintf(engine.system_error_message1, "GFX_LoadSpriteGraphics function error");
+		sprintf(engine.system_error_message1, "GFX_LoadSpriteGraphicsRLE function error");
 		sprintf(engine.system_error_message2, "Invalid sprite stack graphic id number %u", id);
 		sprintf(engine.system_error_message3, "DAT filename: %s, Asset filename: %s", dat_name, asset_name);
 		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_GRAPHICS);
@@ -135,12 +145,17 @@ void GFX_LoadSpriteGraphicsRLE(const char *dat_name, const char *asset_name, int
 
 	// Check if sprite is already loaded
 	if (gfx_sprite_graphics_stack[id].loaded) {
-		MM_PopChunks(CT_TEMPORARY);
 		sprintf(engine.system_error_message1, "GFX_LoadSpriteGraphics function error");
 		sprintf(engine.system_error_message2, "Sprite stack graphic id number %u already in use", id);
 		sprintf(engine.system_error_message3, "DAT filename: %s, Asset filename: %s", dat_name, asset_name);
 		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_GRAPHICS);
 	}
+
+	gfx_sprite_graphics_stack[id].buffer = MM_PushChunk(width_px * height_px * num_frames, CT_SPRITE);
+	gfx_sprite_graphics_stack[id].frame_offset = MM_PushChunk(num_frames << 1, CT_SPRITE);
+	gfx_sprite_graphics_stack[id].row_offset = MM_PushChunk((num_frames * height_px) << 1, CT_SPRITE);
+
+	dataLoaded = MM_PushChunk(width_px * height_px * num_frames, CT_TEMPORARY);
 
 	// Load graphics file
 	FILE_LoadPCXSprite(dat_name, asset_name, dataLoaded, width_px * height_px * num_frames, &image_width_px, &image_height_px, SPRITE_TRANSP_COLOR);
@@ -256,6 +271,31 @@ void GFX_SetPanelPortait(StatusPanel *panel, int portait_frame) {
 	panel->portait_frame = portait_frame - 1;
 }
 
+void GFX_SetChatGraphics(ChatPanel *panel, int portait_graphics_id, int chat_graphics_id) {
+	panel->portait_graphics_id = portait_graphics_id;
+	panel->chat_graphics_id = chat_graphics_id;
+	panel->portait_frame = 0;
+}
+
+void GFX_SetChatPosition(ChatPanel *panel, int x, int y, int portait_x, int portait_y, bool portait_inverted, int chat_x, int chat_y, bool chat_inverted) {
+
+	panel->pos_x = x;
+	panel->pos_y = y;
+
+	panel->portait_x = portait_x;
+	panel->portait_y = portait_y;
+	panel->portait_inverted = portait_inverted;
+
+	panel->chat_x = chat_x;
+	panel->chat_y = chat_y;
+	panel->chat_inverted = chat_inverted;
+}
+
+void GFX_SetLineChatPanel(ChatPanel *panel, const char c[40], int line) {
+	strcpy(panel->line[line], c);
+}
+
+
 /** Unload all sprite graphics
  *
  */
@@ -263,6 +303,7 @@ void GFX_UnloadSpriteGraphics(void) {
 	int i;
 	for (i = 0; i < SPRITE_MAX_STACK; i++) {
 		gfx_sprite_stack[i].loaded = false;
+		gfx_sprite_stack[i].shown = false;
 	}
 	for (i = 0; i < SPRITE_MAX_GRAPHICS; i++) {
 		gfx_sprite_graphics_stack[i].loaded = false;
@@ -327,6 +368,7 @@ void GFX_UnloadSprites(void) {
 	int i;
 	for (i = 0; i < SPRITE_MAX_STACK; i++) {
 		gfx_sprite_stack[i].loaded = false;
+		gfx_sprite_stack[i].shown = false;
 	}
 }
 
@@ -369,14 +411,30 @@ void GFX_UpdateSprites(void) {
 	// Set sprite priority stack
 	for (i = 0; i < gfx_sprites_priority_index; i++) {
 		for (j = 0; j < gfx_sprites_priority_index - 1; j++) {
-			if ((gfx_sprite_stack[gfx_sprites_priority_stack[j]].screen_pos_y > gfx_sprite_stack[gfx_sprites_priority_stack[j + 1]].screen_pos_y)
-
-				|| (gfx_sprite_stack[gfx_sprites_priority_stack[j]].graphics_id == SPRITE_GRAPHICS_ID_CURSOR)) {
+			if ((gfx_sprite_stack[gfx_sprites_priority_stack[j]].screen_pos_y + gfx_sprite_stack[gfx_sprites_priority_stack[j]].height_px) > (gfx_sprite_stack[gfx_sprites_priority_stack[j + 1]].screen_pos_y) + gfx_sprite_stack[gfx_sprites_priority_stack[j + 1]].height_px) {
 
 				aux = gfx_sprites_priority_stack[j + 1];
 				gfx_sprites_priority_stack[j + 1] = gfx_sprites_priority_stack[j];
 				gfx_sprites_priority_stack[j] = aux;
 			}
+		}
+	}
+
+	// Set effects at higher priority
+	for (j = 0; j < gfx_sprites_priority_index - 1; j++) {
+		if (gfx_sprite_stack[gfx_sprites_priority_stack[j]].graphics_id == SPRITE_GRAPHICS_ID_PUNCH_EFFECT) {
+			aux = gfx_sprites_priority_stack[j + 1];
+			gfx_sprites_priority_stack[j + 1] = gfx_sprites_priority_stack[j];
+			gfx_sprites_priority_stack[j] = aux;
+		}
+	}
+
+	// Set cursor at higher priority
+	for (j = 0; j < gfx_sprites_priority_index - 1; j++) {
+		if (gfx_sprite_stack[gfx_sprites_priority_stack[j]].graphics_id == SPRITE_GRAPHICS_ID_CURSOR) {
+			aux = gfx_sprites_priority_stack[j + 1];
+			gfx_sprites_priority_stack[j + 1] = gfx_sprites_priority_stack[j];
+			gfx_sprites_priority_stack[j] = aux;
 		}
 	}
 
@@ -423,7 +481,7 @@ void GFX_LoadImage(const char *filename, const char *subfile, int size) {
 	word width, height;
 
 	byte *dataLoaded = MM_PushChunk(size, CT_TEMPORARY);
-	FILE_LoadPCXImage(filename, subfile, dataLoaded, size, gfxPaletteLoaded, &width, &height);
+	FILE_LoadPCXImage(filename, subfile, dataLoaded, size, &width, &height);
 	// Transfer data to video buffer
 	src_index = 0;
 	dst_index = 0;
@@ -440,7 +498,7 @@ void GFX_LoadImage(const char *filename, const char *subfile, int size) {
  *  - PCX file inside a DAT file required
  *  - Loads image into RAM video buffer   
  */
-void GFX_LoadFont(const char *filename, const char *subfile, int size) {
+void GFX_LoadFont(const char *filename, const char *subfile, int size, word char_w, word char_h, int font_number) {
 
 	word width;
 	word height;
@@ -450,20 +508,24 @@ void GFX_LoadFont(const char *filename, const char *subfile, int size) {
 	register int num_char_columns, num_char_rows;
 
 	byte *dataLoaded = MM_PushChunk(size, CT_TEMPORARY);
-	FILE_LoadPCXImage(filename, subfile, dataLoaded, size, gfxPaletteLoaded, &width, &height);
+	FILE_LoadPCXImage(filename, subfile, dataLoaded, size, &width, &height);
 
-	num_char_columns = (width >> 3);
-	num_char_rows = (height >> 3);
+	gfx.font[font_number].char_width = char_w;
+	gfx.font[font_number].char_height = char_h;
+
+	num_char_columns = width / char_w;
+	num_char_rows = height / char_h;
+
 	src_index = 0;
 	dst_index = 0;
 
 	// regular mode
 	for (r = 0; r < num_char_rows; r++) {
 		for (c = 0; c < num_char_columns; c++) {
-			for (j = 0; j < 8; j++) {
-				for (k = 0; k < 8; k++) {
-					src_index = ((width << 3) * r) + (c << 3) + (j * width) + k;
-					gfxFont[dst_index] = dataLoaded[src_index] + 220;// font colors are allocated from color 220
+			for (j = 0; j < char_h; j++) {
+				for (k = 0; k < char_w; k++) {
+					src_index = ((width * char_h) * r) + (c * char_w) + (j * width) + k;
+					gfx.font[font_number].data[dst_index] = dataLoaded[src_index] + 220;// font colors are allocated from color 220
 					dst_index++;
 				}
 			}
@@ -476,5 +538,43 @@ void GFX_LoadFont(const char *filename, const char *subfile, int size) {
 /** GFX :: Load palette
  */
 void GFX_LoadPalette(const char *dat_file, const char *asset_file, int size) {
-	FILE_LoadPCXPalette(dat_file, asset_file, gfxPaletteLoaded, size);
+	FILE_LoadPCXPalette(dat_file, asset_file, gfx.palette_loaded, size);
+}
+
+/** GFX :: PCX Image to image buffer
+ *  - Loads a pcx image file and print it to a memory buffer
+ */
+/** Load and display specified text-mode screen */
+void GFX_PCXImageToBuffer(const char *dat_name, const char *asset_name, int size, byte *buffer, word *width, word *height) {
+	FILE_LoadPCXImage(dat_name, asset_name, buffer, size, width, height);
+
+	if (size < *width * *height) {
+		sprintf(engine.system_error_message1, "GFX_PCXImageToBuffer function error");
+		sprintf(engine.system_error_message2, "Image size is bigger than memory size set");
+		sprintf(engine.system_error_message3, " ");
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_VIDEO);
+	}
+}
+
+/** GFX :: Clear buffer
+ */
+void GFX_ClearBuffer(byte *buffer, int width, int heigth, byte clear_byte) {
+	memset(buffer, clear_byte, width * heigth);
+}
+
+
+void GFX_SetSpritePosition(int sprite_num, int screen_pos_x, int screen_pos_y) {
+	gfx_sprite_stack[sprite_num].screen_pos_x = screen_pos_x;
+	gfx_sprite_stack[sprite_num].screen_pos_y = screen_pos_y;
+}
+
+void GFX_SetSpriteAnimation(int sprite_num, int first_frame, int max_frames, int speed, bool loop, bool inverted) {
+	gfx_sprite_stack[sprite_num].current_frame = 1;
+	gfx_sprite_stack[sprite_num].animation_base_frame = first_frame;
+	gfx_sprite_stack[sprite_num].animation_frames = max_frames;
+	gfx_sprite_stack[sprite_num].animation_counter = 0;
+	gfx_sprite_stack[sprite_num].animation_speed = speed;
+	gfx_sprite_stack[sprite_num].animation_end = false;
+	gfx_sprite_stack[sprite_num].animation_inverted = inverted;
+	gfx_sprite_stack[sprite_num].animation_loop = loop;
 }

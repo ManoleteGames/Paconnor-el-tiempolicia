@@ -43,8 +43,6 @@ void MOUSE_Init(void) {
 	_go32_dpmi_seginfo mouse_seginfo;
 
 	if (!mouse_initialized) {
-		printf(" Initializing Mouse... \n");
-
 		mouse_seginfo.pm_offset = (int) MOUSE_handler;
 
 		_go32_dpmi_allocate_real_mode_callback_retf(&mouse_seginfo,
@@ -138,12 +136,35 @@ void MOUSE_SetCursorFrame(int frame_number) {
 	gfx_sprite_stack[cursor.sprite_num].animation_frames = 1;
 }
 
+/** MOUSE :: Check cursor colission
+ */
 int MOUSE_CheckCursorColission(void) {
-	int i;
+	int i, hspot;
 	int point1_x, point1_y;
 
 	point1_x = cursor.pos_x;
 	point1_y = cursor.pos_y;
+
+
+	/////// BUTTONS COLISSIONS ///////////
+	for (i = 0; i < UI_MAX_BUTTONS; i++) {
+		if (ui_button[i].is_loaded) {
+			if (gfx_sprite_stack[ui_button[i].num_sprite].shown) {
+
+				//Point 1
+				if (point1_x < ui_button[i].pos_x + ui_button[i].hit_area.points[1][0]
+
+					&& point1_x > ui_button[i].pos_x + ui_button[i].hit_area.points[0][0]
+
+					&& point1_y > ui_button[i].pos_y + ui_button[i].hit_area.points[0][1]
+
+					&& point1_y < ui_button[i].pos_y + ui_button[i].hit_area.points[2][1]) {
+					return gfx_sprite_stack[ui_button[i].num_sprite].id;
+				}
+			}
+		}
+	}
+
 
 	/////// OBJECTS COLISSIONS ///////////
 	for (i = 0; i < OBJECT_MAX_OBJECTS; i++) {
@@ -181,6 +202,16 @@ int MOUSE_CheckCursorColission(void) {
 		}
 	}
 
+	/////// HOTSPOT COLISSIONS ///////////
+	hspot = 0;
+	if (map.loaded) {
+		hspot = MAP_CheckHotspotTile(camera.pos_x + cursor.pos_x, camera.pos_y + cursor.pos_y);
+		if (hspot != 255) return ((hspot) << 8) | ENTITY_ID_HSPOT;
+		else
+			return 0;
+	}
+
+
 	return 0;
 }
 
@@ -188,53 +219,25 @@ void MOUSE_Update(bool combat_mode) {
 	if (mouse_initialized) {
 		gfx_sprite_stack[cursor.sprite_num].screen_pos_x = cursor.pos_x;
 		gfx_sprite_stack[cursor.sprite_num].screen_pos_y = cursor.pos_y;
-		ui.show_description = false;
 
-		if (!combat_mode || ui.pause) {
+		if (ui.freeze) {
 			gfx_sprite_stack[cursor.sprite_num].graphics_id = SPRITE_GRAPHICS_ID_CURSOR;
+			return;
+		}
 
-			if (!ui.pause) {
-				// Check if hits something
-				cursor.point_on = MOUSE_CheckCursorColission();
-				// Check point on object or enemy
-				switch (cursor.point_on & 0xFF) {
-					case ENTITY_ID_BARREL:
-						ui.name_length = FILE_LoadText("DIALOG.DAT", "NAMES.TXT", 1, ui.object_name);
-						ui.show_description = true;
-						break;
-					case ENTITY_ID_ENEMY:
-
-						break;
-					default:
-						break;
-				}
-			}
+		if (!combat_mode) {
+			gfx_sprite_stack[cursor.sprite_num].graphics_id = SPRITE_GRAPHICS_ID_CURSOR;
+			cursor.point_on = MOUSE_CheckCursorColission();
 
 			if (cursor.left_click) {
-				cursor.left_click = false;
 				gfx_sprite_stack[cursor.sprite_num].animation_end = false;
 				gfx_sprite_stack[cursor.sprite_num].animation_counter = 0;
 				gfx_sprite_stack[cursor.sprite_num].animation_frames = 7;
 				gfx_sprite_stack[cursor.sprite_num].current_frame = 1;
 				gfx_sprite_stack[cursor.sprite_num].animation_speed = 2;
-
-				if (!ui.pause) {
-					switch (cursor.point_on & 0xFF) {
-						case ENTITY_ID_BARREL:
-							ui.speech_length = FILE_LoadText("DIALOG.DAT", "GLOBAL.TXT", 1, ui.speech);
-							ui.speech_time = 0;
-							ui.speech_timeout = 100;
-							ui.show_speech = true;
-							break;
-						case ENTITY_ID_ENEMY:
-
-							break;
-						default:
-							break;
-					}
-				}
 			}
 
+			// Update animation
 			if (gfx_sprite_stack[cursor.sprite_num].animation_end) {
 				gfx_sprite_stack[cursor.sprite_num].animation_counter = 0;
 				gfx_sprite_stack[cursor.sprite_num].animation_frames = 1;

@@ -6,23 +6,22 @@ Map map;
 /** MAP :: Initialize map
  */
 void MAP_Init(void) {
-	printf(" Initializing Maps... \n");
 	// Reserve memory for background tileset
-	map.layer_tiles[MAP_BACKGROUND_LAYER].buffer = MM_PushChunk(MAP_MAX_BACK_TILESET_WIDTH * MAP_MAX_BACK_TILESET_HEIGHT, CT_MAP);
+	map.layer_tiles[MAP_BACKGROUND_LAYER].buffer = MM_PushChunk(MAP_MAX_BACK_TILESET_WIDTH * MAP_MAX_BACK_TILESET_HEIGHT, CT_ENGINE);
 	// Reserve memory for foreground tileset
-	map.layer_tiles[MAP_FOREGROUND_LAYER].buffer = MM_PushChunk(MAP_MAX_FORE_TILESET_WIDTH * MAP_MAX_FORE_TILESET_HEIGHT, CT_MAP);
+	map.layer_tiles[MAP_FOREGROUND_LAYER].buffer = MM_PushChunk(MAP_MAX_FORE_TILESET_WIDTH * MAP_MAX_FORE_TILESET_HEIGHT, CT_ENGINE);
 	// Reserve memory for mask tileset
-	map.layer_tiles[MAP_MASK_LAYER].buffer = MM_PushChunk(MAP_MAX_MASK_TILESET_WIDTH * MAP_MAX_MASK_TILESET_HEIGHT, CT_MAP);
+	map.layer_tiles[MAP_MASK_LAYER].buffer = MM_PushChunk(MAP_MAX_MASK_TILESET_WIDTH * MAP_MAX_MASK_TILESET_HEIGHT, CT_ENGINE);
 	// Reserve memory for map background
-	map.layer[MAP_BACKGROUND_LAYER] = MM_PushChunk((MAP_MAX_WIDTH * MAP_MAX_HEIGHT) << 1, CT_MAP);
+	map.layer[MAP_BACKGROUND_LAYER] = MM_PushChunk((MAP_MAX_WIDTH * MAP_MAX_HEIGHT) << 1, CT_ENGINE);
 	// Reserve memory for map foreground
-	map.layer[MAP_FOREGROUND_LAYER] = MM_PushChunk((MAP_MAX_WIDTH * MAP_MAX_HEIGHT) << 1, CT_MAP);
+	map.layer[MAP_FOREGROUND_LAYER] = MM_PushChunk((MAP_MAX_WIDTH * MAP_MAX_HEIGHT) << 1, CT_ENGINE);
 	// Reserve memory for map mask
-	map.layer[MAP_MASK_LAYER] = MM_PushChunk((MAP_MAX_WIDTH * MAP_MAX_HEIGHT) << 1, CT_MAP);
+	map.layer[MAP_MASK_LAYER] = MM_PushChunk((MAP_MAX_WIDTH * MAP_MAX_HEIGHT) << 1, CT_ENGINE);
 	// Reserve memory for map colission
-	map.layer[MAP_COLISSION_LAYER] = MM_PushChunk((MAP_MAX_WIDTH * MAP_MAX_HEIGHT) << 1, CT_MAP);
+	map.layer[MAP_COLISSION_LAYER] = MM_PushChunk((MAP_MAX_WIDTH * MAP_MAX_HEIGHT) << 1, CT_ENGINE);
 	// Reserve memory for map event
-	map.layer[MAP_EVENT_HSPOT_LAYER] = MM_PushChunk((MAP_MAX_WIDTH * MAP_MAX_HEIGHT) << 1, CT_MAP);
+	map.layer[MAP_EVENT_HSPOT_LAYER] = MM_PushChunk((MAP_MAX_WIDTH * MAP_MAX_HEIGHT) << 1, CT_ENGINE);
 }
 
 /** MAP :: Shutdown map data
@@ -37,6 +36,14 @@ int MAP_GetTileNumber(int x_px, int y_px) {
 
 int MAP_CheckColissionTile(int x_px, int y_px) {
 	return map.layer[MAP_COLISSION_LAYER][MAP_GetTileNumber(x_px, y_px)];
+}
+
+int MAP_CheckHotspotTile(int x_px, int y_px) {
+	return (map.layer[MAP_EVENT_HSPOT_LAYER][MAP_GetTileNumber(x_px, y_px)]) & 0xFF;
+}
+
+int MAP_CheckEventTile(int x_px, int y_px) {
+	return (map.layer[MAP_EVENT_HSPOT_LAYER][MAP_GetTileNumber(x_px, y_px)] >> 8) & 0xFF;
 }
 
 /** MAP :: Tileset load

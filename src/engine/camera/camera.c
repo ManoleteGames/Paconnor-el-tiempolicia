@@ -9,9 +9,6 @@ CameraParallax cam_parallax[3];
  */
 void CAM_Init(void) {
 	int i;
-
-	printf(" Initializing Camera... \n");
-
 	// Check camera resolution
 	if (video.screen_width < CAM_VISIBLE_WIDTH || video.screen_height < CAM_VISIBLE_HEIGHT) {
 		sprintf(engine.system_error_message1, "CAM_Init function error");

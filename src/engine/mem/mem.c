@@ -18,8 +18,6 @@ void MM_Init(void) {
 	int i;
 
 	if (!MM_Initialized) {
-
-		printf(" Initializing Memory Manager... \n");
 		// Clear chunck data and set all chunks as temporary
 		for (i = 0; i < MM_MAX_NUM_CHUNKS; ++i) {
 			mmChunkSizes[i] = 0;

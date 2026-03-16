@@ -585,7 +585,7 @@ void A2M_LoadFile(const char *dat_name, const char *asset_name) {
 	byte *unpacked;
 
 	////////////////////// 1st. Read raw data /////////////////////
-	rawdata = FILE_LoadA2MSongInfo(dat_name, asset_name, &filesize);
+	rawdata = FILE_LoadA2MSongInfo(dat_name, asset_name, &filesize, CT_TEMPORARY);
 
 	////////////////////// 2nd. Get header data /////////////////////
 	header = rawdata;
@@ -711,7 +711,7 @@ void A2M_LoadFile(const char *dat_name, const char *asset_name) {
 	//f = fopen(filename, "rb");
 	//fread(rawdata, filesize, 1, f);
 	//fclose(f);
-	rawdata = FILE_LoadA2MSongInfo(dat_name, asset_name, &filesize);
+	rawdata = FILE_LoadA2MSongInfo(dat_name, asset_name, &filesize, CT_TEMPORARY);
 
 	// Block 1 ( patterns 0..7 )
 	blockptr = rawdata + 16;//header size = 16
@@ -1172,28 +1172,6 @@ static void A2M_OutputNote(byte note, uint8_t ins, int chan, bool restart_macro,
 
 	freq = freq + ch_data.ftune_table[chan];
 	A2M_ChangeFrequency(chan, freq);
-
-	/*if (note) {
-		ch_data.event_table[chan].note = note;
-
-		// Do we need that?
-		//if (is_4op_chan(chan) && is_4op_chan_hi(chan)) {
-		//    ch->event_table[chan + 1].note = note;
-		//}
-
-		if (restart_macro) {
-			// Check if no ZFF - force no restart
-			bool force_no_restart = (((ch_data.event_table[chan].eff[0].def == ef_Extended) &&
-									  (ch_data.event_table[chan].eff[0].val == ef_ex_ExtendedCmd2 * 16 + ef_ex_cmd2_NoRestart)) ||
-									 ((ch_data.event_table[chan].eff[1].def == ef_Extended) &&
-									  (ch_data.event_table[chan].eff[1].val == ef_ex_ExtendedCmd2 * 16 + ef_ex_cmd2_NoRestart)));
-			if (!force_no_restart) {
-				A2M_InitMacroTable(chan, note, ins, freq);
-			} else {
-				ch_data.macro_table[chan].arpg_note = note;
-			}
-		}
-	}*/
 }
 
 static void A2M_NewProcessNote(A2M_TRACK_EVENT event, int chan) {
@@ -2195,7 +2173,7 @@ static void A2M_UpdateExtraFineEffectsSlot(int slot, int chan) {
 }
 
 static void A2M_UpdateExtraFineEffects() {
-	for (int chan = 1; chan <= songinfo.nm_tracks; chan++) {
+	for (int chan = 0; chan < songinfo.nm_tracks; chan++) {
 		A2M_UpdateExtraFineEffectsSlot(0, chan);
 		A2M_UpdateExtraFineEffectsSlot(1, chan);
 	}
@@ -2237,13 +2215,65 @@ void A2M_Process(void) {
 void A2M_MacroProcess(void) {
 }
 
+
+void opl_write(unsigned char reg, unsigned char val) {
+	outp(0x388, reg);
+	inp(0x388);
+	inp(0x388);
+	inp(0x388);
+	inp(0x388);
+
+	outp(0x389, val);
+	for (int i = 0; i < 35; i++)
+		inp(0x388);
+}
+
+void A2M_Stop(void) {
+	for (int ch = 0; ch < 9; ch++) {
+		opl_write(0xB0 + ch, 0x00);// Key off + block + fnum alto = 0
+		opl_write(0xA0 + ch, 0x00);// fnum bajo = 0
+	}
+
+	for (int op = 0; op < 18; op++)
+		opl_write(0x40 + op, 0x3F);
+
+	int op_table[9][2] = {
+			{0, 3},
+			{1, 4},
+			{2, 5},
+			{6, 9},
+			{7, 10},
+			{8, 11},
+			{12, 15},
+			{13, 16},
+			{14, 17}};
+
+	for (int ch = 0; ch < 9; ch++) {
+		int carrier = op_table[ch][1];
+		opl_write(0x40 + carrier, 0x3F);// SOLO el carrier importa para volumen
+	}
+
+	for (int ch = 0; ch < 9; ch++) {
+		int carrier = op_table[ch][1];
+		opl_write(0x80 + carrier, 0xFF);// sustain=0, release rápido
+	}
+
+	for (int ch = 0; ch < 9; ch++) {
+		opl_write(0xB0 + ch, 0x00);
+		opl_write(0xA0 + ch, 0x00);
+	}
+	opl_write(0xBD, 0x00);
+}
+
+
 /** A2M_TimerHandler :: Timer callback
  *   - Count each timer tick and trigger
  *	   next process depending on song tempo
  */
 void A2M_TimerHandler(void) {
-
+	int regNum;
 	if (song.play) {
+		song.stop = false;
 		// Process tick
 		if (song.ticklooper == 0) {
 			A2M_Process();
@@ -2262,24 +2292,6 @@ void A2M_TimerHandler(void) {
 		if (song.macro_ticklooper >= (TIMER_AUDIO_TIME / (songinfo.tempo * song.macro_speedup)))//IRQ_freq / (tempo * _macro_speedup()))
 			song.macro_ticklooper = 0;
 	} else {
-		if (!song.stop) {
-			// Stop song
-			for (int chan = 0; chan < songinfo.nm_tracks; chan++) {
-				ch_data.event_table[chan].note = ch_data.event_table[chan].note | 0x80;
-				for (int slot = 0; slot < 2; slot++) {
-					ch_data.event_table[chan].eff[slot].def = 0;
-					ch_data.event_table[chan].eff[slot].val = 0;
-				}
-				//A2M_KeyOFF(chan);
-				//SB_NoteOff(chan, ch_data.event_table[chan].note % 12, ch_data.event_table[chan].note / 12);
-				A2M_ProcessEffects(ch_data.event_table[chan], 0, chan);
-				A2M_ProcessEffects(ch_data.event_table[chan], 1, chan);
-				A2M_UpdateEffectsSlot(0, chan);
-				A2M_UpdateEffectsSlot(1, chan);
-				A2M_NewProcessNote(ch_data.event_table[chan], chan);
-			}
-			song.ticklooper = 0;
-			song.stop = true;
-		}
+		song.stop = true;
 	}
 }

@@ -127,7 +127,7 @@ void VGA_HideCursor(void) {
  */
 void VGA_SetPalette(byte *palette) {
 	int i;
-	memcpy(gfxPaletteShown, palette, 255 * 3);
+	memcpy(gfx.palette_shown, palette, 255 * 3);
 	outportb(VGA_PALETTE_INDEX_WR, 0);
 	for (i = 0; i < 255 * 3; i++) {
 		outportb(VGA_PALETTE_DATA, palette[i]);// Set the 256 palette colors
@@ -234,37 +234,37 @@ void VGA_ClearScreen(void) {
 void VGA_FadeIn(int speed) {
 	volatile int i;
 	volatile int step, max_steps;
-	memset(gfxPaletteShown, 0, 255 * 3);
+	memset(gfx.palette_shown, 0, 255 * 3);
 
 	VGA_VSync();
 	// Set black palette for the first cycle
 
-	VGA_SetPalette(gfxPaletteShown);
+	VGA_SetPalette(gfx.palette_shown);
 
 	max_steps = (64 / speed) - 1;
 	step = 0;
 	while (step < max_steps) {
 		for (i = 0; i < 255 * 3; i++) {
-			gfxPaletteShown[i] += speed;
-			if (gfxPaletteShown[i] > gfxPaletteLoaded[i]) {
-				gfxPaletteShown[i] = gfxPaletteLoaded[i];
+			gfx.palette_shown[i] += speed;
+			if (gfx.palette_shown[i] > gfx.palette_loaded[i]) {
+				gfx.palette_shown[i] = gfx.palette_loaded[i];
 			}
-			gfxPaletteShown[i + 1] += speed;
-			if (gfxPaletteShown[i + 1] > gfxPaletteLoaded[i + 1]) {
-				gfxPaletteShown[i + 1] = gfxPaletteLoaded[i + 1];
+			gfx.palette_shown[i + 1] += speed;
+			if (gfx.palette_shown[i + 1] > gfx.palette_loaded[i + 1]) {
+				gfx.palette_shown[i + 1] = gfx.palette_loaded[i + 1];
 			}
-			gfxPaletteShown[i + 2] += speed;
-			if (gfxPaletteShown[i + 2] > gfxPaletteLoaded[i + 2]) {
-				gfxPaletteShown[i + 2] = gfxPaletteLoaded[i + 2];
+			gfx.palette_shown[i + 2] += speed;
+			if (gfx.palette_shown[i + 2] > gfx.palette_loaded[i + 2]) {
+				gfx.palette_shown[i + 2] = gfx.palette_loaded[i + 2];
 			}
 		}
 		VGA_VSync();
-		VGA_SetPalette(gfxPaletteShown);
+		VGA_SetPalette(gfx.palette_shown);
 		step++;
 	}
 
-	VGA_SetPalette(gfxPaletteLoaded);
-	memcpy(gfxPaletteShown, gfxPaletteLoaded, 255 * 3);
+	VGA_SetPalette(gfx.palette_loaded);
+	memcpy(gfx.palette_shown, gfx.palette_loaded, 255 * 3);
 }
 
 /** VGA :: Syncronous fade in
@@ -272,23 +272,26 @@ void VGA_FadeIn(int speed) {
 bool VGA_FadeIn_Async(int speed, int *step) {
 	volatile int i;
 	volatile int sp;
+	volatile int max_steps;
 
 	sp = speed;
 	if (sp > 4) { sp = 4; }
+	if (sp < 1) { sp = 1; }
+	max_steps = 8;
 
-	if (*step < (sp << 4)) {
+	if (*step <= max_steps) {
 		for (i = 0; i < 256 * 3; i++) {
-			gfxPaletteShown[i] += gfxPaletteLoaded[i] >> (5 - sp);
-			if (gfxPaletteShown[i] > gfxPaletteLoaded[i]) {
-				gfxPaletteShown[i] = gfxPaletteLoaded[i];
+			gfx.palette_shown[i] += gfx.palette_loaded[i] >> (max_steps - *step);
+			if (gfx.palette_shown[i] > gfx.palette_loaded[i]) {
+				gfx.palette_shown[i] = gfx.palette_loaded[i];
 			}
 		}
-		VGA_SetPalette(gfxPaletteShown);
+		VGA_SetPalette(gfx.palette_shown);
 		*step = *step + 1;
 		return false;
+	} else {
+		return true;
 	}
-
-	return true;
 }
 
 /** VGA :: Syncronous fade out
@@ -296,38 +299,102 @@ bool VGA_FadeIn_Async(int speed, int *step) {
 void VGA_FadeOut(int speed) {
 	volatile int i;
 	volatile int step, max_steps;
-	memcpy(gfxPaletteLoaded, gfxPaletteShown, 255 * 3);
+	memcpy(gfx.palette_loaded, gfx.palette_shown, 255 * 3);
 
 	VGA_VSync();
-	VGA_SetPalette(gfxPaletteShown);
+	VGA_SetPalette(gfx.palette_shown);
 
 	max_steps = (64 / speed) - 1;
 	step = 0;
 	while (step < max_steps) {
 		for (i = 0; i < 255 * 3; i++) {
-			if ((gfxPaletteShown[i] - speed) > 0) {
-				gfxPaletteShown[i] -= speed;
+			if ((gfx.palette_shown[i] - speed) > 0) {
+				gfx.palette_shown[i] -= speed;
 			} else {
-				gfxPaletteShown[i] = 0;
+				gfx.palette_shown[i] = 0;
 			}
-			if ((gfxPaletteShown[i + 1] - speed) > 0) {
-				gfxPaletteShown[i + 1] -= speed;
+			if ((gfx.palette_shown[i + 1] - speed) > 0) {
+				gfx.palette_shown[i + 1] -= speed;
 			} else {
-				gfxPaletteShown[i + 1] = 0;
+				gfx.palette_shown[i + 1] = 0;
 			}
-			if ((gfxPaletteShown[i + 2] - speed) > 0) {
-				gfxPaletteShown[i + 2] -= speed;
+			if ((gfx.palette_shown[i + 2] - speed) > 0) {
+				gfx.palette_shown[i + 2] -= speed;
 			} else {
-				gfxPaletteShown[i + 2] = 0;
+				gfx.palette_shown[i + 2] = 0;
 			}
 		}
 		VGA_VSync();
-		VGA_SetPalette(gfxPaletteShown);
+		VGA_SetPalette(gfx.palette_shown);
 		step++;
 	}
 
-	memset(gfxPaletteShown, 0, 255 * 3);
-	VGA_SetPalette(gfxPaletteShown);
+	memset(gfx.palette_shown, 0, 255 * 3);
+	VGA_SetPalette(gfx.palette_shown);
+}
+
+
+/** VGA :: Syncronous fade out
+ */
+bool VGA_FadeOut_Async(int speed, int *step) {
+	volatile int i;
+	volatile int sp;
+	volatile int max_steps;
+
+	sp = speed;
+	if (sp > 4) { sp = 4; }
+	if (sp < 1) { sp = 1; }
+	max_steps = 8;
+
+	if (*step <= max_steps) {
+		for (i = 0; i < 256 * 3; i++) {
+			gfx.palette_shown[i] -= gfx.palette_shown[i] >> (max_steps - *step);
+			if (gfx.palette_shown[i] < 0) {
+				gfx.palette_shown[i] = 0;
+			}
+		}
+		*step = *step + 1;
+		return false;
+	} else {
+		return true;
+	}
+
+
+	/*volatile int i;
+	volatile int sp;
+
+	sp = speed;
+	if (sp > 4) { sp = 4; }
+
+	if (*step < (sp << 4)) {
+		memcpy(gfx.palette_loaded, gfx.palette_shown, 255 * 3);
+
+		VGA_VSync();
+		VGA_SetPalette(gfx.palette_shown);
+
+		for (i = 0; i < 255 * 3; i++) {
+			if ((gfx.palette_shown[i] - speed) > 0) {
+				gfx.palette_shown[i] -= speed;
+			} else {
+				gfx.palette_shown[i] = 0;
+			}
+			if ((gfx.palette_shown[i + 1] - speed) > 0) {
+				gfx.palette_shown[i + 1] -= speed;
+			} else {
+				gfx.palette_shown[i + 1] = 0;
+			}
+			if ((gfx.palette_shown[i + 2] - speed) > 0) {
+				gfx.palette_shown[i + 2] -= speed;
+			} else {
+				gfx.palette_shown[i + 2] = 0;
+			}
+		}
+		VGA_VSync();
+		VGA_SetPalette(gfx.palette_shown);
+		step++;
+		return false;
+	}*/
+	//return true;
 }
 
 /////////////////////////////////////////////////////////
@@ -336,7 +403,7 @@ void VGA_FadeOut(int speed) {
 // - Rotates colors just one by one
 /////////////////////////////////////////////////////////
 void VGA_RotatePaletteAsync(int index1, int index2) {
-	int j;
+	int i;
 	int colors;
 
 	unsigned char auxColorR;
@@ -348,23 +415,23 @@ void VGA_RotatePaletteAsync(int index1, int index2) {
 	colors = index2 - index1;
 
 	// first thing first...save last index colour
-	auxColorR = gfxPaletteShown[lastIndex];
-	auxColorG = gfxPaletteShown[lastIndex + 1];
-	auxColorB = gfxPaletteShown[lastIndex + 2];
+	auxColorR = gfx.palette_shown[lastIndex];
+	auxColorG = gfx.palette_shown[lastIndex + 1];
+	auxColorB = gfx.palette_shown[lastIndex + 2];
 
 	// rotate all colors
-	for (j = 0; j < colors; j++) {
-		gfxPaletteShown[lastIndex - (j * 3)] = gfxPaletteShown[lastIndex - (j * 3) - 3];
-		gfxPaletteShown[lastIndex - (j * 3) + 1] = gfxPaletteShown[lastIndex - (j * 3) - 2];
-		gfxPaletteShown[lastIndex - (j * 3) + 2] = gfxPaletteShown[lastIndex - (j * 3) - 1];
+	for (i = 0; i < colors; i++) {
+		gfx.palette_shown[lastIndex - (i * 3)] = gfx.palette_shown[lastIndex - (i * 3) - 3];
+		gfx.palette_shown[lastIndex - (i * 3) + 1] = gfx.palette_shown[lastIndex - (i * 3) - 2];
+		gfx.palette_shown[lastIndex - (i * 3) + 2] = gfx.palette_shown[lastIndex - (i * 3) - 1];
 	}
 
 	// restore last index colour on first index
-	gfxPaletteShown[firstIndex] = auxColorR;
-	gfxPaletteShown[firstIndex + 1] = auxColorG;
-	gfxPaletteShown[firstIndex + 2] = auxColorB;
+	gfx.palette_shown[firstIndex] = auxColorR;
+	gfx.palette_shown[firstIndex + 1] = auxColorG;
+	gfx.palette_shown[firstIndex + 2] = auxColorB;
 
-	VGA_SetPalette(gfxPaletteShown);
+	VGA_SetPaletteRange(gfx.palette_shown, index1, index2);
 }
 
 
@@ -395,23 +462,23 @@ void VGA_RotatePalette(int index1, int index2, int speed) {
 	for (i = 0; i <= iterances; i++) {
 
 		// first thing first...save last index colour
-		auxColorR = gfxPaletteShown[lastIndex];
-		auxColorG = gfxPaletteShown[lastIndex + 1];
-		auxColorB = gfxPaletteShown[lastIndex + 2];
+		auxColorR = gfx.palette_shown[lastIndex];
+		auxColorG = gfx.palette_shown[lastIndex + 1];
+		auxColorB = gfx.palette_shown[lastIndex + 2];
 
 		// rotate all colors
 		for (j = 0; j < colors; j++) {
-			gfxPaletteShown[lastIndex - (j * 3)] = gfxPaletteShown[lastIndex - (j * 3) - 3];
-			gfxPaletteShown[lastIndex - (j * 3) + 1] = gfxPaletteShown[lastIndex - (j * 3) - 2];
-			gfxPaletteShown[lastIndex - (j * 3) + 2] = gfxPaletteShown[lastIndex - (j * 3) - 1];
+			gfx.palette_shown[lastIndex - (j * 3)] = gfx.palette_shown[lastIndex - (j * 3) - 3];
+			gfx.palette_shown[lastIndex - (j * 3) + 1] = gfx.palette_shown[lastIndex - (j * 3) - 2];
+			gfx.palette_shown[lastIndex - (j * 3) + 2] = gfx.palette_shown[lastIndex - (j * 3) - 1];
 		}
 
 		// restore last index colour on first index
-		gfxPaletteShown[firstIndex] = auxColorR;
-		gfxPaletteShown[firstIndex + 1] = auxColorG;
-		gfxPaletteShown[firstIndex + 2] = auxColorB;
+		gfx.palette_shown[firstIndex] = auxColorR;
+		gfx.palette_shown[firstIndex + 1] = auxColorG;
+		gfx.palette_shown[firstIndex + 2] = auxColorB;
 
-		VGA_SetPalette(gfxPaletteShown);
+		VGA_SetPalette(gfx.palette_shown);
 
 		waitcounter = 0;
 		while (waitcounter < waitcount) {

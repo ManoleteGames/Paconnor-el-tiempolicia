@@ -12,6 +12,21 @@ static _go32_dpmi_seginfo old_handler_13, new_handler_13;
 static _go32_dpmi_seginfo old_handler_15, new_handler_15;
 
 
+//List of FNumbers
+const word FNr[12] = {
+		/*C*/ 343,
+		/*C#/Db*/ 363,
+		/*D*/ 385,
+		/*D#/Eb*/ 408,
+		/*E*/ 432,
+		/*F*/ 458,
+		/*F#/Gb*/ 485,
+		/*G*/ 514,
+		/*G#/Ab*/ 544,
+		/*A*/ 577,
+		/*A#/Bb*/ 611,
+		/*B*/ 647};
+
 /** SB :: Reset DSP
  *  - Check if there is a sound blaster
  */

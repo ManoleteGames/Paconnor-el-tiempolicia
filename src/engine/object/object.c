@@ -120,6 +120,12 @@ void OBJECT_LoadObject(byte number, byte entity_id, byte graphics_id, int pos_x,
 			object[number].steps = 12;
 			object[number].current_step = 1;
 			break;
+		case ENTITY_ID_BTN:
+			object[number].max_life = 1;
+			object[number].life = 1;
+			object[number].steps = 2;
+			object[number].current_step = 1;
+			break;
 		default:
 			sprintf(engine.system_error_message1, "GFX_LoadObject function error");
 			sprintf(engine.system_error_message2, "Unknown object type %u ", entity_id);
@@ -156,7 +162,7 @@ void OBJECT_UpdateObjects(void) {
 						// Check if hit by actor bullet and update enemy panel
 						switch (object[i].hit_by) {
 							case ENTITY_ID_ACTOR_BULLET:
-								GFX_SetPanelGraphics(&gfx_enemy_status_panel, SPRITE_GRAPHICS_ID_BARREL2_PORTAIT, SPRITE_GRAPHICS_ID_LIFEBAR);
+								GFX_SetPanelGraphics(&gfx_enemy_status_panel, SPRITE_GRAPHICS_ID_BARREL1_PORTAIT, SPRITE_GRAPHICS_ID_LIFEBAR);
 								GFX_UpdatePanel(&gfx_enemy_status_panel, object[i].life, object[i].life + object[i].damage, object[i].max_life, 1);
 								gfx_enemy_status_panel.shown = true;
 								break;
@@ -175,12 +181,12 @@ void OBJECT_UpdateObjects(void) {
 							gfx_sprite_stack[sprite_num].animation_end = false;
 							gfx_sprite_stack[sprite_num].entity_id = ENTITY_ID_EXPLOSION;
 							gfx_sprite_stack[sprite_num].id = ENTITY_ID_EXPLOSION << 8 | i;
-							PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_FIRE1, object[i].pos_x - 8, object[i].pos_y + 16, object[i].pos_x - 10, object[i].pos_y, 1, 10);
-							PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_FIRE1, object[i].pos_x - 8, object[i].pos_y + 16, object[i].pos_x - 16, object[i].pos_y + 16, 1, 10);
-							PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_FIRE1, object[i].pos_x - 8, object[i].pos_y + 16, object[i].pos_x - 10, object[i].pos_y + 32, 1, 10);
-							PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_FIRE1, object[i].pos_x + 18, object[i].pos_y + 8, object[i].pos_x + 21, object[i].pos_y, 1, 10);
-							PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_FIRE1, object[i].pos_x + 18, object[i].pos_y + 16, object[i].pos_x + 24, object[i].pos_y + 16, 1, 10);
-							PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_FIRE1, object[i].pos_x + 18, object[i].pos_y + 32, object[i].pos_x + 21, object[i].pos_y + 32, 1, 10);
+							PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_FIRE1, ENTITY_ID_EXPLOSION, object[i].pos_x - 8, object[i].pos_y + 16, object[i].pos_x - 10, object[i].pos_y, 1, 10);
+							PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_FIRE1, ENTITY_ID_EXPLOSION, object[i].pos_x - 8, object[i].pos_y + 16, object[i].pos_x - 16, object[i].pos_y + 16, 1, 10);
+							PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_FIRE1, ENTITY_ID_EXPLOSION, object[i].pos_x - 8, object[i].pos_y + 16, object[i].pos_x - 10, object[i].pos_y + 32, 1, 10);
+							PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_FIRE1, ENTITY_ID_EXPLOSION, object[i].pos_x + 18, object[i].pos_y + 8, object[i].pos_x + 21, object[i].pos_y, 1, 10);
+							PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_FIRE1, ENTITY_ID_EXPLOSION, object[i].pos_x + 18, object[i].pos_y + 16, object[i].pos_x + 24, object[i].pos_y + 16, 1, 10);
+							PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_FIRE1, ENTITY_ID_EXPLOSION, object[i].pos_x + 18, object[i].pos_y + 32, object[i].pos_x + 21, object[i].pos_y + 32, 1, 10);
 
 							GFX_SetPanelPortait(&gfx_enemy_status_panel, 2);
 						}
@@ -208,5 +214,12 @@ void OBJECT_UpdateObjects(void) {
 					break;
 			}
 		}
+	}
+}
+
+void OBJECT_UnloadObjects(void) {
+	int i;
+	for (i = 0; i < OBJECT_MAX_OBJECTS; i++) {
+		object[i].is_loaded = false;
 	}
 }

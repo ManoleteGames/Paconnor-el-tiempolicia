@@ -12,8 +12,6 @@ Video video;
  *  - Allocate video memory
  */
 void VIDEO_Init(void) {
-	printf(" Initializing Video... \n");
-
 	video.selected_mode = 1;// Default to VGA
 
 	switch (video.selected_mode) {
@@ -47,22 +45,58 @@ void VIDEO_Init(void) {
 	}
 
 	// Reserve RAM memory for screen buffers
-	video.screen_buffer[VIDEO_SCREEN_BUFFER_BACK] = MM_PushChunk(video.screen_width * video.screen_height, CT_VIDEO_BUFFER);
-	video.screen_buffer[VIDEO_SCREEN_BUFFER_FORE] = MM_PushChunk(video.screen_width * video.screen_height, CT_VIDEO_BUFFER);
-	video.screen_buffer[VIDEO_SCREEN_BUFFER_MASK] = MM_PushChunk(video.screen_width * video.screen_height, CT_VIDEO_BUFFER);
-
-	// Reserve RAM memory for screen map chunks
-	video.screen_chunks_buffer[MAP_BACKGROUND_LAYER] = MM_PushChunk(32 * VIDEO_MAP_BUFFER_HEIGHT, CT_VIDEO_BUFFER);
-	video.screen_chunks_buffer[MAP_FOREGROUND_LAYER] = MM_PushChunk(32 * VIDEO_MAP_BUFFER_HEIGHT, CT_VIDEO_BUFFER);
-	video.screen_chunks_buffer[MAP_MASK_LAYER] = MM_PushChunk(32 * VIDEO_MAP_BUFFER_HEIGHT, CT_VIDEO_BUFFER);
+	video.screen_buffer[VIDEO_SCREEN_BUFFER_BACK] = MM_PushChunk(video.screen_width * video.screen_height, CT_ENGINE);
+	video.screen_buffer[VIDEO_SCREEN_BUFFER_FORE] = MM_PushChunk(video.screen_width * video.screen_height, CT_ENGINE);
+	video.screen_buffer[VIDEO_SCREEN_BUFFER_MASK] = MM_PushChunk(video.screen_width * video.screen_height, CT_ENGINE);
 
 	// Map buffers
 	video.map_buffer_width = VIDEO_MAP_BUFFER_WIDTH;
 	video.map_buffer_height = VIDEO_MAP_BUFFER_HEIGHT;
 	// Reserve RAM memory for map buffers
-	video.map_buffer[MAP_BACKGROUND_LAYER] = MM_PushChunk(VIDEO_MAP_BUFFER_WIDTH * VIDEO_MAP_BUFFER_HEIGHT, CT_VIDEO_BUFFER);
-	video.map_buffer[MAP_FOREGROUND_LAYER] = MM_PushChunk(VIDEO_MAP_BUFFER_WIDTH * VIDEO_MAP_BUFFER_HEIGHT, CT_VIDEO_BUFFER);
-	video.map_buffer[MAP_MASK_LAYER] = MM_PushChunk(VIDEO_MAP_BUFFER_WIDTH * VIDEO_MAP_BUFFER_HEIGHT, CT_VIDEO_BUFFER);
+	video.map_buffer[MAP_BACKGROUND_LAYER] = MM_PushChunk(VIDEO_MAP_BUFFER_WIDTH * VIDEO_MAP_BUFFER_HEIGHT, CT_ENGINE);
+	video.map_buffer[MAP_FOREGROUND_LAYER] = MM_PushChunk(VIDEO_MAP_BUFFER_WIDTH * VIDEO_MAP_BUFFER_HEIGHT, CT_ENGINE);
+	video.map_buffer[MAP_MASK_LAYER] = MM_PushChunk(VIDEO_MAP_BUFFER_WIDTH * VIDEO_MAP_BUFFER_HEIGHT, CT_ENGINE);
+}
+
+/** VIDEO :: Video timer callback
+ */
+void VIDEO_TimerHandler(void) {
+	// Depending on the video mode, call the correct function
+	switch (video.selected_mode) {
+		case 0:// EGA
+
+			break;
+		case 1:// VGA
+			// Asyncronous fade in activated
+			if (video.fading_in_async) {
+				if (VGA_FadeIn_Async(video.fading_speed, &video.fading_step)) {
+					video.faded_in = true;
+					video.fading_in_async = false;
+				}
+			}
+
+			if (video.fading_out_async) {
+				if (VGA_FadeOut_Async(video.fading_speed, &video.fading_step)) {
+					video.faded_out = true;
+					video.fading_out_async = false;
+				}
+			}
+
+			if (video.rotate_palette_async) {
+				VGA_RotatePaletteAsync(video.rotate_first_index, video.rotate_last_index);
+			}
+
+			break;
+		case 2:// CGA
+
+			break;
+		default:
+			sprintf(engine.system_error_message1, "VIDEO_TimerHandler function error");
+			sprintf(engine.system_error_message2, "Unknown video mode selected");
+			sprintf(engine.system_error_message3, " ");
+			Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_VIDEO);
+			break;
+	}
 }
 
 /** VIDEO :: Shutdown video system
@@ -79,7 +113,6 @@ void (*VIDEO_VSync)(void);
 /** VIDEO :: Text image on Video memory
  *  - Loads a binary file and print it directly on video memory
  */
-/** Load and display specified text-mode screen */
 void VIDEO_BinaryImageToVRAM(const char *dat_name, const char *asset_name) {
 	system("cls");
 	FILE_LoadBinaryImage(dat_name, asset_name, EGA);
@@ -93,7 +126,7 @@ void VIDEO_PCXImageToVRAM(const char *dat_name, const char *asset_name, int size
 	word width, height;
 
 	byte *data_loaded = MM_PushChunk(size, CT_TEMPORARY);
-	FILE_LoadPCXImage(dat_name, asset_name, data_loaded, size, gfxPaletteLoaded, &width, &height);
+	FILE_LoadPCXImage(dat_name, asset_name, data_loaded, size, &width, &height);
 
 	// Depending on the video mode, call the correct function
 	switch (video.selected_mode) {
@@ -214,645 +247,6 @@ void VIDEO_MapBufferToScreenBuffer(void) {
 	}
 }
 
-void VIDEO_MapLayerToScreenBuffer_Parallax(CameraParallax cam, int layer, int scanline_start, int scanline_end) {
-	int i, j, k;
-	int src_index, dst_index;
-	int tile_index;
-	int break_point_x;
-	int length1, length2;
-	byte *s, *d;
-	int tile;
-	int tile_counter;
-	int solid_counter, transparent_counter, no_print_counter;
-	int print_command[32];
-	int print_command_index;
-
-	break_point_x = cam.pos_abs_x;
-
-	if ((CAM_VISIBLE_WIDTH + break_point_x) <= video.map_buffer_width) {
-		length1 = CAM_VISIBLE_WIDTH;
-		length2 = CAM_VISIBLE_WIDTH - length1;
-	} else {
-		length1 = CAM_VISIBLE_WIDTH - ((CAM_VISIBLE_WIDTH + break_point_x) - video.map_buffer_width);
-		length2 = CAM_VISIBLE_WIDTH - length1;
-	}
-
-	// Get scanline print command
-	for (i = scanline_start; i < scanline_end; i++) {
-		tile_counter = 0;
-		print_command_index = 0;
-		transparent_counter = 0;
-		solid_counter = 0;
-		no_print_counter = 0;
-
-		while (tile_counter < (length1 >> 4)) {
-			tile_index = ((i >> 4) * (map.width)) + (cam.pos_x >> 4) + tile_counter;
-			tile = map.layer[layer][tile_index];
-			if (tile_counter == 0) {
-				print_command[print_command_index] = 1;
-				print_command_index++;
-				print_command[print_command_index] = 16 - cam.tile_offset_x;
-				print_command_index++;
-			}
-			if ((tile_counter > 0) && (tile_counter < (length1 - 2))) {
-				switch ((tile >> 14) & 0x03) {
-					case 0:// solid
-						if (transparent_counter != 0) {
-							print_command[print_command_index] = 1;
-							print_command_index++;
-							print_command[print_command_index] = transparent_counter;
-							print_command_index++;
-							transparent_counter = 0;
-						}
-						if (no_print_counter != 0) {
-							print_command[print_command_index] = 2;
-							print_command_index++;
-							print_command[print_command_index] = no_print_counter;
-							print_command_index++;
-							no_print_counter = 0;
-						}
-						solid_counter += 16;
-						break;
-					case 1:// transparent
-						if (solid_counter != 0) {
-							print_command[print_command_index] = 0;
-							print_command_index++;
-							print_command[print_command_index] = solid_counter;
-							print_command_index++;
-							solid_counter = 0;
-						}
-						if (no_print_counter != 0) {
-							print_command[print_command_index] = 2;
-							print_command_index++;
-							print_command[print_command_index] = no_print_counter;
-							print_command_index++;
-							no_print_counter = 0;
-						}
-						transparent_counter += 16;
-						break;
-					case 2:// no print
-						if (transparent_counter != 0) {
-							print_command[print_command_index] = 1;
-							print_command_index++;
-							print_command[print_command_index] = transparent_counter;
-							print_command_index++;
-							transparent_counter = 0;
-						}
-						if (solid_counter != 0) {
-							print_command[print_command_index] = 0;
-							print_command_index++;
-							print_command[print_command_index] = solid_counter;
-							print_command_index++;
-							solid_counter = 0;
-						}
-						no_print_counter += 16;
-						break;
-					case 3:// no print neither
-						Error("Tile type not defined ", "", "", tile);
-						break;
-					default:
-						Error("Unknown map code", "", "", (tile >> 14) & 0x03);
-						break;
-				}
-			}
-			if (tile_counter == ((length1 >> 4) - 1)) {
-				print_command[print_command_index] = 1;
-				print_command_index++;
-				print_command[print_command_index] = cam.tile_offset_x;
-				print_command_index++;
-			}
-			tile_counter++;
-		}
-		if (solid_counter != 0) {
-			print_command[print_command_index] = 0;
-			print_command_index++;
-			print_command[print_command_index] = solid_counter;
-			print_command_index++;
-			solid_counter = 0;
-		}
-		if (no_print_counter != 0) {
-			print_command[print_command_index] = 2;
-			print_command_index++;
-			print_command[print_command_index] = no_print_counter;
-			print_command_index++;
-			no_print_counter = 0;
-		}
-		if (transparent_counter != 0) {
-			print_command[print_command_index] = 1;
-			print_command_index++;
-			print_command[print_command_index] = transparent_counter;
-			print_command_index++;
-			transparent_counter = 0;
-		}
-		print_command[print_command_index] = 99;// end of commands
-
-		// Print
-		src_index = (i * video.map_buffer_width) + break_point_x;
-		dst_index = i * CAM_VISIBLE_WIDTH;
-
-		s = &video.map_buffer[layer][src_index];
-		d = &video.screen_buffer[VIDEO_SCREEN_BUFFER_BACK][dst_index];
-
-		print_command_index = 0;
-		while (print_command[print_command_index] != 99) {
-			switch (print_command[print_command_index]) {
-				case 0:// solid
-					memcpy(d, s, print_command[print_command_index + 1] << 4);
-					s += print_command[print_command_index + 1];
-					d += print_command[print_command_index + 1];
-					break;
-				case 1:// transparent
-					for (k = 0; k < print_command[print_command_index + 1]; k++) {
-						if (*s) {
-							*d++ = *s++;
-						} else {
-							s++;
-							d++;
-						}
-					}
-					break;
-				case 2:// no print
-					s += print_command[print_command_index + 1];
-					d += print_command[print_command_index + 1];
-					break;
-				case 99:// end
-					break;
-			}
-			print_command_index += 2;
-		}
-
-		// second side
-		/*tile_counter = 0;
-		print_command_index = 0;
-		transparent_counter = 0;
-		solid_counter = 0;
-		no_print_counter = 0;
-
-		while (tile_counter < (length2 >> 4)) {
-			tile_index = ((i >> 4) * (map.width)) + ((cam.pos_x + length1) >> 4) + tile_counter;
-			tile = map.layer[layer][tile_index];
-			tile_counter++;
-			switch ((tile >> 14) & 0x03) {
-				case 0:// solid
-					if (transparent_counter != 0) {
-						print_command[print_command_index] = 0;
-						print_command_index++;
-						print_command[print_command_index] = transparent_counter;
-						print_command_index++;
-					}
-					if (no_print_counter != 0) {
-						print_command[print_command_index] = 2;
-						print_command_index++;
-						print_command[print_command_index] = no_print_counter;
-						print_command_index++;
-					}
-					if (solid_counter == 0) {
-						print_command[print_command_index] = 0;
-						print_command_index++;
-					}
-
-					solid_counter++;
-					break;
-				case 1:// transparent
-					if (solid_counter != 0) {
-						print_command[print_command_index] = 0;
-						print_command_index++;
-						print_command[print_command_index] = solid_counter;
-						print_command_index++;
-					}
-					if (no_print_counter != 0) {
-						print_command[print_command_index] = 2;
-						print_command_index++;
-						print_command[print_command_index] = no_print_counter;
-						print_command_index++;
-					}
-					if (transparent_counter == 0) {
-						print_command[print_command_index] = 1;
-						print_command_index++;
-					}
-					transparent_counter++;
-					break;
-				case 2:// no print
-					if (transparent_counter != 0) {
-						print_command[print_command_index] = 1;
-						print_command_index++;
-						print_command[print_command_index] = transparent_counter;
-						print_command_index++;
-					}
-					if (solid_counter != 0) {
-						print_command[print_command_index] = 0;
-						print_command_index++;
-						print_command[print_command_index] = solid_counter;
-						print_command_index++;
-					}
-					if (no_print_counter == 0) {
-						print_command[print_command_index] = 2;
-						print_command_index++;
-					}
-					no_print_counter++;
-					break;
-				case 3:// no print neither
-					if (transparent_counter != 0) {
-						print_command[print_command_index] = 1;
-						print_command_index++;
-						print_command[print_command_index] = transparent_counter;
-						print_command_index++;
-					}
-					if (solid_counter != 0) {
-						print_command[print_command_index] = 0;
-						print_command_index++;
-						print_command[print_command_index] = solid_counter;
-						print_command_index++;
-					}
-					if (no_print_counter == 0) {
-						print_command[print_command_index] = 2;
-						print_command_index++;
-					}
-					no_print_counter++;
-					break;
-				default:
-					Error("Unknown map code", "", "", (tile >> 14) & 0x03);
-					break;
-			}
-		}
-		if (solid_counter != 0) {
-			print_command[print_command_index] = solid_counter;
-			print_command_index++;
-		}
-		if (no_print_counter != 0) {
-			print_command[print_command_index] = no_print_counter;
-			print_command_index++;
-		}
-		if (transparent_counter != 0) {
-			print_command[print_command_index] = transparent_counter;
-			print_command_index++;
-		}
-		print_command[print_command_index] = 99;// end of commands
-
-		// Print
-		src_index = (i * video.map_buffer_width);
-		dst_index = (i * CAM_VISIBLE_WIDTH) + length1;
-
-		s = &video.map_buffer[layer][src_index];
-		d = &video.screen_buffer[VIDEO_SCREEN_BUFFER_BACK][dst_index];
-
-		print_command_index = 0;
-		while (print_command[print_command_index] != 99) {
-			switch (print_command[print_command_index]) {
-				case 0:// solid
-					memcpy(d, s, print_command[print_command_index + 1] << 4);
-					s += print_command[print_command_index + 1] << 4;
-					d += print_command[print_command_index + 1] << 4;
-					break;
-				case 1:// transparent
-					for (k = 0; k < print_command[print_command_index + 1] << 4; k++) {
-						if (*s) {
-							*d++ = *s++;
-						} else {
-							s++;
-							d++;
-						}
-					}
-					break;
-				case 2:// no print
-					s += print_command[print_command_index + 1] << 4;
-					d += print_command[print_command_index + 1] << 4;
-					break;
-				case 99:// end
-					break;
-			}
-			print_command_index += 2;
-		}*/
-
-		/*
-
-		// Second side
-		src_index = (i * video.map_buffer_width);
-		dst_index = (i * CAM_VISIBLE_WIDTH) + length1;
-
-		s = &video.map_buffer[layer][src_index];
-		d = &video.screen_buffer[VIDEO_SCREEN_BUFFER_BACK][dst_index];
-
-		memcpy(d, s, length2);
-
-		break_point_y++;
-		if (break_point_y >= video.map_buffer_height) {
-			break_point_y = 0;
-		}*/
-	}
-}
-
-/** VIDEO :: Fills screen buffer with the data on the current cam position
- */
-void VIDEO_MapBufferToScreenBuffer_Paralax(void) {
-	int i, j, k;
-	int src_index, dst_index;
-	int tile_index;
-	int break_point_x, break_point_y;
-	int length1, length2;
-	byte *s, *d;
-	int tile;
-	int tile_counter;
-
-	// 1st. Layer
-	/*break_point_x = cam_parallax[0].pos_abs_x;
-	break_point_y = cam_parallax[0].pos_abs_y;
-
-	if ((CAM_VISIBLE_WIDTH + break_point_x) <= video.map_buffer_width) {
-		length1 = CAM_VISIBLE_WIDTH;
-		length2 = CAM_VISIBLE_WIDTH - length1;
-	} else {
-		length1 = CAM_VISIBLE_WIDTH - ((CAM_VISIBLE_WIDTH + break_point_x) - video.map_buffer_width);
-		length2 = CAM_VISIBLE_WIDTH - length1;
-	}
-
-	for (i = 0; i < camera.visible_height; i++) {
-
-		// First side
-		src_index = (i * video.map_buffer_width) + break_point_x;
-		dst_index = i * CAM_VISIBLE_WIDTH;
-
-		s = &video.map_buffer[MAP_BACKGROUND_LAYER][src_index];
-		d = &video.screen_buffer[VIDEO_SCREEN_BUFFER_BACK][dst_index];
-
-		memcpy(d, s, length1);
-
-		// Second side
-		src_index = (i * video.map_buffer_width);
-		dst_index = (i * CAM_VISIBLE_WIDTH) + length1;
-
-		s = &video.map_buffer[MAP_BACKGROUND_LAYER][src_index];
-		d = &video.screen_buffer[VIDEO_SCREEN_BUFFER_BACK][dst_index];
-
-		memcpy(d, s, length2);
-
-		break_point_y++;
-		if (break_point_y >= video.map_buffer_height) {
-			break_point_y = 0;
-		}
-	}*/
-
-	VIDEO_MapLayerToScreenBuffer_Parallax(cam_parallax[0], MAP_BACKGROUND_LAYER, 0, 208);
-	VIDEO_MapLayerToScreenBuffer_Parallax(cam_parallax[1], MAP_FOREGROUND_LAYER, 16, 160);
-
-	return;
-
-	// 2nd. Layer
-	break_point_x = cam_parallax[1].pos_abs_x;
-	break_point_y = cam_parallax[1].pos_abs_y;
-
-	if ((CAM_VISIBLE_WIDTH + break_point_x) <= video.map_buffer_width) {
-		length1 = CAM_VISIBLE_WIDTH;
-		length2 = CAM_VISIBLE_WIDTH - length1;
-	} else {
-		length1 = CAM_VISIBLE_WIDTH - ((CAM_VISIBLE_WIDTH + break_point_x) - video.map_buffer_width);
-		length2 = CAM_VISIBLE_WIDTH - length1;
-	}
-
-	for (i = 16; i < 160; i++) {
-
-		// First side
-		src_index = (i * video.map_buffer_width) + break_point_x;
-		dst_index = i * CAM_VISIBLE_WIDTH;
-
-		s = &video.map_buffer[MAP_FOREGROUND_LAYER][src_index];
-		d = &video.screen_buffer[VIDEO_SCREEN_BUFFER_BACK][dst_index];
-
-		tile_counter = 0;
-
-		// first tile
-		if (cam_parallax[1].tile_offset_x > 0) {
-			for (k = 0; k < cam_parallax[1].tile_offset_x; k++) {
-				if (*s) {
-					*d++ = *s++;
-				} else {
-					s++;
-					d++;
-				}
-			}
-		} else {
-			for (k = 0; k < 16; k++) {
-				if (*s) {
-					*d++ = *s++;
-				} else {
-					s++;
-					d++;
-				}
-			}
-		}
-		tile_counter++;
-
-		// tiles 2..n
-		while (tile_counter < (length1 >> 4) - 1) {
-			tile_index = ((i >> 4) * (map.width)) + (cam_parallax[1].pos_x >> 4) + tile_counter;
-			tile = map.layer[MAP_FOREGROUND_LAYER][tile_index];
-			tile = 1;
-			switch ((tile >> 14) & 0x03) {
-				case 0:// solid
-					memcpy(d, s, 16);
-					d += 16;
-					s += 16;
-					break;
-				case 1:// transparent
-					for (k = 0; k < 16; k++) {
-						if (*s) {
-							*d++ = *s++;
-						} else {
-							s++;
-							d++;
-						}
-					}
-					break;
-				case 2:// no print
-					d += 16;
-					s += 16;
-					break;
-				default:
-					d += 16;
-					s += 16;
-					break;
-			}
-			tile_counter++;
-		}
-
-		// last tile
-		if (cam_parallax[0].tile_offset_x > 0) {
-			for (k = 0; k < cam_parallax[1].tile_offset_x; k++) {
-				if (*s) {
-					*d++ = *s++;
-				} else {
-					s++;
-					d++;
-				}
-			}
-		} else {
-			for (k = 0; k < 16; k++) {
-				if (*s) {
-					*d++ = *s++;
-				} else {
-					s++;
-					d++;
-				}
-			}
-		}
-		tile_counter++;
-
-		// Second side
-		src_index = (i * video.map_buffer_width);
-		dst_index = (i * CAM_VISIBLE_WIDTH) + length1;
-
-		s = &video.map_buffer[MAP_FOREGROUND_LAYER][src_index];
-		d = &video.screen_buffer[VIDEO_SCREEN_BUFFER_BACK][dst_index];
-
-		// Check tile type
-		for (j = 0; j < (length2 >> 4); j++) {
-			// first tile
-			if (cam_parallax[0].tile_offset_x > 0) {
-				for (k = 0; k < cam_parallax[1].tile_offset_x; k++) {
-					if (*s) {
-						*d++ = *s++;
-					} else {
-						s++;
-						d++;
-					}
-				}
-				tile_counter++;
-			} else {
-				for (k = 0; k < 16; k++) {
-					if (*s) {
-						*d++ = *s++;
-					} else {
-						s++;
-						d++;
-					}
-				}
-				tile_counter++;
-			}
-
-			while (tile_counter < (length1 >> 4) - 1) {
-				tile_index = ((i >> 4) * (map.width)) + (cam_parallax[1].pos_x >> 4) + tile_counter;
-
-				switch ((tile >> 14) & 0x03) {
-					case 0:// solid
-						//memcpy(d, s, 16);
-						d += 16;
-						s += 16;
-						break;
-					case 1:// transparent
-						for (k = 0; k < 16; k++) {
-							if (*s) {
-								*d++ = *s++;
-							} else {
-								s++;
-								d++;
-							}
-						}
-						break;
-					case 2:// no print
-						d += 16;
-						s += 16;
-						break;
-					default:
-						d += 16;
-						s += 16;
-						break;
-				}
-
-				tile_counter++;
-			}
-
-			// last tile
-			if (cam_parallax[0].tile_offset_x > 0) {
-				for (k = 0; k < cam_parallax[1].tile_offset_x; k++) {
-					if (*s) {
-						*d++ = *s++;
-					} else {
-						s++;
-						d++;
-					}
-				}
-				tile_counter++;
-			} else {
-				for (k = 0; k < 16; k++) {
-					if (*s) {
-						*d++ = *s++;
-					} else {
-						s++;
-						d++;
-					}
-				}
-				tile_counter++;
-			}
-		}
-
-		/*for (j = 0; j < length2; j++) {
-			if (*s) {
-				*d++ = *s++;
-			} else {
-				s++;
-				d++;
-			}
-		}*/
-
-		break_point_y++;
-		if (break_point_y >= video.map_buffer_height) {
-			break_point_y = 0;
-		}
-	}
-
-	// 3rd. Layer
-	break_point_x = cam_parallax[2].pos_abs_x;
-	break_point_y = cam_parallax[2].pos_abs_y;
-
-	if ((CAM_VISIBLE_WIDTH + break_point_x) <= video.map_buffer_width) {
-		length1 = CAM_VISIBLE_WIDTH;
-		length2 = CAM_VISIBLE_WIDTH - length1;
-	} else {
-		length1 = CAM_VISIBLE_WIDTH - ((CAM_VISIBLE_WIDTH + break_point_x) - video.map_buffer_width);
-		length2 = CAM_VISIBLE_WIDTH - length1;
-	}
-
-	for (i = 16; i < 160; i++) {
-
-		// First side
-		src_index = (i * video.map_buffer_width) + break_point_x;
-		dst_index = i * CAM_VISIBLE_WIDTH;
-
-		s = &video.map_buffer[MAP_MASK_LAYER][src_index];
-		d = &video.screen_buffer[VIDEO_SCREEN_BUFFER_BACK][dst_index];
-
-		for (j = 0; j < length1; j++) {
-			if (*s) {
-				*d++ = *s++;
-			} else {
-				s++;
-				d++;
-			}
-		}
-
-		// Second side
-		src_index = (i * video.map_buffer_width);
-		dst_index = (i * CAM_VISIBLE_WIDTH) + length1;
-
-		s = &video.map_buffer[MAP_MASK_LAYER][src_index];
-		d = &video.screen_buffer[VIDEO_SCREEN_BUFFER_BACK][dst_index];
-
-		for (j = 0; j < length2; j++) {
-			if (*s) {
-				*d++ = *s++;
-			} else {
-				s++;
-				d++;
-			}
-		}
-
-		break_point_y++;
-		if (break_point_y >= video.map_buffer_height) {
-			break_point_y = 0;
-		}
-	}
-}
-
 /** VIDEO :: PCX Image on Video memory
  *  - Loads a pcx image file and print it directly on video memory
  */
@@ -862,7 +256,7 @@ void VIDEO_PCXImageToScreenBuffer(const char *dat_name, const char *asset_name, 
 	word width, height;
 
 	byte *data_loaded = MM_PushChunk(size, CT_TEMPORARY);
-	FILE_LoadPCXImage(dat_name, asset_name, data_loaded, size, gfxPaletteLoaded, &width, &height);
+	FILE_LoadPCXImage(dat_name, asset_name, data_loaded, size, &width, &height);
 
 	//disable();
 	src_index = 0;
@@ -996,6 +390,78 @@ void VIDEO_PanelToScreenBuffer(StatusPanel *panel) {
 	}
 }
 
+
+/** VIDEO :: Fills screen buffer with the data on the sent data buffer
+ *  - x: Position x on the current screen
+ *  - y: Position y on the current screen
+ *  - width: Width of the status panel
+ *  - height: Height of the status panel
+ */
+void VIDEO_ChatToScreenBuffer(ChatPanel *panel) {
+	int i;
+	int src_index, dst_index;
+	byte *s, *d;
+	byte color, count;
+	bool end_of_scanline;
+
+	// Draw portait
+	src_index = gfx_sprite_graphics_stack[panel->portait_graphics_id].frame_offset[panel->portait_frame];
+	s = &gfx_sprite_graphics_stack[panel->portait_graphics_id].buffer[src_index];
+	dst_index = ((panel->pos_y + panel->portait_y) * video.screen_width) + (panel->pos_x + panel->portait_x);
+	d = &video.screen_buffer[VIDEO_SCREEN_BUFFER_BACK][dst_index];
+
+	for (i = 0; i < gfx_sprite_graphics_stack[panel->portait_graphics_id].height_px; i++) {
+		end_of_scanline = false;
+		while (!end_of_scanline) {
+			color = *s++;
+			switch (color) {
+				case 1:// start of transparent bunch
+					count = *s++;
+					d += count;
+					break;
+				case 0:// end of scanline
+					d += video.screen_width - gfx_sprite_graphics_stack[panel->portait_graphics_id].width_px;
+					end_of_scanline = true;
+					break;
+				default:// just a color!
+					*d++ = color;
+					break;
+			}
+		}
+	}
+
+	// Draw chat box
+	src_index = gfx_sprite_graphics_stack[panel->chat_graphics_id].frame_offset[panel->chat_frame];
+	s = &gfx_sprite_graphics_stack[panel->chat_graphics_id].buffer[src_index];
+	dst_index = ((panel->pos_y + panel->chat_y) * video.screen_width) + (panel->pos_x + panel->chat_x);
+	d = &video.screen_buffer[VIDEO_SCREEN_BUFFER_BACK][dst_index];
+
+	for (i = 0; i < gfx_sprite_graphics_stack[panel->chat_graphics_id].height_px; i++) {
+		end_of_scanline = false;
+		while (!end_of_scanline) {
+			color = *s++;
+			switch (color) {
+				case 1:// start of transparent bunch
+					count = *s++;
+					d += count;
+					break;
+				case 0:// end of scanline
+					d += video.screen_width - gfx_sprite_graphics_stack[panel->chat_graphics_id].width_px;
+					end_of_scanline = true;
+					break;
+				default:// just a color!
+					*d++ = color;
+					break;
+			}
+		}
+	}
+
+	// Draw text
+	VIDEO_StringToScreenBuffer(panel->pos_x + panel->chat_x + 16, panel->pos_y + panel->chat_y + 16, panel->line[0], FONT_SLIM_BLACK);
+	VIDEO_StringToScreenBuffer(panel->pos_x + panel->chat_x + 16, panel->pos_y + panel->chat_y + 32, panel->line[1], FONT_SLIM_BLACK);
+	VIDEO_StringToScreenBuffer(panel->pos_x + panel->chat_x + 16, panel->pos_y + panel->chat_y + 48, panel->line[2], FONT_SLIM_BLACK);
+}
+
 /** VIDEO :: Draw char on screen buffer
  *  - x: Video buffer x pixel position
  *  - y: Video buffer y pixel position
@@ -1028,7 +494,7 @@ void VIDEO_CharToScreenBuffer(int x, int y, word width, word height, byte transp
  *  - length: String length
  *  - string: String data buffer
  */
-void VIDEO_StringToScreenBuffer(int x, int y, int length, unsigned char *string) {
+void VIDEO_StringToScreenBuffer(int x, int y, unsigned char *string, int font_number) {
 	register int i;
 	register int src_index;
 	register int pos_x, pos_y;
@@ -1037,7 +503,7 @@ void VIDEO_StringToScreenBuffer(int x, int y, int length, unsigned char *string)
 	pos_x = x;
 	pos_y = y;
 
-	for (i = 0; i < length; i++) {
+	for (i = 0; i < strlen(string) - 1; i++) {
 		chr = string[i];
 		switch (chr) {
 			case 0xD1:// Ñ
@@ -1053,9 +519,9 @@ void VIDEO_StringToScreenBuffer(int x, int y, int length, unsigned char *string)
 				break;
 		}
 
-		src_index = (chr - 32) << 6;
-		VIDEO_CharToScreenBuffer(pos_x, pos_y, 8, 8, VIDEO_TRANSPARENT_COLOR, &gfxFont[src_index]);
-		pos_x += 8;
+		src_index = (chr - 32) * gfx.font[font_number].char_width * gfx.font[font_number].char_height;
+		VIDEO_CharToScreenBuffer(pos_x, pos_y, gfx.font[font_number].char_width, gfx.font[font_number].char_height, VIDEO_TRANSPARENT_COLOR, &gfx.font[font_number].data[src_index]);
+		pos_x += gfx.font[font_number].char_width - 1;// less 1 to make chars closer
 	}
 }
 
@@ -1250,19 +716,21 @@ void VIDEO_ClearPalette(void) {
 	}
 }
 
-
 /** VIDEO :: Clear screen
  */
 void VIDEO_ClearScreen(void) {
 	// Depending on the video mode, call the correct function
 	switch (video.selected_mode) {
 		case 0:// EGA
+			memset(video.screen_buffer[VIDEO_SCREEN_BUFFER_BACK], 0, 320 * 200);
 			VGA_ClearScreen();
 			break;
 		case 1:// VGA
+			memset(video.screen_buffer[VIDEO_SCREEN_BUFFER_BACK], 0, 320 * 200);
 			VGA_ClearScreen();
 			break;
 		case 2:// CGA
+			memset(video.screen_buffer[VIDEO_SCREEN_BUFFER_BACK], 0, 320 * 200);
 			VGA_ClearScreen();
 			break;
 		default:
@@ -1274,16 +742,53 @@ void VIDEO_ClearScreen(void) {
 	}
 }
 
+/** VIDEO :: Asyncronous palette rotation set
+ */
+void VIDEO_RotatePaletteStart_Async(int first_index, int last_index, int speed) {
+	video.rotate_palette_async = true;
+	video.rotate_first_index = first_index;
+	video.rotate_last_index = last_index;
+	video.rotate_speed = speed;
+}
+
+/** VIDEO :: Asyncronous palette rotation reet
+ */
+void VIDEO_RotatePaletteEnd_Async(void) {
+	video.rotate_palette_async = false;
+}
+
 /** VIDEO :: Asyncronous fade in
  */
-bool VIDEO_FadeIn_Async(int speed, int *step) {
-	return VGA_FadeIn_Async(speed, step);
+void VIDEO_FadeIn_Async(int speed) {
+	video.fading_speed = speed;
+	video.fading_step = 0;
+	video.faded_in = false;
+	video.faded_out = false;
+	video.fading_out_async = false;
+	video.fading_in_async = true;
+}
+
+bool VIDEO_AwaitFadedIn(void) {
+	while (!video.faded_in) {
+		return false;
+	}
+	return true;
 }
 
 /** VIDEO :: Asyncronous fade out
  */
-bool VIDEO_FadeOut_Async(void) {
-	VGA_FadeOut(1);
+void VIDEO_FadeOut_Async(int speed) {
+	video.fading_step = 0;
+	video.faded_in = false;
+	video.faded_out = false;
+	video.fading_in_async = false;
+	video.fading_out_async = true;
+}
+
+bool VIDEO_AwaitFadedOut(void) {
+	while (!video.faded_out) {
+		return false;
+	}
 	return true;
 }
 
@@ -1336,21 +841,41 @@ void VIDEO_FadeOut(int speed) {
 void VIDEO_FadeOutPause(int atenuation) {
 	int i;
 	for (i = 0; i < 219 * 3; i++) {
-		if ((gfxPaletteShown[i] - atenuation) > 0) {
-			gfxPaletteShown[i] -= atenuation;
+		if ((gfx.palette_shown[i] - atenuation) > 0) {
+			gfx.palette_shown[i] -= atenuation;
 		} else {
-			gfxPaletteShown[i] = 0;
+			gfx.palette_shown[i] = 0;
 		}
-		if ((gfxPaletteShown[i + 1] - atenuation) > 0) {
-			gfxPaletteShown[i + 1] -= atenuation;
+		if ((gfx.palette_shown[i + 1] - atenuation) > 0) {
+			gfx.palette_shown[i + 1] -= atenuation;
 		} else {
-			gfxPaletteShown[i + 1] = 0;
+			gfx.palette_shown[i + 1] = 0;
 		}
-		if ((gfxPaletteShown[i + 2] - atenuation) > 0) {
-			gfxPaletteShown[i + 2] -= atenuation;
+		if ((gfx.palette_shown[i + 2] - atenuation) > 0) {
+			gfx.palette_shown[i + 2] -= atenuation;
 		} else {
-			gfxPaletteShown[i + 2] = 0;
+			gfx.palette_shown[i + 2] = 0;
 		}
 	}
-	VGA_SetPalette(gfxPaletteShown);
+	VGA_SetPalette(gfx.palette_shown);
+}
+
+/** VIDEO :: Image buffer to screen buffer
+ *  - Prints to screen buffer a previously loaded image on a buffer
+ */
+/** Load and display specified text-mode screen */
+void VIDEO_BufferToScreenBuffer(byte *buffer, word width, word height, int screen_pos_x, int screen_pos_y) {
+	int i, src_index, dst_index, length;
+
+	src_index = 0;
+	dst_index = screen_pos_y * CAM_VISIBLE_WIDTH + screen_pos_x;
+	if (width > CAM_VISIBLE_WIDTH) length = CAM_VISIBLE_WIDTH;
+	else
+		length = width;
+
+	for (i = 0; i < height; i++) {
+		memcpy(&video.screen_buffer[VIDEO_SCREEN_BUFFER_BACK][dst_index], &buffer[src_index], length);
+		src_index += width;
+		dst_index += CAM_VISIBLE_WIDTH;
+	}
 }

@@ -28,6 +28,7 @@
 #include "audio/audio.h"
 #include "audio/a2m.h"
 #include "particle/particle.h"
+#include "ui/ui.h"
 #include <errno.h>
 
 
@@ -35,7 +36,7 @@
 #define DOS_MINOR_VERSION 0
 
 
-#define SPRITE_MAX_GRAPHICS 32
+#define SPRITE_MAX_GRAPHICS 64
 #define SPRITE_MAX_STACK 64
 #define SPRITE_TRANSP_COLOR 220
 
@@ -55,10 +56,16 @@
 #define ENTITY_ID_CURSOR 0x20
 #define ENTITY_ID_ACTOR 0x30
 #define ENTITY_ID_ACTOR_BULLET 0x40
+#define ENTITY_ID_ACTOR_PUNCH 0x41
+#define ENTITY_ID_ACTOR_KICK 0x42
 #define ENTITY_ID_BARREL 0x50
 #define ENTITY_ID_ENEMY 0x60
 #define ENTITY_ID_ENEMY_BULLET 0x70
 #define ENTITY_ID_EXPLOSION 0x80
+#define ENTITY_ID_BLOOD 0x81
+#define ENTITY_ID_BTN 0x10
+#define ENTITY_ID_HSPOT 0x90
+
 
 extern System engine;
 extern int errno;
@@ -69,6 +76,8 @@ void ExitDos(void);
 void Update(int player_follow);
 void UpdateStatusPannel(void);
 void FPS(void);
+void SetDelayTime(int time);
+bool AwaitDelayTime(void);
 
 /// VIDEO.C ///
 extern Video video;
@@ -78,10 +87,9 @@ extern void (*VIDEO_VSync)(void);
 extern void (*VIDEO_ScreenBufferToVRAM)(void);
 void VIDEO_SetActiveBuffer(int bufferNumber);
 void VIDEO_CharToScreenBuffer(int x, int y, word width, word height, byte transparent_color, byte *data);
-void VIDEO_StringToScreenBuffer(int x, int y, int length, unsigned char *string);
+void VIDEO_StringToScreenBuffer(int x, int y, unsigned char *string, int font_number);
 void VIDEO_DrawSpriteToScreenBufferRLE(SpriteGraphic *spr_graphics, Sprite spr);
 void VIDEO_MapBufferToScreenBuffer(void);
-void VIDEO_MapBufferToScreenBuffer_Paralax(void);
 void VIDEO_DrawLifeBarOnScreenBuffer(int x, int y, int length, int life);
 void VIDEO_PanelToScreenBuffer(StatusPanel *panel);
 void VIDEO_DrawLifeBarOnScreenPanel(int x, int y, int length, int life, StatusPanel panel);
@@ -91,12 +99,19 @@ void VIDEO_PCXImageToScreenBuffer(const char *dat_name, const char *asset_name, 
 void VIDEO_SetPalette(byte *palette);
 void VIDEO_ClearScreen(void);
 void VIDEO_ClearPalette(void);
-bool VIDEO_FadeIn_Async(int speed, int *step);
-bool VIDEO_FadeOut_Async(void);
+void VIDEO_FadeIn_Async(int speed);
+bool VIDEO_AwaitFadedIn(void);
+void VIDEO_FadeOut_Async(int speed);
+bool VIDEO_AwaitFadedOut(void);
 void VIDEO_FadeIn(int speed);
 void VIDEO_FadeOut(int speed);
 void VIDEO_DrawPixelOnScreenBuffer(int x, int y, byte color);
 void VIDEO_FadeOutPause(int atenuation);
+void VIDEO_TimerHandler(void);
+void VIDEO_RotatePaletteStart_Async(int first_index, int last_index, int speed);
+void VIDEO_RotatePaletteEnd_Async(void);
+void VIDEO_BufferToScreenBuffer(byte *buffer, word width, word height, int screen_pos_x, int screen_pos_y);
+void VIDEO_ChatToScreenBuffer(ChatPanel *panel);
 
 /// CGA.C //
 extern byte *CGA;
@@ -126,6 +141,7 @@ void VGA_ClearPalette(void);
 void VGA_FadeIn(int speed);
 void VGA_FadeOut(int speed);
 bool VGA_FadeIn_Async(int speed, int *step);
+bool VGA_FadeOut_Async(int speed, int *step);
 void VGA_RotatePaletteAsync(int index1, int index2);
 void VGA_RotatePalette(int index1, int index2, int speed);
 
@@ -139,13 +155,12 @@ void CAM_SetLimits(int x, int y);
 void CAM_UpdateParalax(int delay1, int delay2, int delay3);
 
 /// GFX.C ///
-extern byte *gfxPaletteShown;
-extern byte *gfxPaletteLoaded;
-extern byte *gfxFont;
+extern Graphics gfx;
 extern SpriteGraphic gfx_sprite_graphics_stack[SPRITE_MAX_GRAPHICS];
 extern Sprite gfx_sprite_stack[SPRITE_MAX_STACK];
 extern StatusPanel gfx_actor_status_panel;
 extern StatusPanel gfx_enemy_status_panel;
+extern ChatPanel gfx_chat_panel;
 void GFX_Init(void);
 void GFX_Shutdown(void);
 void GFX_LoadSpriteGraphics(const char *dat_name, const char *asset_name, int id, int width_px, int height_px, int num_frames, int transparent_color, int hit_color);
@@ -156,7 +171,7 @@ void GFX_UnloadSprite(int number);
 void GFX_UnloadSprites(void);
 void GFX_DrawSprites(void);
 void GFX_LoadImage(const char *filename, const char *subfile, int size);
-void GFX_LoadFont(const char *filename, const char *subfile, int size);
+void GFX_LoadFont(const char *filename, const char *subfile, int size, word char_w, word char_h, int font_number);
 void GFX_LoadPalette(const char *dat_file, const char *asset_file, int size);
 void GFX_UpdateSprites(void);
 void GFX_SetPanelGraphics(StatusPanel *panel, int portait_graphics_id, int lifebar_graphics_id);
@@ -164,11 +179,19 @@ void GFX_SetPanelPosition(StatusPanel *panel, int x, int y, int portait_x, int p
 void GFX_ShowPanel(StatusPanel *panel, bool show, int timeout);
 void GFX_UpdatePanel(StatusPanel *panel, int life, int old_life, int max_life, int portait_frame);
 void GFX_SetPanelPortait(StatusPanel *panel, int portait_frame);
+void GFX_PCXImageToBuffer(const char *dat_name, const char *asset_name, int size, byte *buffer, word *width, word *height);
+void GFX_SetSpritePosition(int sprite_num, int screen_pos_x, int screen_pos_y);
+void GFX_SetSpriteAnimation(int sprite_num, int first_frame, int max_frames, int speed, bool loop, bool inverted);
+void GFX_ClearBuffer(byte *buffer, int width, int heigth, byte clear_byte);
+void GFX_SetChatGraphics(ChatPanel *panel, int portait_graphics_id, int chat_graphics_id);
+void GFX_SetChatPosition(ChatPanel *panel, int x, int y, int portait_x, int portait_y, bool portait_inverted, int chat_x, int chat_y, bool chat_inverted);
+void GFX_SetLineChatPanel(ChatPanel *panel, const char c[40], int line);
 
 /// OBJECT.C ///
 extern Object object[OBJECT_MAX_OBJECTS];
 void OBJECT_LoadObject(byte number, byte entity_id, byte graphics_id, int pos_x, int pos_y);
 void OBJECT_UpdateObjects(void);
+void OBJECT_UnloadObjects(void);
 
 /// MAP.C ///
 extern Map map;
@@ -183,19 +206,19 @@ int MAP_GetTileNumber(int x_px, int y_px);
 int MAP_CheckColissionTile(int x_px, int y_px);
 void MAP_DrawForegroundTile(int x, int y, int num_tile);
 void MAP_DrawToVideoBuffer(int x_px, int y_px, int width_px, int height_px, byte *src_buffer, byte *video_buffer);
+int MAP_CheckHotspotTile(int x_px, int y_px);
+int MAP_CheckEventTile(int x_px, int y_px);
 
 /// FILE.C ///
 void FILE_LoadBinaryImage(const char *dat_name, const char *asset_name, byte *buffer);
-void FILE_LoadPCXImage(const char *dat_name, const char *asset_name, byte *buffer, long size, byte *pal, word *width, word *height);
+void FILE_LoadPCXImage(const char *dat_name, const char *asset_name, byte *buffer, long size, word *width, word *height);
 void FILE_LoadPCXTileset(const char *dat_name, const char *asset_name, byte *buffer, long size, word *width, word *height);
 void FILE_LoadMap_CSV(const char *dat_name, int *back, int *fore, int *mask, int *col, int *event_hspot, int size);
 void FILE_LoadPCXSprite(const char *dat_name, const char *asset_name, byte *buffer, long size, word *width, word *height, int palette_offset);
 void FILE_LoadPCXPalette(const char *dat_name, const char *asset_name, byte *buffer, long size);
 dword FILE_SeekAssetOffset(FILE *fp, const char *filename);
 int FILE_LoadText(const char *dat_name, const char *asset_name, int line, unsigned char *str);
-void FILE_LoadInstruments(const char *dat_name, const char *asset_name, byte *inst1, byte *inst2, byte *inst3, byte *inst4, byte *inst5, byte *inst6, byte *inst7, byte *inst8, byte *inst9, byte *inst10, byte *inst11);
-void FILE_LoadMidiSong(const char *dat_name, const char *asset_name);
-byte *FILE_LoadA2MSongInfo(const char *dat_name, const char *asset_name, dword *size);
+byte *FILE_LoadA2MSongInfo(const char *dat_name, const char *asset_name, dword *size, int mem_type);
 
 /// UTILS.C ///
 void WriteWord(word value, int fd);
@@ -247,6 +270,7 @@ void KEYB_Free(void);
 extern bool MM_Initialized;
 extern dword mmMemTotal;
 extern dword mmMemUsed;
+extern word mmChunksUsed;
 void MM_Init(void);
 void MM_Shutdown(void);
 void *MM_PushChunk(word size, ChunkType type);
@@ -269,8 +293,8 @@ void MOUSE_Update(bool combat_mode);
 
 /// ACTOR.c //
 extern Actor actor;
-void ACTOR_SetGun(int type, int graphics_id, int bullet_graphics_id);
-void ACTOR_Init(int x, int y, int graphics_id, int gun_graphics_id, int bullet_graphics_id, int colission_frame, int hit_frame);
+void ACTOR_SetGun(int type, int graphics_id, int effect_graphics_id, int bullet_graphics_id);
+void ACTOR_Init(int x, int y, int graphics_id, int gun_graphics_id, int gun_effect_graphics_id, int bullet_graphics_id, int colission_frame, int hit_frame);
 void ACTOR_Update(void);
 void ACTOR_InitBullet(int source_x, int source_y, int target_x, int target_y, int accuracy);
 void ACTOR_UpdateBullets(void);
@@ -282,31 +306,18 @@ word ISQRT(dword n);
 
 /// AUDIO.c //
 extern bool AUDIO_Initialized;
-extern const word FNr[12];
-extern Instrument flute;
-extern Instrument piano;
-extern Instrument harp;
-extern Instrument flute;
-extern Instrument piano;
-extern Instrument harp;
-extern Instrument drum1;
-extern Instrument drum2;
-extern Instrument drum3;
-extern MIDI_Song midi_song;
 extern Song song;
 void AUDIO_Init(void);
 void AUDIO_Shutdown(void);
 void AUDIO_PlaySound(byte sound);
-int AUDIO_TestOPL(int port);
 bool AUDIO_CheckSoundBlaster(void);
 bool AUDIO_CheckAdlib(void);
 void AUDIO_PlayIntro(void);
 void AUDIO_TimerHandler(void);
-void AUDIO_PlayMIDI(void);
-void AUDIO_LoadMIDI(const char *dat_name, const char *instruments_name, const char *song_name);
 void AUDIO_LoadSong(const char *dat_name, const char *asset_name);
 void AUDIO_PlaySong(void);
 void AUDIO_StopSong(void);
+void AUDIO_UnloadSong(void);
 
 void SetInstr(unsigned char Voice, unsigned char I, unsigned char Volume);
 void A2M_UnpackFile(void);
@@ -314,6 +325,7 @@ void A2M_LoadFile(const char *dat_name, const char *asset_name);
 void A2M_TimerHandler(void);
 void A2M_SetInstrument(byte chan, A2M_INSTR_DATA instr);
 void A2M_UpdateEffectsSlot(int slot, int chan);
+void A2M_Stop(void);
 /// A2M.c //
 extern A2M_SONGINFO songinfo;
 
@@ -335,7 +347,6 @@ byte SB_TestLoDMA(void);
 extern bool adlib_present;
 extern Adlib adlib;
 bool ADLIB_CheckFMInstalled(void);
-void ADLIB_FM_Test(void);
 
 /// SPEAKER.c //
 extern int speaker_note[96];
@@ -347,17 +358,33 @@ void SPK_Test(void);
 
 //// ENEMY.c //
 extern Enemy enemy[ENEMY_MAX_ENEMIES];
-void ENEMY_Init(byte number, int x, int y, int facing, int graphics_id, int gun_type, int gun_graphics_id, int bullet_graphics_id);
+void ENEMY_Init(byte number, int x, int y, int facing, int graphics_id, int gun_type, int gun_graphics_id, int bullet_graphics_id, int behavior, int life);
 void ENEMY_Update(void);
 void ENEMY_DrawColissionPixels(Enemy e);
 void ENEMY_DrawHitPixels(Enemy e);
+void ENEMY_UnloadEnemies(void);
 
 /// PARTICLES.c //
 extern Particle particle[PARTICLE_MAX_PARTICLES];
-void PARTICLE_InitParticle(int graphics_id, int source_x, int source_y, int target_x, int target_y, int speed, int damage);
+void PARTICLE_InitParticle(int graphics_id, int entity_id, int source_x, int source_y, int target_x, int target_y, int speed, int damage);
 int PARTICLE_CheckParticleColission(Particle obj);
 void PARTICLE_UpdateParticles(void);
 
 /// UI.c //
 extern UI ui;
-void UI_UpdateUI(void);
+extern Button ui_button[UI_MAX_BUTTONS];
+void UI_UpdateUI(bool combat_mode);
+void UI_LoadButton(byte number, byte entity_id, byte graphics_id, int pos_x, int pos_y);
+void UI_UpdateButtons(void);
+void UI_ButtonOver(int button_number);
+void UI_ButtonClick(int button_number);
+void UI_SetButtonPosition(byte number, int x, int y);
+int UI_GetButtonXPosition(byte number);
+int UI_GetButtonYPosition(byte number);
+void UI_ShowSpeech(ChatPanel *pannel, int portait_graphics_id, int box_graphics_id, const char *dat_name, const char *asset_name, int line1, int line2, int line3, bool inverted, int timeout);
+void UI_ShowDescription(const char *dat_name, const char *asset_name, int line);
+void UI_UnloadButtons(void);
+
+/// EFFECT.c //
+void EFFECT_LoadEffect(byte number, byte entity_id, byte graphics_id, int pos_x, int pos_y);
+void EFFECT_UpdateEffects(void);
