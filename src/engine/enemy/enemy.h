@@ -1,0 +1,152 @@
+
+#ifndef ENEMY_H
+#define ENAMY_H
+
+#include "../types/types.h"
+
+#define ENEMY_TRANSP_COLOR 201
+
+#define ENEMY_MAX_ENEMIES 16
+
+#define ENEMY_BULLET_GFX_WIDTH 32
+#define ENEMY_BULLET_GFX_HEIGHT 8
+#define ENEMY_BULLET_WIDTH 8
+#define ENEMY_BULLET_HEIGHT 8
+#define ENEMY_BULLET_SPEED 15
+
+#define ENEMY_SPEED 4
+
+#define ENEMY_ANIMATION_SPEED 4
+
+#define ENEMY_IDLE_TICKS 8
+
+#define ENEMY_ACTION_STAND 1
+#define ENEMY_ACTION_LOOP 2
+#define ENEMY_ACTION_SHOOT 3
+#define ENEMY_ACTION_WALK 4
+#define ENEMY_ACTION_PUNCH 5
+
+#define ENEMY_PATTERN_HOLD_ON 0
+#define ENEMY_PATTERN_WALK_BACK 1
+#define ENEMY_PATTERN_WALK_FORWARD 2
+#define ENEMY_PATTERN_WALK_ARROUND 3
+#define ENEMY_PATTERN_ATTACK 4
+#define ENEMY_PATTERN_NPC_WALK_LEFT 5
+#define ENEMY_PATTERN_NPC_WALK_RIGHT 6
+#define ENEMY_PATTERN_NPC_WALK_UP 7
+#define ENEMY_PATTERN_NPC_WALK_DOWN 8
+#define ENEMY_PATTERN_NPC_WALK_RANDOM 9
+
+#define ENEMY_GUN_BARE_HANDS 0
+#define ENEMY_GUN_PISTOL 1
+#define ENEMY_GUN_RIFLE 2
+#define ENEMY_GUN_SHOTGUN 3
+#define ENEMY_GUN_AK 4
+#define ENEMY_GUN_MISILE 5
+
+#define ENEMY_FACING_RIGHT 1
+#define ENEMY_FACING_LEFT 2
+#define ENEMY_FACING_DOWN 4
+#define ENEMY_FACING_DOWN_RIGHT 5
+#define ENEMY_FACING_DOWN_LEFT 6
+#define ENEMY_FACING_UP 8
+#define ENEMY_FACING_UP_RIGHT 9
+#define ENEMY_FACING_UP_LEFT 10
+
+#define ENEMY_MOVING_RIGHT 1
+#define ENEMY_MOVING_LEFT 2
+#define ENEMY_MOVING_DOWN 4
+#define ENEMY_MOVING_UP 8
+
+#define ENEMY_STATUS_SLEEP 1
+#define ENEMY_STATUS_WAKEUP 2
+#define ENEMY_STATUS_IDLE 3
+#define ENEMY_STATUS_WARNING 4
+#define ENEMY_STATUS_CHASE 5
+#define ENEMY_STATUS_ATTACK 6
+#define ENEMY_STATUS_AVOID 7
+#define ENEMY_STATUS_HIDE 8
+#define ENEMY_STATUS_STATIC_SHOOTER 9
+#define ENEMY_STATUS_CHASE_NPC 14
+#define ENEMY_STATUS_STATIC_NPC 15
+#define ENEMY_STATUS_WALKING_ARROUND_NPC 16
+#define ENEMY_STATUS_WALKING_HORIZONTAL_NPC 17
+#define ENEMY_STATUS_WALKING_VERTICAL_NPC 18
+#define ENEMY_STATUS_WALKING_RANDOM_NPC 19
+
+#define ENEMY_ANIM_FEET_INDEX 0
+#define ENEMY_ANIM_BODY_INDEX 1
+#define ENEMY_ANIM_HEAD_INDEX 2
+#define ENEMY_ANIM_LARM_INDEX 3
+#define ENEMY_ANIM_RARM_INDEX 4
+
+#define ENEMY_ANIM_STAND_UP 1
+#define ENEMY_ANIM_STAND_UP_RIGHT 2
+#define ENEMY_ANIM_STAND_RIGHT 3
+#define ENEMY_ANIM_STAND_DOWN_RIGHT 4
+#define ENEMY_ANIM_STAND_DOWN 5
+#define ENEMY_ANIM_STAND_DOWN_LEFT 6
+#define ENEMY_ANIM_STAND_LEFT 7
+#define ENEMY_ANIM_STAND_UP_LEFT 8
+
+#define ENEMY_ANIM_WALK_UP 9
+#define ENEMY_ANIM_WALK_UP_RIGHT 10
+#define ENEMY_ANIM_WALK_RIGHT 11
+#define ENEMY_ANIM_WALK_DOWN_RIGHT 12
+#define ENEMY_ANIM_WALK_DOWN 13
+#define ENEMY_ANIM_WALK_DOWN_LEFT 14
+#define ENEMY_ANIM_WALK_LEFT 15
+#define ENEMY_ANIM_WALK_UP_LEFT 16
+
+#define ENEMY_ANIM_PUNCH_UP 17
+#define ENEMY_ANIM_PUNCH_UP_RIGHT 18
+#define ENEMY_ANIM_PUNCH_RIGHT 19
+#define ENEMY_ANIM_PUNCH_DOWN_RIGHT 20
+#define ENEMY_ANIM_PUNCH_DOWN 21
+#define ENEMY_ANIM_PUNCH_DOWN_LEFT 22
+#define ENEMY_ANIM_PUNCH_LEFT 23
+#define ENEMY_ANIM_PUNCH_UP_LEFT 24
+
+#define ENEMY_ANIM_SHOT_UP 25
+#define ENEMY_ANIM_SHOT_UP_RIGHT 26
+#define ENEMY_ANIM_SHOT_RIGHT 27
+#define ENEMY_ANIM_SHOT_DOWN_RIGHT 28
+#define ENEMY_ANIM_SHOT_DOWN 29
+#define ENEMY_ANIM_SHOT_DOWN_LEFT 30
+#define ENEMY_ANIM_SHOT_LEFT 31
+#define ENEMY_ANIM_SHOT_UP_LEFT 32
+
+#define ENEMY_ANIM_HIT_UP 33
+#define ENEMY_ANIM_HIT_UP_RIGHT 34
+#define ENEMY_ANIM_HIT_RIGHT 35
+#define ENEMY_ANIM_HIT_DOWN_RIGHT 36
+#define ENEMY_ANIM_HIT_DOWN 37
+#define ENEMY_ANIM_HIT_DOWN_LEFT 38
+#define ENEMY_ANIM_HIT_LEFT 39
+#define ENEMY_ANIM_HIT_UP_LEFT 40
+
+#define ENEMY_ANIM_FALL_UP 41
+#define ENEMY_ANIM_FALL_RIGHT 42
+#define ENEMY_ANIM_FALL_DOWN 43
+#define ENEMY_ANIM_FALL_LEFT 44
+
+#define ENEMY_ANIM_DEAD_UP 45
+#define ENEMY_ANIM_DEAD_RIGHT 46
+#define ENEMY_ANIM_DEAD_DOWN 47
+#define ENEMY_ANIM_DEAD_LEFT 48
+
+extern Enemy enemy[ENEMY_MAX_ENEMIES];
+extern byte enemy_counter;
+void ENEMY_Init(void);
+void ENEMY_Load(byte number, int x, int y, int width_px, int height_px, int portait_gfx_id, int feet_gfx_id, int body_gfx_id, int head_gfx_id, int larm_gfx_id, int rarm_gfx_id, int facing, int gun_type, int gun_graphics_id, int bullet_graphics_id, int behavior, int life);
+void ENEMY_Update(void);
+void ENEMY_DrawColissionPixels(Enemy e);
+void ENEMY_DrawHitPixels(Enemy e);
+void ENEMY_UnloadEnemies(void);
+void ENEMY_SetPosition(byte number, int x, int y);
+void ENEMY_SetBehavior(byte number, int behavior);
+//bool ENEMY_AreEnemiesNearby(void);
+void ENEMY_SetFacing(byte number, int facing);
+void ENEMY_LoadAnimations(const char *dat_name, int enemy_number, int total_anims);
+
+#endif

@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PC SPEAKER TOOL</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap');
+
+  :root {
+    --phosphor: #33ff33;
+    --phosphor-dim: #1a8c1a;
+    --phosphor-bright: #99ff99;
+    --phosphor-glow: rgba(51,255,51,0.15);
+    --bg: #0a0a0a;
+    --bg2: #0f0f0f;
+    --border: #1f5c1f;
+    --scanline: rgba(0,0,0,0.25);
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--phosphor);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* CRT scanlines overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      var(--scanline) 0px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* Phosphor flicker */
+  @keyframes flicker {
+    0%,100% { opacity:1; }
+    92% { opacity:0.97; }
+    93% { opacity:0.85; }
+    94% { opacity:0.97; }
+  }
+  body { animation: flicker 8s infinite; }
+
+  .screen {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  /* Header */
+  .header {
+    border: 1px solid var(--phosphor-dim);
+    padding: 10px 16px;
+    margin-bottom: 12px;
+    text-shadow: 0 0 8px var(--phosphor);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: linear-gradient(90deg, rgba(51,255,51,0.05), transparent);
+  }
+  .header .title { font-family: 'VT323', monospace; font-size: 28px; letter-spacing: 3px; }
+  .header .subtitle { color: var(--phosphor-dim); font-size: 11px; }
+  .blink { animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity:0; } }
+
+  /* Tabs */
+  .tabs { display:flex; gap:0; margin-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .tab {
+    padding: 6px 20px;
+    cursor: pointer;
+    border: 1px solid transparent;
+    border-bottom: none;
+    color: var(--phosphor-dim);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    background: none;
+    transition: all 0.1s;
+    letter-spacing: 1px;
+  }
+  .tab:hover { color: var(--phosphor); background: var(--phosphor-glow); }
+  .tab.active {
+    color: var(--phosphor-bright);
+    border-color: var(--border);
+    background: var(--bg2);
+    text-shadow: 0 0 6px var(--phosphor);
+  }
+
+  .panel { display:none; }
+  .panel.active { display:block; }
+
+  /* Grid layout */
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+  /* Box */
+  .box {
+    border: 1px solid var(--border);
+    padding: 12px;
+    background: var(--bg2);
+  }
+  .box-title {
+    color: var(--phosphor-dim);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px;
+  }
+
+  /* Controls */
+  label { color: var(--phosphor-dim); font-size: 11px; display:block; margin-bottom:3px; }
+  input[type=range] {
+    width:100%; height:4px;
+    -webkit-appearance:none;
+    background: var(--border);
+    outline:none;
+    cursor:pointer;
+    margin-bottom: 10px;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance:none;
+    width:12px; height:12px;
+    background: var(--phosphor);
+    box-shadow: 0 0 6px var(--phosphor);
+    cursor:pointer;
+  }
+  input[type=number], input[type=text], select {
+    background: #000;
+    border: 1px solid var(--border);
+    color: var(--phosphor);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 13px;
+    padding: 4px 8px;
+    width: 100%;
+    margin-bottom: 8px;
+    outline: none;
+  }
+  input[type=number]:focus, select:focus { border-color: var(--phosphor); }
+  select option { background: #000; }
+
+  .val-display {
+    display: inline-block;
+    color: var(--phosphor-bright);
+    font-size: 14px;
+    text-shadow: 0 0 6px var(--phosphor);
+    min-width: 60px;
+    text-align: right;
+  }
+
+  /* Buttons */
+  .btn {
+    background: none;
+    border: 1px solid var(--phosphor-dim);
+    color: var(--phosphor);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    padding: 6px 16px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.1s;
+    text-shadow: none;
+  }
+  .btn:hover {
+    background: var(--phosphor-glow);
+    border-color: var(--phosphor);
+    text-shadow: 0 0 6px var(--phosphor);
+    box-shadow: 0 0 8px var(--phosphor-glow);
+  }
+  .btn:active { background: rgba(51,255,51,0.2); }
+  .btn.primary {
+    border-color: var(--phosphor);
+    text-shadow: 0 0 6px var(--phosphor);
+  }
+  .btn.danger { border-color: #ff3333; color: #ff3333; }
+  .btn.danger:hover { background: rgba(255,51,51,0.1); }
+  .btn-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+
+  /* Piano keyboard */
+  .piano {
+    display: flex;
+    gap: 2px;
+    margin: 8px 0;
+    height: 60px;
+    align-items: flex-end;
+  }
+  .piano-key {
+    flex: 1;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    background: #0a0a0a;
+    transition: background 0.05s;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 4px;
+    font-size: 9px;
+    color: var(--phosphor-dim);
+    user-select: none;
+    min-width: 28px;
+  }
+  .piano-key:hover, .piano-key.active {
+    background: var(--phosphor-glow);
+    border-color: var(--phosphor);
+    color: var(--phosphor);
+    box-shadow: 0 0 8px var(--phosphor-glow) inset;
+  }
+  .piano-key.sharp {
+    background: #111;
+    height: 38px;
+    flex: 0.7;
+    min-width: 20px;
+  }
+
+  /* Waveform display */
+  canvas {
+    width: 100%;
+    height: 60px;
+    border: 1px solid var(--border);
+    display: block;
+    image-rendering: pixelated;
+  }
+
+  /* Sequencer grid */
+  .seq-grid {
+    display: grid;
+    gap: 2px;
+    margin-bottom: 8px;
+  }
+  .seq-row { display:flex; gap:2px; align-items:center; }
+  .seq-label { width:36px; font-size:10px; color:var(--phosphor-dim); text-align:right; padding-right:4px; flex-shrink:0; }
+  .seq-cell {
+    width: 22px; height: 22px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    background: #000;
+    flex-shrink: 0;
+    transition: background 0.05s;
+  }
+  .seq-cell:hover { border-color: var(--phosphor-dim); }
+  .seq-cell.on { background: var(--phosphor); box-shadow: 0 0 4px var(--phosphor); }
+  .seq-cell.playing { box-shadow: 0 0 10px var(--phosphor-bright), 0 0 2px #fff inset; }
+
+  /* Output code */
+  .code-out {
+    background: #000;
+    border: 1px solid var(--border);
+    padding: 10px;
+    font-size: 11px;
+    line-height: 1.6;
+    white-space: pre;
+    overflow-x: auto;
+    color: #88ff88;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+
+  /* SFX presets */
+  .sfx-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+  .sfx-btn {
+    padding: 8px 10px;
+    text-align: left;
+    font-size: 11px;
+    letter-spacing: 0;
+  }
+  .sfx-btn .sfx-name { display:block; color:var(--phosphor); }
+  .sfx-btn .sfx-desc { display:block; color:var(--phosphor-dim); font-size:10px; margin-top:2px; }
+
+  /* Status bar */
+  .statusbar {
+    border: 1px solid var(--border);
+    border-top: 1px solid var(--phosphor-dim);
+    padding: 4px 12px;
+    margin-top: 12px;
+    display:flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--phosphor-dim);
+  }
+
+  .row { display:flex; gap:8px; align-items:center; }
+  .spacer { height:8px; }
+  small { font-size:10px; color:var(--phosphor-dim); }
+</style>
+</head>
+<body>
+<div class="screen">
+
+  <div class="header">
+    <div>
+      <div class="title">▐ PC SPEAKER TOOL <span class="blink">█</span></div>
+      <div class="subtitle">DOS SOUND DESIGNER v1.0 — 8253 PIT COMPATIBLE</div>
+    </div>
+    <div style="text-align:right; color:var(--phosphor-dim); font-size:11px;">
+      <div id="freq-display">-- Hz</div>
+      <div id="div-display">DIV: ----</div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('sfx')">[ EFFECTS ]</button>
+    <button class="tab" onclick="switchTab('melody')">[ MELODY ]</button>
+    <button class="tab" onclick="switchTab('sweep')">[ SWEEP ]</button>
+    <button class="tab" onclick="switchTab('export')">[ EXPORT C ]</button>
+  </div>
+
+  <!-- EFFECTS TAB -->
+  <div id="tab-sfx" class="panel active">
+    <div class="grid2">
+      <div>
+        <div class="box">
+          <div class="box-title">▸ PRESETS SFX</div>
+          <div class="sfx-grid" id="sfx-grid"></div>
+          <div class="btn-row" style="margin-top:6px;">
+            <button class="btn primary" id="sfx-add-btn" onclick="addPresetToMelody()" style="display:none;">+ ADD TO MELODY: <span id="sfx-add-label">--</span></button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="box">
+          <div class="box-title" style="display:flex;justify-content:space-between;align-items:center;">
+            <span>▸ DISEÑO MANUAL</span>
+            <span id="designer-mode-label" style="font-size:10px;color:var(--phosphor-dim);letter-spacing:1px;">MODO: SWEEP</span>
+          </div>
+
+          <!-- SWEEP MODE -->
+          <div id="designer-sweep">
+            <label>FRECUENCIA INICIO <span class="val-display" id="f1v">440 Hz</span></label>
+            <input type="range" id="f1" min="50" max="4000" value="440" oninput="updateSweepUI()">
+            <label>FRECUENCIA FIN <span class="val-display" id="f2v">440 Hz</span></label>
+            <input type="range" id="f2" min="50" max="4000" value="440" oninput="updateSweepUI()">
+            <label>DURACIÓN <span class="val-display" id="durv">200 ms</span></label>
+            <input type="range" id="dur" min="10" max="2000" value="200" oninput="updateSweepUI()">
+            <label>PASOS (sweep) <span class="val-display" id="stepsv">20</span></label>
+            <input type="range" id="steps" min="1" max="100" value="20" oninput="updateSweepUI()">
+            <div class="btn-row">
+              <button class="btn primary" onclick="playCustomSweep()">▶ PLAY</button>
+              <button class="btn" onclick="addToMelody()">+ ADD TO MELODY</button>
+            </div>
+          </div>
+
+          <!-- SEQUENCE MODE -->
+          <div id="designer-seq" style="display:none;">
+            <div id="seq-note-list" style="max-height:160px;overflow-y:auto;font-size:11px;margin-bottom:8px;"></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px;">
+              <div>
+                <label>FREQ (Hz)</label>
+                <input type="number" id="seq-note-f" value="440" min="0" max="5000" style="margin:0;">
+              </div>
+              <div>
+                <label>DUR (ms)</label>
+                <input type="number" id="seq-note-d" value="80" min="10" max="2000" style="margin:0;">
+              </div>
+            </div>
+            <small style="color:var(--phosphor-dim);">freq=0 → silencio</small>
+            <div class="btn-row" style="margin-top:6px;">
+              <button class="btn" onclick="seqNoteAdd()">+ NOTA</button>
+              <button class="btn" onclick="seqNoteAdd(0)">+ SILENCIO</button>
+              <button class="btn primary" onclick="playSeqDesigner()">▶ PLAY</button>
+              <button class="btn" onclick="addSeqDesignerToMelody()">+ MELODY</button>
+              <button class="btn danger" onclick="seqDesignerClear()">✕</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="spacer"></div>
+
+        <div class="box">
+          <div class="box-title">▸ VISUALIZADOR</div>
+          <canvas id="wave-canvas" width="400" height="60"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MELODY TAB -->
+  <div id="tab-melody" class="panel">
+    <div class="box" style="margin-bottom:12px;">
+      <div class="box-title">▸ PIANO — CLICK O TECLADO [A-K] = DO..SI</div>
+      <div class="piano" id="piano"></div>
+      <div class="row" style="margin-top:8px;">
+        <label style="margin:0;">OCTAVA:</label>
+        <select id="octave" style="width:80px; margin:0;">
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4" selected>4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+        </select>
+        <label style="margin:0;">DURACIÓN (ms):</label>
+        <select id="note-dur" style="width:100px; margin:0;">
+          <option value="62">1/16 (62)</option>
+          <option value="125">1/8 (125)</option>
+          <option value="250" selected>1/4 (250)</option>
+          <option value="500">1/2 (500)</option>
+          <option value="1000">1 (1000)</option>
+        </select>
+        <label style="margin:0;">BPM:</label>
+        <input type="number" id="bpm" value="120" style="width:70px; margin:0;">
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="box">
+        <div class="box-title" style="display:flex;justify-content:space-between;align-items:center;">
+          <span>▸ SECUENCIA GRABADA</span>
+          <span style="font-size:10px;color:var(--phosphor-dim);">
+            <label style="display:inline;cursor:pointer;">
+              <input type="checkbox" id="sel-mode" onchange="toggleSelMode()" style="width:auto;margin:0 4px 0 0;">SELECCIONAR
+            </label>
+          </span>
+        </div>
+        <div id="seq-list" style="min-height:80px; max-height:180px; overflow-y:auto; font-size:11px; color:var(--phosphor-dim);">
+          <em>— vacío —</em>
+        </div>
+        <!-- Loop panel — visible only in sel mode -->
+        <div id="loop-panel" style="display:none;border-top:1px solid var(--border);margin-top:8px;padding-top:8px;">
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <span style="color:var(--phosphor-dim);font-size:11px;">NOTAS SEL: <span id="sel-count" style="color:var(--phosphor);">0</span></span>
+            <span style="color:var(--phosphor-dim);font-size:11px;">REPETIR</span>
+            <input type="number" id="loop-times" value="2" min="2" max="99" style="width:55px;margin:0;padding:3px 6px;">
+            <span style="color:var(--phosphor-dim);font-size:11px;">VECES</span>
+            <button class="btn" onclick="selectAll()">SEL TODO</button>
+            <button class="btn" onclick="clearSel()">DESEL</button>
+          </div>
+          <div class="btn-row" style="margin-top:6px;">
+            <button class="btn primary" onclick="applyLoop()">⟳ APLICAR LOOP</button>
+            <button class="btn" onclick="previewLoop()">▶ PREVIEW LOOP</button>
+            <button class="btn danger" onclick="deleteSelected()">✕ BORRAR SEL</button>
+          </div>
+          <div id="loop-info" style="font-size:10px;color:var(--phosphor-dim);margin-top:4px;"></div>
+        </div>
+        <div class="btn-row" style="margin-top:8px;">
+          <button class="btn primary" onclick="playMelody()">▶ PLAY</button>
+          <button class="btn" onclick="stopMelody()">■ STOP</button>
+          <button class="btn danger" onclick="clearMelody()">✕ CLEAR</button>
+        </div>
+      </div>
+      <div class="box">
+        <div class="box-title">▸ NOTA MANUAL</div>
+        <label>Frecuencia (Hz)</label>
+        <input type="number" id="manual-freq" value="440" min="50" max="5000">
+        <label>Duración (ms)</label>
+        <input type="number" id="manual-dur" value="250" min="10" max="2000">
+        <div class="btn-row">
+          <button class="btn" onclick="addManualNote()">+ AÑADIR NOTA</button>
+          <button class="btn" onclick="addSilence()">+ SILENCIO</button>
+        </div>
+        <div class="spacer"></div>
+        <small>Nota actual: <span id="note-info" style="color:var(--phosphor);">--</span></small>
+      </div>
+    </div>
+  </div>
+
+  <!-- SWEEP TAB -->
+  <div id="tab-sweep" class="panel">
+    <div class="box" style="margin-bottom:12px;">
+      <div class="box-title">▸ GENERADOR DE BARRIDOS Y RUIDO</div>
+      <div class="grid3">
+        <div>
+          <label>TIPO DE BARRIDO</label>
+          <select id="sweep-type">
+            <option value="linear">Lineal</option>
+            <option value="exp">Exponencial</option>
+            <option value="log">Logarítmico</option>
+            <option value="sine">Senoidal</option>
+            <option value="random">Ruido / Random</option>
+          </select>
+        </div>
+        <div>
+          <label>FREQ INICIO (Hz) <span class="val-display" id="sw1v">200</span></label>
+          <input type="range" id="sw1" min="50" max="4000" value="200" oninput="document.getElementById('sw1v').textContent=this.value">
+        </div>
+        <div>
+          <label>FREQ FIN (Hz) <span class="val-display" id="sw2v">1000</span></label>
+          <input type="range" id="sw2" min="50" max="4000" value="1000" oninput="document.getElementById('sw2v').textContent=this.value">
+        </div>
+        <div>
+          <label>DURACIÓN (ms) <span class="val-display" id="swdv">300</span></label>
+          <input type="range" id="swd" min="50" max="3000" value="300" oninput="document.getElementById('swdv').textContent=this.value">
+        </div>
+        <div>
+          <label>PASOS <span class="val-display" id="swsv">30</span></label>
+          <input type="range" id="sws" min="2" max="200" value="30" oninput="document.getElementById('swsv').textContent=this.value">
+        </div>
+        <div>
+          <label>CICLOS (sine) <span class="val-display" id="swcv">2</span></label>
+          <input type="range" id="swc" min="1" max="10" value="2" oninput="document.getElementById('swcv').textContent=this.value">
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn primary" onclick="playSweepAdv()">▶ PLAY SWEEP</button>
+        <button class="btn" onclick="addSweepToMelody()">+ ADD TO MELODY</button>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="box-title">▸ PREVIEW FORMA DE ONDA</div>
+      <canvas id="sweep-canvas" width="800" height="80"></canvas>
+    </div>
+  </div>
+
+  <!-- EXPORT TAB -->
+  <div id="tab-export" class="panel">
+    <div class="box" style="margin-bottom:12px;">
+      <div class="box-title">▸ CÓDIGO C GENERADO — listo para DOS / Open Watcom / Turbo C</div>
+      <div class="code-out" id="code-out">/* Añade notas en la pestaña MELODY para generar código */</div>
+      <div class="btn-row">
+        <button class="btn primary" onclick="generateCode()">⟳ GENERAR CÓDIGO</button>
+        <button class="btn" onclick="copyCode()">⎘ COPIAR</button>
+        <button class="btn" onclick="generateHeader()">▸ MODO HEADER (.H)</button>
+      </div>
+    </div>
+    <div class="box">
+      <div class="box-title">▸ PLANTILLA BASE pcspeaker.c</div>
+      <div class="code-out" id="template-out"
+>#include &lt;dos.h&gt;
+#include &lt;conio.h&gt;
+
+/* Activa el PC Speaker a la frecuencia dada */
+void spk_on(unsigned int freq) {
+    unsigned int divisor = 1193182U / freq;
+    outp(0x43, 0xB6);
+    outp(0x42, divisor &amp; 0xFF);
+    outp(0x42, (divisor &gt;&gt; 8) &amp; 0xFF);
+    outp(0x61, inp(0x61) | 0x03);
+}
+
+/* Apaga el PC Speaker */
+void spk_off(void) {
+    outp(0x61, inp(0x61) &amp; ~0x03);
+}
+
+/* Reproduce una nota (bloqueante) */
+void play_note(unsigned int freq, unsigned int ms) {
+    if (freq == 0) { delay(ms); return; }
+    spk_on(freq);
+    delay(ms);
+    spk_off();
+}
+
+/* Reproduce un sweep de frecuencia */
+void play_sweep(unsigned int f1, unsigned int f2,
+                unsigned int ms, unsigned int steps) {
+    unsigned int i;
+    unsigned int step_ms = ms / steps;
+    int df = ((int)f2 - (int)f1);
+    for (i = 0; i &lt; steps; i++) {
+        unsigned int f = f1 + (unsigned int)((long)df * i / steps);
+        spk_on(f);
+        delay(step_ms);
+    }
+    spk_off();
+}
+</div>
+    </div>
+  </div>
+
+  <div class="statusbar">
+    <span id="status">READY — CLICK A PRESET O TECLEA UNA NOTA</span>
+    <span id="freq-status">1193182 / f = DIV</span>
+  </div>
+
+</div>
+
+<script>
+// ─── Audio Engine (Web Audio API simulating square wave) ───────────────────
+const AC = window.AudioContext || window.webkitAudioContext;
+let ac = null;
+function getAC() { if (!ac) ac = new AC(); return ac; }
+
+function playTone(freq, duration, onEnd) {
+  if (freq <= 0) { setTimeout(onEnd || (()=>{}), duration); return null; }
+  const ctx = getAC();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain); gain.connect(ctx.destination);
+  osc.type = 'square';
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(0.18, ctx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration/1000 - 0.01);
+  osc.start(); osc.stop(ctx.currentTime + duration/1000);
+  osc.onended = onEnd || null;
+  updateDisplay(freq);
+  drawWave(freq, 'wave-canvas');
+  return osc;
+}
+
+function playSweepTones(freqs, stepMs, cb) {
+  let i = 0;
+  function next() {
+    if (i >= freqs.length) { if(cb) cb(); return; }
+    playTone(freqs[i++], stepMs, next);
+  }
+  next();
+}
+
+// ─── Display ───────────────────────────────────────────────────────────────
+function updateDisplay(freq) {
+  const div = Math.round(1193182 / freq);
+  document.getElementById('freq-display').textContent = freq.toFixed(0) + ' Hz';
+  document.getElementById('div-display').textContent = 'DIV: ' + div;
+  document.getElementById('freq-status').textContent = '1193182 / ' + freq.toFixed(0) + ' = ' + div;
+  document.getElementById('status').textContent = 'PLAYING ' + freq.toFixed(0) + 'Hz  |  DIV=' + div;
+}
+
+function drawWave(freq, canvasId) {
+  const c = document.getElementById(canvasId);
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle = '#33ff33';
+  ctx.lineWidth = 1.5;
+  ctx.shadowColor = '#33ff33';
+  ctx.shadowBlur = 4;
+  ctx.beginPath();
+  const cycles = 4;
+  const period = W / cycles;
+  for (let x = 0; x <= W; x++) {
+    const t = (x % period) / period;
+    const y = t < 0.5 ? H*0.2 : H*0.8;
+    x === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    if (Math.abs(t - 0.5) < 0.01 || t < 0.01) {
+      ctx.lineTo(x, t < 0.5 ? H*0.8 : H*0.2);
+    }
+  }
+  ctx.stroke();
+}
+
+function drawSweepPreview() {
+  const type = document.getElementById('sweep-type').value;
+  const f1 = +document.getElementById('sw1').value;
+  const f2 = +document.getElementById('sw2').value;
+  const steps = +document.getElementById('sws').value;
+  const cycles = +document.getElementById('swc').value;
+  const freqs = buildSweep(type, f1, f2, steps, cycles);
+  const c = document.getElementById('sweep-canvas');
+  const ctx = c.getContext('2d');
+  const W = c.width, H = c.height;
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle = '#33ff33'; ctx.lineWidth = 1.5;
+  ctx.shadowColor = '#33ff33'; ctx.shadowBlur = 4;
+  ctx.beginPath();
+  freqs.forEach((f, i) => {
+    const x = (i / (freqs.length-1)) * W;
+    const y = H - ((f - 50) / (4000 - 50)) * H;
+    i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+}
+
+// ─── Sweep builder ────────────────────────────────────────────────────────
+function buildSweep(type, f1, f2, steps, cycles) {
+  const freqs = [];
+  for (let i = 0; i < steps; i++) {
+    const t = i / (steps - 1);
+    let f;
+    switch(type) {
+      case 'linear': f = f1 + (f2-f1)*t; break;
+      case 'exp':    f = f1 * Math.pow(f2/f1, t); break;
+      case 'log':    f = f1 + (f2-f1) * Math.log1p(t*9) / Math.log(10); break;
+      case 'sine':   f = (f1+f2)/2 + (f2-f1)/2 * Math.sin(t * Math.PI * 2 * cycles); break;
+      case 'random': f = f1 + Math.random() * (f2-f1); break;
+      default:       f = f1 + (f2-f1)*t;
+    }
+    freqs.push(Math.max(50, Math.min(5000, Math.round(f))));
+  }
+  return freqs;
+}
+
+// ─── SFX Presets ──────────────────────────────────────────────────────────
+const SFX_META = {
+  shoot:       {label:'SHOOT',       desc:'láser / disparo'},
+  explosion:   {label:'EXPLOSION',   desc:'boom bajo'},
+  pickup:      {label:'PICKUP',      desc:'recoger ítem'},
+  jump:        {label:'JUMP',        desc:'salto'},
+  death:       {label:'DEATH',       desc:'game over'},
+  coin:        {label:'COIN',        desc:'moneda / punto'},
+  select:      {label:'SELECT',      desc:'menú cursor'},
+  powerup:     {label:'POWER UP',    desc:'subir nivel'},
+  hit:         {label:'HIT',         desc:'golpe / daño'},
+  beep:        {label:'BEEP',        desc:'error / alerta'},
+  alarm:       {label:'ALARM',       desc:'peligro'},
+  woosh:       {label:'WOOSH',       desc:'barrido rápido'},
+  door_open:   {label:'DOOR OPEN',   desc:'abrir puerta'},
+  door_close:  {label:'DOOR CLOSE',  desc:'cerrar puerta'},
+  door_locked: {label:'DOOR LOCKED', desc:'puerta cerrada'},
+  door_secret: {label:'SECRET DOOR', desc:'pasaje oculto'},
+};
+
+const SFX = {
+  shoot:     [{f:1000,d:20},{f:800,d:20},{f:600,d:20},{f:400,d:20},{f:200,d:30}],
+  explosion: [{f:200,d:30},{f:150,d:30},{f:100,d:40},{f:80,d:50},{f:60,d:80},{f:40,d:100}],
+  pickup:    [{f:523,d:60},{f:659,d:60},{f:784,d:80},{f:1047,d:100}],
+  jump:      [{f:300,d:30},{f:400,d:30},{f:550,d:40},{f:700,d:60}],
+  death:     [{f:440,d:80},{f:370,d:80},{f:311,d:80},{f:261,d:80},{f:220,d:120},{f:185,d:200}],
+  coin:      [{f:987,d:50},{f:1318,d:80}],
+  select:    [{f:440,d:40},{f:550,d:60}],
+  powerup:   [{f:261,d:50},{f:329,d:50},{f:392,d:50},{f:523,d:50},{f:659,d:50},{f:784,d:80},{f:1047,d:150}],
+  hit:       [{f:400,d:30},{f:200,d:30},{f:150,d:50}],
+  beep:      [{f:880,d:100},{f:0,d:50},{f:880,d:100}],
+  alarm:     [{f:800,d:80},{f:600,d:80},{f:800,d:80},{f:600,d:80},{f:800,d:80}],
+  woosh:       'sweep_linear_2000_100_20_60',
+  door_open:   [{f:180,d:40},{f:160,d:40},{f:140,d:50},{f:120,d:50},{f:100,d:60},{f:80,d:80},{f:60,d:120}],
+  door_close:  [{f:60,d:60},{f:80,d:50},{f:110,d:50},{f:150,d:40},{f:200,d:40},{f:160,d:30},{f:130,d:80}],
+  door_locked: [{f:220,d:60},{f:0,d:40},{f:180,d:60},{f:0,d:40},{f:140,d:100}],
+  door_secret: [{f:80,d:60},{f:90,d:60},{f:100,d:60},{f:110,d:60},{f:120,d:80},{f:0,d:80},{f:200,d:40},{f:250,d:40},{f:300,d:60}]
+};
+
+function playSFXSequence(seq, idx) {
+  if (idx >= seq.length) { setStatus('DONE'); return; }
+  const {f, d} = seq[idx];
+  playTone(f, d, () => playSFXSequence(seq, idx+1));
+}
+
+let currentSFXName = null;
+
+function playSFX(name) {
+  const s = SFX[name];
+  // play
+  if (typeof s === 'string') {
+    const p = s.split('_');
+    const freqs = buildSweep(p[1], +p[2], +p[3], +p[4], 1);
+    const stepMs = +p[5] / freqs.length;
+    playSweepTones(freqs, stepMs);
+  } else {
+    playSFXSequence(s, 0);
+  }
+  setStatus('SFX: ' + name.toUpperCase());
+
+  // highlight selected button
+  document.querySelectorAll('.sfx-btn').forEach(b => b.classList.remove('primary'));
+  const btn = document.querySelector('.sfx-btn[data-name="'+name+'"]');
+  if (btn) btn.classList.add('primary');
+
+  // load into manual designer
+  loadSFXIntoDesigner(name, s);
+
+  // show add-to-melody button
+  currentSFXName = name;
+  document.getElementById('sfx-add-btn').style.display = 'inline-block';
+  document.getElementById('sfx-add-label').textContent = SFX_META[name].label;
+}
+
+// sweep = notas continuas sin silencios; seq = notas discretas / silencios
+function isSweepLike(s) {
+  if (typeof s === 'string') return true;
+  // sweep-like: >3 notas, sin silencios, frecuencias varían progresivamente
+  if (s.some(n => n.f === 0)) return false;
+  if (s.length <= 3) return false;
+  return true;
+}
+
+function loadSFXIntoDesigner(name, s) {
+  const sweep = isSweepLike(s);
+  document.getElementById('designer-sweep').style.display = sweep ? '' : 'none';
+  document.getElementById('designer-seq').style.display  = sweep ? 'none' : '';
+  document.getElementById('designer-mode-label').textContent = sweep ? 'MODO: SWEEP' : 'MODO: SECUENCIA';
+
+  if (sweep) {
+    let freqs, totalMs;
+    if (typeof s === 'string') {
+      const p = s.split('_');
+      freqs = buildSweep(p[1], +p[2], +p[3], +p[4], 1);
+      totalMs = +p[5];
+    } else {
+      freqs = s.map(n=>n.f);
+      totalMs = s.reduce((a,n)=>a+n.d, 0);
+    }
+    document.getElementById('f1').value = freqs[0] || 200;
+    document.getElementById('f2').value = freqs[freqs.length-1] || 200;
+    document.getElementById('dur').value = Math.min(2000, totalMs);
+    document.getElementById('steps').value = Math.min(100, freqs.length);
+    updateSweepUI();
+  } else {
+    // load exact sequence into seq designer
+    seqDesignerNotes = s.map(n => ({f:n.f, d:n.d}));
+    renderSeqDesigner();
+  }
+}
+
+// ─── Sequence designer ────────────────────────────────────────────────────
+let seqDesignerNotes = [];
+
+function renderSeqDesigner() {
+  const el = document.getElementById('seq-note-list');
+  if (!seqDesignerNotes.length) { el.innerHTML = '<em style="color:var(--phosphor-dim)">— vacío —</em>'; return; }
+  el.innerHTML = seqDesignerNotes.map((n,i) =>
+    `<div style="display:flex;gap:6px;padding:1px 0;border-bottom:1px solid #1a1a1a;align-items:center;">
+      <span style="color:#444;width:18px;">${i+1}</span>
+      <input type="number" value="${n.f}" min="0" max="5000" style="width:70px;padding:2px 4px;font-size:11px;margin:0;" onchange="seqDesignerNotes[${i}].f=+this.value">
+      <input type="number" value="${n.d}" min="10" max="2000" style="width:60px;padding:2px 4px;font-size:11px;margin:0;" onchange="seqDesignerNotes[${i}].d=+this.value">
+      <span style="color:var(--phosphor-dim);font-size:10px;flex:1;">${n.f===0?'SIL':n.f+'Hz'} ${n.d}ms</span>
+      <span style="cursor:pointer;color:#ff5555;font-size:12px;" onclick="seqDesignerNotes.splice(${i},1);renderSeqDesigner()">✕</span>
+    </div>`
+  ).join('');
+}
+
+function seqNoteAdd(forceF) {
+  const f = forceF !== undefined ? 0 : +document.getElementById('seq-note-f').value;
+  const d = +document.getElementById('seq-note-d').value;
+  seqDesignerNotes.push({f, d});
+  renderSeqDesigner();
+}
+
+function seqDesignerClear() { seqDesignerNotes = []; renderSeqDesigner(); }
+
+function playSeqDesigner() {
+  playSFXSequence(seqDesignerNotes, 0);
+}
+
+function addSeqDesignerToMelody() {
+  const label = currentSFXName ? SFX_META[currentSFXName].label : 'SFX';
+  seqDesignerNotes.forEach(n => melody.push({f:n.f, d:n.d, label: n.f>0 ? label : '---'}));
+  renderMelody();
+  setStatus('AÑADIDO ' + seqDesignerNotes.length + ' NOTAS A MELODY');
+}
+
+function addPresetToMelody() {
+  if (!currentSFXName) return;
+  const s = SFX[currentSFXName];
+  if (typeof s === 'string') {
+    const p = s.split('_');
+    const freqs = buildSweep(p[1], +p[2], +p[3], +p[4], 1);
+    const stepMs = Math.max(1, Math.round(+p[5] / freqs.length));
+    freqs.forEach(f => melody.push({f, d:stepMs, label:'~'+f}));
+  } else {
+    s.forEach(n => melody.push({f:n.f, d:n.d, label: n.f>0 ? SFX_META[currentSFXName].label : '---'}));
+  }
+  renderMelody();
+  setStatus('ADDED "' + SFX_META[currentSFXName].label + '" TO MELODY (' + (typeof s==='string'? +s.split('_')[4] : s.length) + ' notas)');
+}
+
+function buildSFXGrid() {
+  const grid = document.getElementById('sfx-grid');
+  grid.innerHTML = '';
+  Object.keys(SFX_META).forEach(name => {
+    const m = SFX_META[name];
+    const btn = document.createElement('button');
+    btn.className = 'btn sfx-btn';
+    btn.dataset.name = name;
+    btn.innerHTML = '<span class="sfx-name">'+m.label+'</span><span class="sfx-desc">'+m.desc+'</span>';
+    btn.addEventListener('click', () => playSFX(name));
+    grid.appendChild(btn);
+  });
+}
+
+// ─── Custom sweep ─────────────────────────────────────────────────────────
+function updateSweepUI() {
+  const f1 = +document.getElementById('f1').value;
+  const f2 = +document.getElementById('f2').value;
+  const dur = +document.getElementById('dur').value;
+  const steps = +document.getElementById('steps').value;
+  document.getElementById('f1v').textContent = f1 + ' Hz';
+  document.getElementById('f2v').textContent = f2 + ' Hz';
+  document.getElementById('durv').textContent = dur + ' ms';
+  document.getElementById('stepsv').textContent = steps;
+}
+
+function playCustomSweep() {
+  const f1 = +document.getElementById('f1').value;
+  const f2 = +document.getElementById('f2').value;
+  const dur = +document.getElementById('dur').value;
+  const steps = +document.getElementById('steps').value;
+  const freqs = buildSweep('linear', f1, f2, steps, 1);
+  playSweepTones(freqs, Math.max(1, Math.round(dur/steps)));
+}
+
+function playSweepAdv() {
+  const type = document.getElementById('sweep-type').value;
+  const f1 = +document.getElementById('sw1').value;
+  const f2 = +document.getElementById('sw2').value;
+  const dur = +document.getElementById('swd').value;
+  const steps = +document.getElementById('sws').value;
+  const cycles = +document.getElementById('swc').value;
+  const freqs = buildSweep(type, f1, f2, steps, cycles);
+  playSweepTones(freqs, Math.max(1, Math.round(dur/steps)));
+  drawSweepPreview();
+}
+
+// ─── Melody sequencer ─────────────────────────────────────────────────────
+let melody = []; // [{f, d, label}]
+let melodyPlaying = false;
+let stopFlag = false;
+
+const NOTE_NAMES = ['DO','DO#','RE','RE#','MI','FA','FA#','SOL','SOL#','LA','LA#','SI'];
+const NOTE_FREQS_4 = [261.63,277.18,293.66,311.13,329.63,349.23,369.99,392.00,415.30,440.00,466.16,493.88];
+
+function noteFreq(noteIdx, octave) {
+  return NOTE_FREQS_4[noteIdx] * Math.pow(2, octave - 4);
+}
+
+function buildPiano() {
+  const piano = document.getElementById('piano');
+  const keys = [
+    {n:0,s:false},{n:1,s:true},{n:2,s:false},{n:3,s:true},{n:4,s:false},
+    {n:5,s:false},{n:6,s:true},{n:7,s:false},{n:8,s:true},{n:9,s:false},{n:10,s:true},{n:11,s:false}
+  ];
+  const labels = ['C','','D','','E','F','','G','','A','','B'];
+  keys.forEach(k => {
+    const el = document.createElement('div');
+    el.className = 'piano-key' + (k.s ? ' sharp' : '');
+    el.textContent = labels[k.n] || '';
+    el.dataset.note = k.n;
+    el.addEventListener('mousedown', () => pressKey(k.n, el));
+    piano.appendChild(el);
+  });
+}
+
+function pressKey(noteIdx, el) {
+  const octave = +document.getElementById('octave').value;
+  const dur = +document.getElementById('note-dur').value;
+  const freq = noteFreq(noteIdx, octave);
+  el.classList.add('active');
+  playTone(freq, dur, () => el.classList.remove('active'));
+  const label = NOTE_NAMES[noteIdx] + octave;
+  melody.push({f: Math.round(freq), d: dur, label});
+  renderMelody();
+  document.getElementById('note-info').textContent = label + ' — ' + Math.round(freq) + 'Hz';
+}
+
+const KB_MAP = {'a':0,'w':1,'s':2,'e':3,'d':4,'f':5,'t':6,'g':7,'y':8,'h':9,'u':10,'j':11,'k':0};
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+  const idx = KB_MAP[e.key.toLowerCase()];
+  if (idx !== undefined) {
+    const keys = document.querySelectorAll('.piano-key');
+    pressKey(idx, keys[idx]);
+  }
+});
+
+function addManualNote() {
+  const f = +document.getElementById('manual-freq').value;
+  const d = +document.getElementById('manual-dur').value;
+  melody.push({f, d, label: f + 'Hz'});
+  renderMelody();
+}
+
+function addSilence() {
+  const d = +document.getElementById('manual-dur').value;
+  melody.push({f:0, d, label:'---'});
+  renderMelody();
+}
+
+function addToMelody() {
+  const f1 = +document.getElementById('f1').value;
+  const f2 = +document.getElementById('f2').value;
+  const dur = +document.getElementById('dur').value;
+  const steps = +document.getElementById('steps').value;
+  const freqs = buildSweep('linear', f1, f2, steps, 1);
+  const stepMs = Math.max(1, Math.round(dur/steps));
+  freqs.forEach(f => melody.push({f, d:stepMs, label:'~'+f}));
+  renderMelody();
+}
+
+function addSweepToMelody() {
+  const type = document.getElementById('sweep-type').value;
+  const f1 = +document.getElementById('sw1').value;
+  const f2 = +document.getElementById('sw2').value;
+  const dur = +document.getElementById('swd').value;
+  const steps = +document.getElementById('sws').value;
+  const cycles = +document.getElementById('swc').value;
+  const freqs = buildSweep(type, f1, f2, steps, cycles);
+  const stepMs = Math.max(1, Math.round(dur/steps));
+  freqs.forEach(f => melody.push({f, d:stepMs, label:'~'+f}));
+  renderMelody();
+}
+
+let selMode = false;
+let selected = new Set(); // indices
+
+function toggleSelMode() {
+  selMode = document.getElementById('sel-mode').checked;
+  selected.clear();
+  document.getElementById('loop-panel').style.display = selMode ? '' : 'none';
+  renderMelody();
+}
+
+function toggleSelect(i) {
+  if (selected.has(i)) selected.delete(i); else selected.add(i);
+  updateSelCount();
+  renderMelody();
+}
+
+function updateSelCount() {
+  document.getElementById('sel-count').textContent = selected.size;
+  if (selected.size > 0) {
+    const sorted = [...selected].sort((a,b)=>a-b);
+    const times = +document.getElementById('loop-times').value || 2;
+    document.getElementById('loop-info').textContent =
+      'Notas ' + (sorted[0]+1) + '–' + (sorted[sorted.length-1]+1) +
+      ' repetidas ×' + times + ' = ' + (selected.size * times) + ' notas añadidas';
+  } else {
+    document.getElementById('loop-info').textContent = '';
+  }
+}
+
+function selectAll() { melody.forEach((_,i) => selected.add(i)); updateSelCount(); renderMelody(); }
+function clearSel()  { selected.clear(); updateSelCount(); renderMelody(); }
+
+function applyLoop() {
+  if (!selected.size) { setStatus('SELECCIONA NOTAS PRIMERO'); return; }
+  const times = Math.max(2, +document.getElementById('loop-times').value || 2);
+  const sorted = [...selected].sort((a,b)=>a-b);
+  const chunk = sorted.map(i => ({...melody[i]}));
+  // insert repeated copies after last selected index
+  const insertAt = sorted[sorted.length-1] + 1;
+  const repeated = [];
+  for (let t = 1; t < times; t++) chunk.forEach(n => repeated.push({...n}));
+  melody.splice(insertAt, 0, ...repeated);
+  selected.clear();
+  updateSelCount();
+  renderMelody();
+  setStatus('LOOP APLICADO: ' + chunk.length + ' notas × ' + times + ' = ' + (chunk.length*times) + ' notas totales');
+}
+
+function previewLoop() {
+  if (!selected.size) { setStatus('SELECCIONA NOTAS PRIMERO'); return; }
+  const times = Math.max(2, +document.getElementById('loop-times').value || 2);
+  const sorted = [...selected].sort((a,b)=>a-b);
+  const chunk = sorted.map(i => melody[i]);
+  const full = [];
+  for (let t = 0; t < times; t++) chunk.forEach(n => full.push(n));
+  stopFlag = false;
+  setStatus('PREVIEW LOOP ×' + times + '...');
+  let i = 0;
+  function next() {
+    if (stopFlag || i >= full.length) { setStatus('PREVIEW DONE'); return; }
+    const {f,d} = full[i++];
+    playTone(f, d, next);
+  }
+  next();
+}
+
+function deleteSelected() {
+  if (!selected.size) return;
+  melody = melody.filter((_,i) => !selected.has(i));
+  selected.clear();
+  updateSelCount();
+  renderMelody();
+  setStatus('NOTAS ELIMINADAS');
+}
+
+let dragSrcIdx = null;
+
+function moveNote(i, dir) {
+  const j = i + dir;
+  if (j < 0 || j >= melody.length) return;
+  [melody[i], melody[j]] = [melody[j], melody[i]];
+  // update selection indices
+  const newSel = new Set();
+  selected.forEach(s => {
+    if (s === i) newSel.add(j);
+    else if (s === j) newSel.add(i);
+    else newSel.add(s);
+  });
+  selected.clear(); newSel.forEach(s => selected.add(s));
+  renderMelody();
+  // scroll to keep moved note visible
+  setTimeout(() => {
+    const rows = document.querySelectorAll('#seq-list .note-row');
+    if (rows[j]) rows[j].scrollIntoView({block:'nearest'});
+  }, 0);
+}
+
+function renderMelody() {
+  const el = document.getElementById('seq-list');
+  if (!melody.length) { el.innerHTML = '<em>— vacío —</em>'; return; }
+  el.innerHTML = melody.map((n,i) => {
+    const isSel = selected.has(i);
+    const bg = isSel ? 'background:rgba(51,255,51,0.08);' : '';
+    const dragging = 'opacity:1;';
+
+    const check = selMode
+      ? `<input type="checkbox" ${isSel?'checked':''} onchange="event.stopPropagation();toggleSelect(${i})" style="width:auto;margin:0;cursor:pointer;">`
+      : `<span style="color:#444;min-width:16px;text-align:right;">${i+1}</span>`;
+
+    const orderBtns = !selMode ? `
+      <span onclick="event.stopPropagation();moveNote(${i},-1)" title="Subir"
+        style="cursor:pointer;color:var(--phosphor-dim);padding:0 2px;user-select:none;" onmouseover="this.style.color='var(--phosphor)'" onmouseout="this.style.color='var(--phosphor-dim)'">▲</span>
+      <span onclick="event.stopPropagation();moveNote(${i},1)" title="Bajar"
+        style="cursor:pointer;color:var(--phosphor-dim);padding:0 2px;user-select:none;" onmouseover="this.style.color='var(--phosphor)'" onmouseout="this.style.color='var(--phosphor-dim)'">▼</span>
+      <span style="cursor:grab;color:#333;padding:0 2px;user-select:none;" title="Arrastrar">⠿</span>
+    ` : '';
+
+    return `<div class="note-row"
+        draggable="${!selMode}"
+        data-idx="${i}"
+        style="display:flex;gap:4px;padding:2px 2px;border-bottom:1px solid #1a1a1a;align-items:center;${bg}${dragging}cursor:${selMode?'pointer':'default'};"
+        ${selMode ? `onclick="toggleSelect(${i})"` : ''}
+        ondragstart="dragStart(event,${i})"
+        ondragover="dragOver(event,${i})"
+        ondrop="dragDrop(event,${i})"
+        ondragend="dragEnd(event)"
+        ondragleave="dragLeave(event)">
+      ${check}
+      ${orderBtns}
+      <span style="color:${isSel?'var(--phosphor-bright)':'var(--phosphor)'};width:54px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${n.label}</span>
+      <span style="color:#555;min-width:52px;">${n.f?n.f+'Hz':'SIL'}</span>
+      <span style="color:#444;min-width:38px;">${n.d}ms</span>
+      ${!selMode ? `<span style="cursor:pointer;color:#ff5555;margin-left:auto;padding:0 4px;" onclick="event.stopPropagation();removeNote(${i})">✕</span>` : ''}
+    </div>`;
+  }).join('');
+  if (selMode) updateSelCount();
+}
+
+function dragStart(e, i) {
+  dragSrcIdx = i;
+  e.dataTransfer.effectAllowed = 'move';
+  setTimeout(() => {
+    const rows = document.querySelectorAll('#seq-list .note-row');
+    if (rows[i]) rows[i].style.opacity = '0.4';
+  }, 0);
+}
+
+function dragOver(e, i) {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  document.querySelectorAll('#seq-list .note-row').forEach((r,ri) => {
+    r.style.borderTop = ri === i && i !== dragSrcIdx ? '2px solid var(--phosphor)' : '';
+    r.style.borderBottom = ri === i && i !== dragSrcIdx ? '' : '1px solid #1a1a1a';
+  });
+}
+
+function dragLeave(e) {
+  e.currentTarget.style.borderTop = '';
+  e.currentTarget.style.borderBottom = '1px solid #1a1a1a';
+}
+
+function dragDrop(e, i) {
+  e.preventDefault();
+  if (dragSrcIdx === null || dragSrcIdx === i) return;
+  const moved = melody.splice(dragSrcIdx, 1)[0];
+  const dest = i > dragSrcIdx ? i - 1 : i;
+  melody.splice(dest, 0, moved);
+  // remap selection
+  const newSel = new Set();
+  selected.forEach(s => {
+    if (s === dragSrcIdx) { newSel.add(dest); return; }
+    if (dragSrcIdx < i) { if (s > dragSrcIdx && s <= dest) newSel.add(s-1); else newSel.add(s); }
+    else { if (s >= dest && s < dragSrcIdx) newSel.add(s+1); else newSel.add(s); }
+  });
+  selected.clear(); newSel.forEach(s => selected.add(s));
+  dragSrcIdx = null;
+  renderMelody();
+}
+
+function dragEnd(e) {
+  dragSrcIdx = null;
+  document.querySelectorAll('#seq-list .note-row').forEach(r => {
+    r.style.opacity = '1';
+    r.style.borderTop = '';
+    r.style.borderBottom = '1px solid #1a1a1a';
+  });
+}
+
+function removeNote(i) { melody.splice(i,1); renderMelody(); }
+function clearMelody() { melody=[]; renderMelody(); stopMelody(); }
+
+function playMelody() {
+  if (!melody.length) return;
+  stopFlag = false;
+  setStatus('PLAYING MELODY...');
+  playMelodyStep(0);
+}
+
+function playMelodyStep(i) {
+  if (stopFlag || i >= melody.length) { setStatus('MELODY DONE'); return; }
+  const {f,d} = melody[i];
+  playTone(f, d, () => playMelodyStep(i+1));
+}
+
+function stopMelody() { stopFlag = true; if(ac) { ac.close(); ac=null; } setStatus('STOPPED'); }
+
+// ─── Code export ──────────────────────────────────────────────────────────
+function generateCode() {
+  if (!melody.length) { document.getElementById('code-out').textContent='/* Sin notas */'; return; }
+  let code = '/* Generado por PC Speaker Tool */\n';
+  code += '#define MELODY_LEN ' + melody.length + '\n\n';
+  code += 'static unsigned int melody_freq[MELODY_LEN] = {\n    ';
+  code += melody.map(n=>n.f).join(', ') + '\n};\n\n';
+  code += 'static unsigned int melody_dur[MELODY_LEN] = {\n    ';
+  code += melody.map(n=>n.d).join(', ') + '\n};\n\n';
+  code += 'void play_melody(void) {\n';
+  code += '    int i;\n';
+  code += '    for (i = 0; i < MELODY_LEN; i++) {\n';
+  code += '        play_note(melody_freq[i], melody_dur[i]);\n';
+  code += '    }\n}\n';
+  document.getElementById('code-out').textContent = code;
+  switchTab('export');
+}
+
+function generateHeader() {
+  if (!melody.length) return;
+  const name = 'MY_MELODY';
+  let code = '#ifndef MELODY_H\n#define MELODY_H\n\n';
+  code += '#define ' + name + '_LEN ' + melody.length + '\n\n';
+  code += 'static const unsigned int ' + name.toLowerCase() + '_freq[] = {';
+  code += melody.map(n=>n.f).join(',') + '};\n';
+  code += 'static const unsigned int ' + name.toLowerCase() + '_dur[] = {';
+  code += melody.map(n=>n.d).join(',') + '};\n\n';
+  code += '#endif /* MELODY_H */\n';
+  document.getElementById('code-out').textContent = code;
+  switchTab('export');
+}
+
+function copyCode() {
+  const text = document.getElementById('code-out').textContent;
+  navigator.clipboard.writeText(text).then(() => setStatus('CÓDIGO COPIADO AL PORTAPAPELES'));
+}
+
+// ─── UI helpers ───────────────────────────────────────────────────────────
+function setStatus(msg) { document.getElementById('status').textContent = msg; }
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  event.target.classList.add('active');
+  if (name === 'sweep') drawSweepPreview();
+}
+
+document.querySelectorAll('#sw1,#sw2,#sws,#swc,#sweep-type').forEach(el => {
+  el.addEventListener('input', drawSweepPreview);
+  el.addEventListener('change', drawSweepPreview);
+});
+
+// Init
+buildPiano();
+buildSFXGrid();
+updateSweepUI();
+drawSweepPreview();
+drawWave(440, 'wave-canvas');
+</script>
+</body>
+</html>
