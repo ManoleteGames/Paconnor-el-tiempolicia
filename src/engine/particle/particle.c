@@ -198,6 +198,90 @@ int PARTICLE_CheckParticleColission(Particle p) {
 	return false;
 }
 
+void PARTICLE_SetExplosionDamage(Particle p) {
+	int i;
+	int point1_x, point1_y;
+	int point2_x, point2_y;
+	int point3_x, point3_y;
+	int point4_x, point4_y;
+	bool collision_detected;
+
+	point1_x = p.pos_x + p.colission_area.points[0][0];
+	point1_y = p.pos_y + p.colission_area.points[0][1];
+	point2_x = p.pos_x + p.colission_area.points[1][0];
+	point2_y = p.pos_y + p.colission_area.points[1][1];
+	point3_x = p.pos_x + p.colission_area.points[2][0];
+	point3_y = p.pos_y + p.colission_area.points[2][1];
+	point4_x = p.pos_x + p.colission_area.points[3][0];
+	point4_y = p.pos_y + p.colission_area.points[3][1];
+
+	/////// OBJECTS COLISSIONS ///////////
+	for (i = 0; i < OBJECT_MAX_OBJECTS; i++) {
+		collision_detected = true;
+		if (object[i].is_loaded) {
+			if (gfx_sprite_stack[object[i].num_sprite].shown) {
+				if (point1_x > object[i].pos_x + object[i].hit_area.points[1][0]) collision_detected = false;// Out of left side
+				if (point2_x < object[i].pos_x + object[i].hit_area.points[0][0]) collision_detected = false;//  Out of right side
+				if (point3_y < object[i].pos_y + object[i].hit_area.points[0][1]) collision_detected = false;//  Out of top side
+				if (point1_y > object[i].pos_y + object[i].hit_area.points[2][1]) collision_detected = false;//  Out of bottom side
+				if (collision_detected) {
+					// Set damage to object
+					object[i].is_hit = true;
+					object[i].hit_by = ENTITY_ID_EXPLOSION;
+					object[i].damage = p.damage;
+				}
+			}
+		}
+	}
+
+	/////// ENEMIES COLISSIONS ///////////
+	for (i = 0; i < ENEMY_MAX_ENEMIES; i++) {
+		collision_detected = true;
+		if (enemy[i].is_loaded && !enemy[i].action_dead) {
+			if (gfx_sprite_stack[enemy[i].sprite_num].shown) {
+				if (point1_x > enemy[i].pos_x + enemy[i].hit_area.points[1][0]) collision_detected = false;// Out of left side
+				if (point2_x < enemy[i].pos_x + enemy[i].hit_area.points[0][0]) collision_detected = false;//  Out of right side
+				if (point3_y < enemy[i].pos_y + enemy[i].hit_area.points[0][1]) collision_detected = false;//  Out of top side
+				if (point1_y > enemy[i].pos_y + enemy[i].hit_area.points[2][1]) collision_detected = false;//  Out of bottom side
+				if (collision_detected) {
+					// Set damage to object
+					enemy[i].is_hit = true;
+					enemy[i].hit_by = ENTITY_ID_EXPLOSION;
+					enemy[i].damage = p.damage;
+				}
+			}
+		}
+	}
+
+	/////// ACTOR COLISSIONS /////////////
+	collision_detected = true;
+	if (!actor.action_dead) {
+		if (point1_x > actor.pos_x + actor.hit_area.points[1][0]) collision_detected = false;// Out of left side
+		if (point2_x < actor.pos_x + actor.hit_area.points[0][0]) collision_detected = false;//  Out of right side
+		if (point3_y < actor.pos_y + actor.hit_area.points[0][1]) collision_detected = false;//  Out of top side
+		if (point1_y > actor.pos_y + actor.hit_area.points[2][1]) collision_detected = false;//  Out of bottom side
+		if (collision_detected) {
+			actor.is_hit = true;
+			actor.hit_by = ENTITY_ID_EXPLOSION;
+			actor.damage = p.damage;
+		}
+	}
+
+	/////// BOSS COLISSIONS /////////////
+	collision_detected = true;
+	if (!boss.action_dead) {
+		if (point1_x > boss.pos_x + boss.hit_area.points[1][0]) collision_detected = false;// Out of left side
+		if (point2_x < boss.pos_x + boss.hit_area.points[0][0]) collision_detected = false;//  Out of right side
+		if (point3_y < boss.pos_y + boss.hit_area.points[0][1]) collision_detected = false;//  Out of top side
+		if (point1_y > boss.pos_y + boss.hit_area.points[2][1]) collision_detected = false;//  Out of bottom side
+		if (collision_detected) {
+			boss.is_hit = true;
+			boss.hit_by = ENTITY_ID_EXPLOSION;
+			boss.damage = p.damage;
+		}
+	}
+}
+
 void PARTICLE_UnloadParticles(void) {
 	int i;
 	for (i = 0; i < PARTICLE_MAX_PARTICLES; i++) {
@@ -222,7 +306,6 @@ void PARTICLE_UnloadParticle(int number) {
  */
 void PARTICLE_UpdateParticles(void) {
 	int i;
-	int obj_number, enemy_number;
 
 	for (i = 0; i < PARTICLE_MAX_PARTICLES; i++) {
 		if (particle[i].loaded) {
@@ -246,78 +329,16 @@ void PARTICLE_UpdateParticles(void) {
 				if (particle[i].current_step >= particle[i].steps) {
 					particle[i].on_target = true;
 					GFX_SetDefaultAnimation(particle[i].sprite_num, false, false, particle[i].speed);
-				}
 
-				// Check if hits something
-				particle[i].hit_on = PARTICLE_CheckParticleColission(particle[i]);
-
-				switch (gfx_sprite_stack[particle[i].sprite_num].entity_id) {
-					case ENTITY_ID_BLOOD:
-						// Check hit on background, object or enemy
-						switch (particle[i].hit_on & 0x00FF) {
-							case ENTITY_ID_BACKGROUND:
-								// can be background
-								particle[i].on_target = true;
-								GFX_SetDefaultAnimation(particle[i].sprite_num, false, false, particle[i].speed);
-								break;
-						}
-						break;
-					case ENTITY_ID_EXPLOSION:
-						// Check hit on background, object or enemy
-						switch (particle[i].hit_on & 0x00FF) {
-							case ENTITY_ID_BACKGROUND:
-							case ENTITY_ID_BARREL:
-							case ENTITY_ID_ENEMY:
-							case ENTITY_ID_ACTOR:
-							case ENTITY_ID_BOSS:
-								particle[i].on_target = true;
-								GFX_SetDefaultAnimation(particle[i].sprite_num, false, false, particle[i].speed);
-								break;
-							default:
-								break;
-						}
-						break;
-					default:
-						break;
+					if (gfx_sprite_stack[particle[i].sprite_num].entity_id == ENTITY_ID_EXPLOSION) {
+						// Set damage to all characters arround and set damage to 0.
+						PARTICLE_SetExplosionDamage(particle[i]);
+					}
 				}
 			}
 
-			// On target
+			// Wait for animation ending
 			if (particle[i].on_target) {
-				switch (gfx_sprite_stack[particle[i].sprite_num].entity_id) {
-					case ENTITY_ID_EXPLOSION:
-						// Check hit on background, object or enemy
-						switch (particle[i].hit_on & 0x00FF) {
-							case ENTITY_ID_BARREL:
-								// Get object number
-								obj_number = (particle[i].hit_on & 0xFF00) >> 8;
-								object[obj_number].is_hit = true;
-								object[obj_number].damage = particle[i].damage;
-								break;
-							case ENTITY_ID_ENEMY:
-								// Get enemy number
-								enemy_number = (particle[i].hit_on & 0xFF00) >> 8;
-								enemy[enemy_number].is_hit = true;
-								enemy[enemy_number].damage = particle[i].damage;
-								break;
-							case ENTITY_ID_ACTOR:
-								actor.is_hit = true;
-								actor.hit_by = ENTITY_ID_EXPLOSION;
-								actor.damage = particle[i].damage;
-								break;
-							case ENTITY_ID_BOSS:
-								boss.is_hit = true;
-								boss.hit_by = ENTITY_ID_EXPLOSION;
-								boss.damage = particle[i].damage;
-								break;
-							default:
-								break;
-						}
-						break;
-					default:
-						break;
-				}
-
 				if (GFX_IsSpriteAnimationEnded(particle[i].sprite_num, 0)) {
 					PARTICLE_UnloadParticle(i);
 				}

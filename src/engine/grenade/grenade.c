@@ -372,32 +372,32 @@ void GRENADE_Update(void) {
 			// Blink
 			switch (grenade[i].current_time) {
 				case 5:
-					//GFX_SetSpriteBlinkingProperties(grenade[i].sprite_num, true, 20, GRENADE_BLINK_COLOR);
+					GFX_SetSpriteBlinkingProperties(grenade[i].sprite_num, true, 20, GRENADE_BLINK_COLOR);
 					gfx_sprite_stack[grenade[i].sprite_num].blink.time = 20;
 					break;
 				case 4:
-					//GFX_SetSpriteBlinkingProperties(grenade[i].sprite_num, true, 15, GRENADE_BLINK_COLOR);
+					GFX_SetSpriteBlinkingProperties(grenade[i].sprite_num, true, 15, GRENADE_BLINK_COLOR);
 					gfx_sprite_stack[grenade[i].sprite_num].blink.time = 15;
 					break;
 				case 3:
-					//GFX_SetSpriteBlinkingProperties(grenade[i].sprite_num, true, 10, GRENADE_BLINK_COLOR);
+					GFX_SetSpriteBlinkingProperties(grenade[i].sprite_num, true, 10, GRENADE_BLINK_COLOR);
 					gfx_sprite_stack[grenade[i].sprite_num].blink.time = 10;
 					break;
 				case 2:
-					//GFX_SetSpriteBlinkingProperties(grenade[i].sprite_num, true, 5, GRENADE_BLINK_COLOR);
+					GFX_SetSpriteBlinkingProperties(grenade[i].sprite_num, true, 5, GRENADE_BLINK_COLOR);
 					gfx_sprite_stack[grenade[i].sprite_num].blink.time = 5;
 					break;
 				case 1:
-					//GFX_SetSpriteBlinkingProperties(grenade[i].sprite_num, true, 2, GRENADE_BLINK_COLOR);
+					GFX_SetSpriteBlinkingProperties(grenade[i].sprite_num, true, 2, GRENADE_BLINK_COLOR);
 					gfx_sprite_stack[grenade[i].sprite_num].blink.time = 2;
 					break;
 				case 0:
-					//GFX_SetSpriteBlinkingProperties(grenade[i].sprite_num, true, 1, GRENADE_BLINK_COLOR);
+					GFX_SetSpriteBlinkingProperties(grenade[i].sprite_num, true, 1, GRENADE_BLINK_COLOR);
 					gfx_sprite_stack[grenade[i].sprite_num].blink.time = 1;
 					break;
 				default:
 					gfx_sprite_stack[grenade[i].sprite_num].blink.time = 1;
-					//GFX_SetSpriteBlinkingProperties(grenade[i].sprite_num, true, 1, GRENADE_BLINK_COLOR);
+					GFX_SetSpriteBlinkingProperties(grenade[i].sprite_num, true, 1, GRENADE_BLINK_COLOR);
 					break;
 			}
 
@@ -532,7 +532,7 @@ void GRENADE_Update(void) {
 				grenade[i].current_step = 0;
 
 				if (grenade[i].pos_z < 5) {// Explode on the floor
-					PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_EXPLOSION1, ENTITY_ID_EXPLOSION, grenade[i].pos_x - 16, grenade[i].pos_y - grenade[i].pos_z - 16, grenade[i].pos_x - 16, grenade[i].pos_y - grenade[i].pos_z - 16, 3, 5, 16, 12);
+					PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_EXPLOSION1, ENTITY_ID_EXPLOSION, grenade[i].pos_x - 16, grenade[i].pos_y - grenade[i].pos_z - 16, grenade[i].pos_x - 16, grenade[i].pos_y - grenade[i].pos_z - 16, 3, 50, 20, 16);
 				} else {// Explode on the air
 					PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_EXPLOSION1, ENTITY_ID_EXPLOSION, grenade[i].pos_x - 16, grenade[i].pos_y - grenade[i].pos_z - 16, grenade[i].pos_x - 16, grenade[i].pos_y - grenade[i].pos_z - 16, 3, 0, 0, 0);
 				}

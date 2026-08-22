@@ -18,5 +18,6 @@ void FILE_LoadTextFile(const char *dat_name, const char *asset_name, TextFile *t
 void FILE_LoadAnimationFile(const char *dat_name, const char *asset_name, SpriteAnimation *ani, int max_animations);
 void FILE_LoadSettingsFile(const char *config_file);
 void FILE_LoadSpeakerSong(const char *dat_name, const char *asset_name, Song *song);
+void FILE_LoadSpriteConfigFile(const char *dat_name, const char *asset_name, SpriteConfig *cfg);
 
 #endif

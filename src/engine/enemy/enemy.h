@@ -6,7 +6,7 @@
 
 #define ENEMY_TRANSP_COLOR 201
 
-#define ENEMY_MAX_ENEMIES 16
+#define ENEMY_MAX_ENEMIES 32
 
 #define ENEMY_BULLET_GFX_WIDTH 32
 #define ENEMY_BULLET_GFX_HEIGHT 8
@@ -138,7 +138,7 @@
 extern Enemy enemy[ENEMY_MAX_ENEMIES];
 extern byte enemy_counter;
 void ENEMY_Init(void);
-void ENEMY_Load(byte number, int x, int y, int width_px, int height_px, int portait_gfx_id, int feet_gfx_id, int body_gfx_id, int head_gfx_id, int larm_gfx_id, int rarm_gfx_id, int facing, int gun_type, int gun_graphics_id, int bullet_graphics_id, int behavior, int life);
+void ENEMY_Load(const char *dat_name, byte number, int x, int y, int face_gfx_id, int portait_gfx_id, int feet_gfx_id, int body_gfx_id, int head_gfx_id, int larm_gfx_id, int rarm_gfx_id, int facing, int gun_type, int gun_graphics_id, int bullet_graphics_id, int behavior, int life);
 void ENEMY_Update(void);
 void ENEMY_DrawColissionPixels(Enemy e);
 void ENEMY_DrawHitPixels(Enemy e);
@@ -148,5 +148,6 @@ void ENEMY_SetBehavior(byte number, int behavior);
 //bool ENEMY_AreEnemiesNearby(void);
 void ENEMY_SetFacing(byte number, int facing);
 void ENEMY_LoadAnimations(const char *dat_name, int enemy_number, int total_anims);
+void ENEMY_Unload(int enemy_number);
 
 #endif

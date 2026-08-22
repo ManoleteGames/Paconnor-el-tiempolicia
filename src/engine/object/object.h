@@ -13,7 +13,7 @@
 
 /// OBJECT.C ///
 extern Object object[OBJECT_MAX_OBJECTS];
-void OBJECT_LoadObject(byte number, byte entity_id, byte graphics_id, int pos_x, int pos_y);
+void OBJECT_LoadObject(const char *dat_name, byte number, byte entity_id, byte sprite_graphics_id, byte portait_graphics_id, int pos_x, int pos_y);
 void OBJECT_UpdateObjects(void);
 void OBJECT_UnloadObjects(void);
 void OBJECT_UnloadObject(int number);

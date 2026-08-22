@@ -50,7 +50,7 @@
 extern Boss boss;
 void BOSS_Init(void);
 void BOSS_LoadAnimations(const char *dat_name, int total_anims);
-void BOSS_Load(int x, int y, int width_px, int height_px, int portait_gfx_id, int feet_gfx_id, int body_gfx_id, int head_gfx_id, int larm_gfx_id, int rarm_gfx_id, int facing, int gun_type, int gun_graphics_id, int bullet_graphics_id, int behavior, int life);
+void BOSS_Load(const char *dat_name, int x, int y, int face_gfx_id, int portait_gfx_id, int feet_gfx_id, int body_gfx_id, int head_gfx_id, int larm_gfx_id, int rarm_gfx_id, int facing, int gun_type, int gun_graphics_id, int bullet_graphics_id, int behavior, int life);
 void BOSS_SetPosition(byte number, int x, int y);
 void BOSS_Unload(void);
 void BOSS_Update(void);

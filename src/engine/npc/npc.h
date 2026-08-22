@@ -55,7 +55,7 @@
 extern NPC npc[NPC_MAX_NPCS];
 extern byte npc_counter;
 void NPC_Init(void);
-void NPC_Load(byte number, int x, int y, int width_px, int height_px, int gfx_id, int facing, int behavior, int life);
+void NPC_Load(const char *dat_name, byte number, int x, int y, int face_gfx_id, int sprite_gfx_id, int facing, int behavior, int life);
 void NPC_SetPosition(byte number, int x, int y);
 void NPC_SetBehavior(byte number, int behavior);
 void NPC_UnloadNpc(int npc_number);

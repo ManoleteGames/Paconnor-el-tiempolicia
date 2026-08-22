@@ -46,7 +46,7 @@ void BOSS_Init(void) {
 /** BOSS :: Initializes boss data
  * - Sets default values for the enemy structure 
  */
-void BOSS_Load(int x, int y, int width_px, int height_px, int portait_gfx_id, int feet_gfx_id, int body_gfx_id, int head_gfx_id, int larm_gfx_id, int rarm_gfx_id, int facing, int gun_type, int gun_graphics_id, int bullet_graphics_id, int behavior, int life) {
+void BOSS_Load(const char *dat_name, int x, int y, int face_gfx_id, int portait_gfx_id, int feet_gfx_id, int body_gfx_id, int head_gfx_id, int larm_gfx_id, int rarm_gfx_id, int facing, int gun_type, int gun_graphics_id, int bullet_graphics_id, int behavior, int life) {
 
 	int sprite_slot;
 
@@ -57,6 +57,21 @@ void BOSS_Load(int x, int y, int width_px, int height_px, int portait_gfx_id, in
 		sprintf(engine.system_error_message3, " ");
 		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_SYSTEM);
 	}
+
+	// Load configuration
+	FILE_LoadSpriteConfigFile(dat_name, "BOSS.CFG", &boss.cfg);
+
+	boss.width_px = boss.cfg.width;
+	boss.height_px = boss.cfg.height;
+
+	// Load graphics
+	if (!gfx_sprite_graphics_stack[face_gfx_id].loaded) GFX_LoadSpriteGraphicsRLE(dat_name, "FACE.PCX", face_gfx_id, boss.cfg.face_width, boss.cfg.face_height, boss.cfg.face_frames, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_TEMPORARY_SPRITE);
+	if (!gfx_sprite_graphics_stack[portait_gfx_id].loaded) GFX_LoadSpriteGraphicsRLE(dat_name, "PORTAIT.PCX", portait_gfx_id, boss.cfg.portait_width, boss.cfg.portait_height, boss.cfg.portait_frames, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_TEMPORARY_SPRITE);
+	if (!gfx_sprite_graphics_stack[feet_gfx_id].loaded) GFX_LoadSpriteGraphicsRLE(dat_name, "FEET.PCX", feet_gfx_id, boss.cfg.feet_width, boss.cfg.feet_height, boss.cfg.feet_frames, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_TEMPORARY_SPRITE);
+	if (!gfx_sprite_graphics_stack[body_gfx_id].loaded) GFX_LoadSpriteGraphicsRLE(dat_name, "BODY.PCX", body_gfx_id, boss.cfg.body_width, boss.cfg.body_height, boss.cfg.body_frames, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_TEMPORARY_SPRITE);
+	if (!gfx_sprite_graphics_stack[head_gfx_id].loaded) GFX_LoadSpriteGraphicsRLE(dat_name, "HEAD.PCX", head_gfx_id, boss.cfg.head_width, boss.cfg.head_height, boss.cfg.head_frames, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_TEMPORARY_SPRITE);
+	if (!gfx_sprite_graphics_stack[larm_gfx_id].loaded) GFX_LoadSpriteGraphicsRLE(dat_name, "LARM.PCX", larm_gfx_id, boss.cfg.larm_width, boss.cfg.larm_height, boss.cfg.larm_frames, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_TEMPORARY_SPRITE);
+	if (!gfx_sprite_graphics_stack[rarm_gfx_id].loaded) GFX_LoadSpriteGraphicsRLE(dat_name, "RARM.PCX", rarm_gfx_id, boss.cfg.rarm_width, boss.cfg.rarm_height, boss.cfg.rarm_frames, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_TEMPORARY_SPRITE);
 
 	boss.is_loaded = true;
 
@@ -103,11 +118,8 @@ void BOSS_Load(int x, int y, int width_px, int height_px, int portait_gfx_id, in
 		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_GRAPHICS);
 	} else {
 		boss.sprite_num = sprite_slot;
-		GFX_InitSprite(ENTITY_ID_BOSS, 0, sprite_slot, 0, width_px, height_px);
+		GFX_InitSprite(ENTITY_ID_BOSS, 0, sprite_slot, 0, boss.cfg.width, boss.cfg.height);
 	}
-
-	boss.width_px = width_px;
-	boss.height_px = height_px;
 
 	// Set colission points
 	//  ----------------
@@ -177,6 +189,9 @@ void BOSS_Load(int x, int y, int width_px, int height_px, int portait_gfx_id, in
 	// Patterns
 	boss.pattern_step = 0;
 	boss.current_pattern = BOSS_PATTERN_HOLD_ON;
+
+	// Load animations
+	BOSS_LoadAnimations(dat_name, 10);
 }
 
 void BOSS_SetPosition(byte number, int x, int y) {
@@ -745,12 +760,6 @@ void BOSS_Update(void) {
 
 	if (boss.is_loaded) {
 		boss_counter++;
-
-
-		engine.debug1_INT = boss.gun.bullet_graphics_id;
-		engine.debug2_INT = boss.in_shoot_range;
-		engine.debug3_INT = boss.in_punch_range;
-
 
 		// Calculate boss middle point
 		boss.middle_x = GFX_GetSpriteScreenPosX(boss.sprite_num) + (boss.width_px >> 1);

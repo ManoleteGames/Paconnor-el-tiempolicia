@@ -29,7 +29,7 @@ void NPC_Init(void) {
 	GFX_SetDefaultAnimation(ENTITY_ID_NPC, 0, 0, 0);
 }
 
-void NPC_Load(byte number, int x, int y, int width_px, int height_px, int gfx_id, int facing, int behavior, int life) {
+void NPC_Load(const char *dat_name, byte number, int x, int y, int face_gfx_id, int sprite_gfx_id, int facing, int behavior, int life) {
 
 	int sprite_slot;
 
@@ -40,6 +40,16 @@ void NPC_Load(byte number, int x, int y, int width_px, int height_px, int gfx_id
 		sprintf(engine.system_error_message3, " ");
 		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_SYSTEM);
 	}
+
+	// Load configuration
+	FILE_LoadSpriteConfigFile(dat_name, "NPC.CFG", &npc[number].cfg);
+
+	npc[number].width_px = npc[number].cfg.width;
+	npc[number].height_px = npc[number].cfg.height;
+
+	// Load graphics
+	if (!gfx_sprite_graphics_stack[face_gfx_id].loaded) GFX_LoadSpriteGraphicsRLE(dat_name, "FACE.PCX", face_gfx_id, npc[number].cfg.face_width, npc[number].cfg.face_height, npc[number].cfg.face_frames, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_TEMPORARY_SPRITE);
+	if (!gfx_sprite_graphics_stack[sprite_gfx_id].loaded) GFX_LoadSpriteGraphicsRLE(dat_name, "SPRITE.PCX", sprite_gfx_id, npc[number].cfg.feet_width, npc[number].cfg.feet_height, npc[number].cfg.feet_frames, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_TEMPORARY_SPRITE);
 
 	npc[number].is_loaded = true;
 
@@ -81,11 +91,8 @@ void NPC_Load(byte number, int x, int y, int width_px, int height_px, int gfx_id
 		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_GRAPHICS);
 	} else {
 		npc[number].sprite_num = sprite_slot;
-		GFX_InitSprite(ENTITY_ID_NPC, number, sprite_slot, 0, width_px, height_px);
+		GFX_InitSprite(ENTITY_ID_NPC, number, sprite_slot, 0, npc[number].cfg.width, npc[number].cfg.height);
 	}
-
-	npc[number].width_px = width_px;
-	npc[number].height_px = height_px;
 
 	// Set colission points
 	//  ----------------
@@ -136,7 +143,7 @@ void NPC_Load(byte number, int x, int y, int width_px, int height_px, int gfx_id
 	npc[number].hit_area.points[3][0] = gfx_sprite_stack[npc[number].sprite_num].width_px - (gfx_sprite_stack[npc[number].sprite_num].width_px >> 3);
 	npc[number].hit_area.points[3][1] = gfx_sprite_stack[npc[number].sprite_num].height_px - (gfx_sprite_stack[npc[number].sprite_num].height_px >> 4);
 
-	GFX_SetSpriteGraphic(npc[number].sprite_num, 0, gfx_id, 0, 0);                  // main graphic
+	GFX_SetSpriteGraphic(npc[number].sprite_num, 0, sprite_gfx_id, 0, 0);           // main graphic
 	GFX_SetSpriteGraphic(npc[number].sprite_num, 1, SPRITE_GRAPHICS_ID_EMPTY, 0, 0);// empty
 	GFX_SetSpriteGraphic(npc[number].sprite_num, 2, SPRITE_GRAPHICS_ID_EMPTY, 0, 0);// empty
 	GFX_SetSpriteGraphic(npc[number].sprite_num, 3, SPRITE_GRAPHICS_ID_EMPTY, 0, 0);// empty
@@ -148,6 +155,9 @@ void NPC_Load(byte number, int x, int y, int width_px, int height_px, int gfx_id
 	// Patterns
 	npc[number].pattern_step = 0;
 	npc[number].current_pattern = NPC_PATTERN_HOLD_ON;
+
+	// Set animation
+	GFX_SetDefaultAnimation(npc[number].sprite_num, false, true, 50);
 }
 
 void NPC_DrawColissionPixels(NPC n) {

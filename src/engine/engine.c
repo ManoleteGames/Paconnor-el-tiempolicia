@@ -469,7 +469,7 @@ void Update(int player_follow) {
 	MAP_Update();
 
 	// Update
-	MOUSE_Update(actor.mode_combat);
+	MOUSE_Update(actor.mode_combat, ui.freeze);
 	ACTOR_Update();
 	if (!ui.freeze) GRENADE_Update();
 	if (!ui.freeze) BULLET_Update();
@@ -482,14 +482,14 @@ void Update(int player_follow) {
 	if (!ui.freeze) NPC_Update();
 
 	// Draw all sprites and effects
-	GFX_UpdateSprites();
+	if (!ui.freeze) GFX_UpdateSprites();
 	GFX_DrawSprites();
 
 	UI_UpdateUI(actor.mode_combat);
 
 	GFX_DrawCursorSprite();
 
-	UpdateStatusPannel();// Draws status pannel on the screen buffer
+	//UpdateStatusPannel();// Draws status pannel on the screen buffer
 
 	LimitFPS(40);//25
 	engine.sample_time = TIMER_GetMilliseconds() - start_time;

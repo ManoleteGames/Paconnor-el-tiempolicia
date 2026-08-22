@@ -8,7 +8,7 @@ byte object_counter;
 
 /** OBJECT :: Load object
  */
-void OBJECT_LoadObject(byte number, byte entity_id, byte graphics_id, int pos_x, int pos_y) {
+void OBJECT_LoadObject(const char *dat_name, byte number, byte entity_id, byte sprite_graphics_id, byte portait_graphics_id, int pos_x, int pos_y) {
 	int i;
 
 	object[number].type = entity_id;
@@ -17,13 +17,18 @@ void OBJECT_LoadObject(byte number, byte entity_id, byte graphics_id, int pos_x,
 	object[number].pos_y = pos_y;
 	object[number].is_hit = false;
 
-	// Check if graphics id is already loaded
-	if (!gfx_sprite_graphics_stack[graphics_id].loaded) {
-		sprintf(engine.system_error_message1, "OBJECT_LoadObject function error");
-		sprintf(engine.system_error_message2, "Graphics id %u not loaded", graphics_id);
-		sprintf(engine.system_error_message3, "");
-		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_GRAPHICS);
-	}
+	object[number].sprite_graphics_id = sprite_graphics_id;
+	object[number].portait_graphics_id = portait_graphics_id;
+
+	// Load configuration
+	FILE_LoadSpriteConfigFile(dat_name, "OBJECT.CFG", &object[number].cfg);
+
+	object[number].width_px = object[number].cfg.width;
+	object[number].height_px = object[number].cfg.height;
+
+	// Load graphics
+	if (!gfx_sprite_graphics_stack[sprite_graphics_id].loaded) GFX_LoadSpriteGraphicsRLE(dat_name, "SPRITE.PCX", sprite_graphics_id, object[number].cfg.feet_width, object[number].cfg.feet_height, object[number].cfg.feet_frames, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_TEMPORARY_SPRITE);
+	if (!gfx_sprite_graphics_stack[portait_graphics_id].loaded) GFX_LoadSpriteGraphicsRLE(dat_name, "PORTAIT.PCX", portait_graphics_id, object[number].cfg.portait_width, object[number].cfg.portait_height, object[number].cfg.portait_frames, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_TEMPORARY_SPRITE);
 
 	object[number].num_sprite = GFX_FindEmptySpriteSlot();
 	if (object[number].num_sprite == -1) {
@@ -32,7 +37,7 @@ void OBJECT_LoadObject(byte number, byte entity_id, byte graphics_id, int pos_x,
 		sprintf(engine.system_error_message3, " ");
 		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_GRAPHICS);
 	} else {
-		GFX_InitSprite(entity_id, number, object[number].num_sprite, 0, gfx_sprite_graphics_stack[graphics_id].width_px, gfx_sprite_graphics_stack[graphics_id].height_px);
+		GFX_InitSprite(entity_id, number, object[number].num_sprite, 0, object[number].width_px, object[number].height_px);
 	}
 
 	// Set colission points
@@ -84,7 +89,7 @@ void OBJECT_LoadObject(byte number, byte entity_id, byte graphics_id, int pos_x,
 	object[number].hit_area.points[3][0] = gfx_sprite_stack[object[number].num_sprite].width_px - (gfx_sprite_stack[object[number].num_sprite].width_px >> 3);
 	object[number].hit_area.points[3][1] = gfx_sprite_stack[object[number].num_sprite].height_px - (gfx_sprite_stack[object[number].num_sprite].height_px >> 4);
 
-	GFX_SetSpriteGraphic(object[number].num_sprite, 0, graphics_id, 0, 0);// feet
+	GFX_SetSpriteGraphic(object[number].num_sprite, 0, sprite_graphics_id, 0, 0);// feet
 	for (i = 1; i < 5; i++) {
 		gfx_sprite_stack[object[number].num_sprite].gfx[i].graphics_id = -1;
 		gfx_sprite_stack[object[number].num_sprite].gfx[i].offset_x = 0;
@@ -177,7 +182,7 @@ void OBJECT_UpdateObjects(void) {
 							// Check if hit by actor bullet and update enemy panel
 							switch (object[i].hit_by) {
 								case ENTITY_ID_ACTOR_BULLET:
-									GFX_SetPanelGraphics(&gfx_enemy_status_panel, SPRITE_GRAPHICS_ID_BARREL1_PORTAIT, SPRITE_GRAPHICS_ID_LIFEBAR, SPRITE_GRAPHICS_ID_GUN0);
+									GFX_SetPanelGraphics(&gfx_enemy_status_panel, object[i].portait_graphics_id, SPRITE_GRAPHICS_ID_LIFEBAR, SPRITE_GRAPHICS_ID_GUN0);
 									GFX_UpdatePanel(&gfx_enemy_status_panel, object[i].life, object[i].life + object[i].damage, object[i].max_life, 1);
 									gfx_enemy_status_panel.shown = true;
 									break;
@@ -188,13 +193,10 @@ void OBJECT_UpdateObjects(void) {
 							if (object[i].life <= 0) {
 								object[i].life = 0;
 								object[i].explode = true;
-								GFX_SetDefaultAnimation(object[i].num_sprite, false, false, 20);
+								GFX_SetDefaultAnimation(object[i].num_sprite, false, false, 2);
 
 								AUDIO_PlaySound(AUDIO_EXPLOSSION, 16);
-								//gfx_sprite_stack[sprite_num].animation_frames = 12;
-								//gfx_sprite_stack[sprite_num].animation_current_frame = 1;
-								//gfx_sprite_stack[sprite_num].animation_speed = 4;
-								//gfx_sprite_stack[sprite_num].animation_end = false;
+
 								gfx_sprite_stack[sprite_num].entity_id = ENTITY_ID_EXPLOSION;
 								gfx_sprite_stack[sprite_num].id = ENTITY_ID_EXPLOSION << 8 | i;
 								PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_FIRE1, ENTITY_ID_EXPLOSION, object[i].pos_x - 8, object[i].pos_y + 16, object[i].pos_x - 10, object[i].pos_y, 1, 10, 8, 8);

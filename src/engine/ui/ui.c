@@ -15,7 +15,7 @@ void UI_SetStatusPanels(void) {
 	GFX_UpdatePanelGun(&gfx_actor_status_panel, actor.gun.graphics_id, actor.gun.type, actor.gun.total_bullets, actor.gun.current_bullets, SPRITE_GRAPHICS_ID_GRENADE, actor.current_grenades);
 	GFX_ShowPanel(&gfx_actor_status_panel, actor.mode_combat, 0);
 
-	GFX_SetPanelGraphics(&gfx_enemy_status_panel, SPRITE_GRAPHICS_ID_BARREL1_PORTAIT, SPRITE_GRAPHICS_ID_LIFEBAR, SPRITE_GRAPHICS_ID_GUN0);
+	GFX_SetPanelGraphics(&gfx_enemy_status_panel, SPRITE_GRAPHICS_ID_OBJECT1_PORTAIT, SPRITE_GRAPHICS_ID_LIFEBAR, SPRITE_GRAPHICS_ID_GUN0);
 	GFX_SetPanelPosition(&gfx_enemy_status_panel, 236, 0, 48, 0, 0, 0, 0, 0, 0, 0);
 	GFX_ShowPanel(&gfx_enemy_status_panel, false, 200);
 }
@@ -118,10 +118,12 @@ void UI_UpdateUI(bool combat_mode) {
 		if (ui.pause) {
 			ui.pause = false;
 			ui.freeze = false;
+			ACTOR_SetFreeze(false);
 			VIDEO_SetPalette(gfx.palette_loaded);
 		} else {
 			ui.pause = true;
 			ui.freeze = true;
+			ACTOR_SetFreeze(true);
 			MOUSE_SetCursorGraphics(SPRITE_GRAPHICS_ID_CURSOR);
 			VIDEO_FadeOutPause(4);
 		}
@@ -133,6 +135,7 @@ void UI_UpdateUI(bool combat_mode) {
 		if (!ui.exit_request) {
 			ui.exit_request = true;
 			ui.freeze = true;
+			ACTOR_SetFreeze(true);
 			MOUSE_SetCursorGraphics(SPRITE_GRAPHICS_ID_CURSOR);
 			VIDEO_FadeOutPause(4);
 		}
@@ -144,6 +147,7 @@ void UI_UpdateUI(bool combat_mode) {
 		engine.ingame = false;
 		engine.exit_game = true;
 		ui.freeze = false;
+		ACTOR_SetFreeze(false);
 		kbKeyState[SCANCODE_Y] = false;
 		ui.exit_request = false;
 		VIDEO_SetPalette(gfx.palette_loaded);
@@ -153,6 +157,7 @@ void UI_UpdateUI(bool combat_mode) {
 	if (engine.ingame & ui.exit_request & kbKeyState[SCANCODE_N]) {
 		engine.ingame = true;
 		ui.freeze = false;
+		ACTOR_SetFreeze(false);
 		kbKeyState[SCANCODE_N] = false;
 		ui.exit_request = false;
 		VIDEO_SetPalette(gfx.palette_loaded);
@@ -200,12 +205,14 @@ void UI_UpdateUI(bool combat_mode) {
 			ui.show_speech = false;
 			ui.freeze = false;
 			if (ui.actor_was_on_combat_mode) ACTOR_SetCombatMode(true);
+			ACTOR_SetFreeze(false);
 		}
 
 		if (ui.speech_time >= ui.speech_timeout) {
 			ui.show_speech = false;
 			ui.freeze = false;
 			if (ui.actor_was_on_combat_mode) ACTOR_SetCombatMode(true);
+			ACTOR_SetFreeze(false);
 		}
 	}
 
@@ -253,6 +260,7 @@ void UI_ShowSpeech(ChatPanel *pannel, int portait_graphics_id, int box_graphics_
 	ui.show_speech = true;
 	ui.speech_time = 0;
 	ui.speech_timeout = timeout;
+	ACTOR_SetFreeze(true);
 }
 
 void UI_ShowDescription(int text_file, int line) {

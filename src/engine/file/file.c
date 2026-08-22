@@ -72,16 +72,19 @@ dword FILE_SeekAssetOffset(FILE *fp, const char *filename) {
 			fseek(fp, 16, SEEK_CUR);// Go to next line
 
 		line++;
+		// End line. Just finish returning 0 as offset
 		if (line == 64) {
 			fclose(fp);
-			sprintf(engine.system_error_message1, "FILE_SeekAssetOffset function error");
-			sprintf(engine.system_error_message2, "Unable to find asset file %s offset", filename);
-			sprintf(engine.system_error_message3, "Last line reached");
-			Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+			offset = 0;
+			data_name = 2;
+			//sprintf(engine.system_error_message1, "FILE_SeekAssetOffset function error");
+			//sprintf(engine.system_error_message2, "Unable to find asset file %s offset", filename);
+			//sprintf(engine.system_error_message3, "Last line reached");
+			//Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
 		}
 	}
 
-	fread(&offset, sizeof(offset), 1, fp);//read offset of file in DAT file
+	if (data_name == 1) fread(&offset, sizeof(offset), 1, fp);//read offset of file in DAT file
 
 	return offset;
 }
@@ -877,6 +880,123 @@ void FILE_LoadAnimationFile(const char *dat_name, const char *asset_name, Sprite
 		// Check EOF
 		if (line_counter == 255) {// EOF
 			sprintf(engine.system_error_message1, "FILE_LoadAnimationFile function error");
+			sprintf(engine.system_error_message2, "Line counter overrun on file %s ", dat_name);
+			sprintf(engine.system_error_message3, "Asset file %s", asset_name);
+			Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+		}
+	}
+
+	fclose(f);
+}
+
+/** FILE :: Load animation data from ani file
+ * - Reads an .ANI file inside a .DAT file 
+ */
+void FILE_LoadSpriteConfigFile(const char *dat_name, const char *asset_name, SpriteConfig *cfg) {
+	FILE *f;
+	bool eof;
+	word line_readed;
+	int line_counter;
+	dword offset;
+	int width, height, frames;
+
+	// Open DAT file and search txt file inside
+	f = fopen(dat_name, "rb");
+	if (!f) {
+		sprintf(engine.system_error_message1, "FILE_LoadSpriteConfigFile function error");
+		sprintf(engine.system_error_message2, "Unable to open DAT file %s ", dat_name);
+		sprintf(engine.system_error_message3, "");
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+
+	// Search asset file
+	offset = FILE_SeekAssetOffset(f, asset_name);
+	fseek(f, offset, SEEK_SET);// Set file pointer at the begining of the file
+	if (offset == 0) {
+		fclose(f);
+		sprintf(engine.system_error_message1, "FILE_LoadSpriteConfigFile function error");
+		sprintf(engine.system_error_message2, "Unable to find offset inside DAT file %s ", dat_name);
+		sprintf(engine.system_error_message3, "Asset file %s", asset_name);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+	}
+
+	eof = false;
+	line_counter = 0;
+
+	while (!eof) {
+		fscanf(f, "#%d#", &line_readed);
+
+		// Check EOF
+		if ((line_readed < 1) || (line_readed > 355)) {// EOF
+			sprintf(engine.system_error_message1, "FILE_LoadSpriteConfigFile function error");
+			sprintf(engine.system_error_message2, "Wrong line readed %u on file %s ", line_readed, dat_name);
+			sprintf(engine.system_error_message3, "Asset file %s", asset_name);
+			Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+		}
+		// Check EOF
+		if (line_readed == 356) {// EOF
+			sprintf(engine.system_error_message1, "FILE_LoadSpriteConfigFile function error");
+			sprintf(engine.system_error_message2, "Last line reached on file %s ", dat_name);
+			sprintf(engine.system_error_message3, "Asset file %s", asset_name);
+			Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);
+		}
+
+		if (line_readed == 355) {
+			eof = true;
+		}
+
+		// Read configuration parameters
+		fscanf(f, " %d,%d,%d ", &width, &height, &frames);
+
+		// Set values
+		switch (line_readed) {
+			case 1:// General dimensions
+				cfg->width = width;
+				cfg->height = height;
+				break;
+			case 2:// Face dimensions
+				cfg->face_width = width;
+				cfg->face_height = height;
+				cfg->face_frames = frames;
+				break;
+			case 3:// Portait dimensions
+				cfg->portait_width = width;
+				cfg->portait_height = height;
+				cfg->portait_frames = frames;
+				break;
+			case 4:// Feet dimensions
+				cfg->feet_width = width;
+				cfg->feet_height = height;
+				cfg->feet_frames = frames;
+				break;
+			case 5:// Body dimensions
+				cfg->body_width = width;
+				cfg->body_height = height;
+				cfg->body_frames = frames;
+				break;
+			case 6:// Head dimensions
+				cfg->head_width = width;
+				cfg->head_height = height;
+				cfg->head_frames = frames;
+				break;
+			case 7:// Left arm dimensions
+				cfg->larm_width = width;
+				cfg->larm_height = height;
+				cfg->larm_frames = frames;
+				break;
+			case 8:// Right arm dimensions
+				cfg->rarm_width = width;
+				cfg->rarm_height = height;
+				cfg->rarm_frames = frames;
+				break;
+			default:
+				break;
+		}
+
+		line_counter++;
+		// Check EOF
+		if (line_counter == 13) {// EOF
+			sprintf(engine.system_error_message1, "FILE_LoadSpriteConfigFile function error");
 			sprintf(engine.system_error_message2, "Line counter overrun on file %s ", dat_name);
 			sprintf(engine.system_error_message3, "Asset file %s", asset_name);
 			Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_FILE);

@@ -280,6 +280,32 @@ typedef struct {
 } SpriteAnimation;
 
 typedef struct {
+	byte width;
+	byte height;
+	byte face_width;
+	byte face_height;
+	byte face_frames;
+	byte portait_width;
+	byte portait_height;
+	byte portait_frames;
+	byte feet_width;
+	byte feet_height;
+	byte feet_frames;
+	byte body_width;
+	byte body_height;
+	byte body_frames;
+	byte head_width;
+	byte head_height;
+	byte head_frames;
+	byte larm_width;
+	byte larm_height;
+	byte larm_frames;
+	byte rarm_width;
+	byte rarm_height;
+	byte rarm_frames;
+} SpriteConfig;
+
+typedef struct {
 	bool active;
 	bool blinked;
 	byte time;
@@ -487,6 +513,8 @@ typedef struct {
 	byte life_shown_counter;
 	bool on_screen;
 
+	int width_px;
+	int height_px;
 	int pos_x, pos_y;
 
 	bool is_hit;
@@ -498,6 +526,10 @@ typedef struct {
 	int current_step;
 	int num_sprite;
 
+	int sprite_graphics_id;
+	int portait_graphics_id;
+
+	SpriteConfig cfg;
 	Area colission_area;
 	Area hit_area;
 } Object;
@@ -599,6 +631,7 @@ typedef struct {
 	bool status_facing_up_left;
 	bool status_idle;
 	bool status_dead;
+	bool status_freeze;
 
 	bool mode_combat;
 
@@ -617,7 +650,7 @@ typedef struct {
 	dword speed_diagonalh_loop_FP;
 	dword x_FP, y_FP;
 
-	byte max_life;
+	int max_life;
 	int life;
 	byte damage;
 
@@ -698,8 +731,8 @@ typedef struct {
 	dword x_FP, y_FP;
 
 	bool movement_allowed;
-	byte max_life;
-	byte life;
+	int max_life;
+	int life;
 	byte damage;
 	byte hit_by;
 	dword hit_vx_FP;
@@ -736,6 +769,7 @@ typedef struct {
 
 	Gun gun;
 
+	SpriteConfig cfg;
 	SpriteAnimation feet_animation[68];
 	SpriteAnimation body_animation[68];
 	SpriteAnimation head_animation[68];
@@ -775,8 +809,8 @@ typedef struct {
 	dword x_FP, y_FP;
 
 	bool movement_allowed;
-	byte max_life;
-	byte life;
+	int max_life;
+	int life;
 	byte damage;
 	byte hit_by;
 	dword hit_vx_FP;
@@ -802,6 +836,8 @@ typedef struct {
 
 	Area colission_area;
 	Area hit_area;
+
+	SpriteConfig cfg;
 } NPC;
 
 typedef struct {
@@ -829,8 +865,8 @@ typedef struct {
 	dword x_FP, y_FP;
 
 	bool movement_allowed;
-	byte max_life;
-	byte life;
+	int max_life;
+	int life;
 	byte damage;
 	byte hit_by;
 	dword hit_vx_FP;
@@ -869,6 +905,7 @@ typedef struct {
 
 	Gun gun;
 
+	SpriteConfig cfg;
 	SpriteAnimation feet_animation[10];
 	SpriteAnimation body_animation[10];
 	SpriteAnimation head_animation[10];

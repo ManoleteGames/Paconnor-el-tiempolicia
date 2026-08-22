@@ -87,10 +87,7 @@ add_custom_target(maps
     ${CMAKE_BINARY_DIR}/  
     COMMAND ${CMAKE_COMMAND} -E copy
     ${CMAKE_CURRENT_SOURCE_DIR}/assets/maps/scn2_1/MAPSCN21.DAT
-    ${CMAKE_BINARY_DIR}/  
-    COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/maps/scn2_2/MAPSCN22.DAT
-    ${CMAKE_BINARY_DIR}/     
+    ${CMAKE_BINARY_DIR}/      
     COMMAND ${CMAKE_COMMAND} -E copy
     ${CMAKE_CURRENT_SOURCE_DIR}/assets/maps/scn3_1/MAPSCN31.DAT
     ${CMAKE_BINARY_DIR}/    
@@ -140,9 +137,6 @@ add_custom_target(tilesets
     ${CMAKE_CURRENT_SOURCE_DIR}/assets/tilesets/scn2_1/TSCN21.DAT
     ${CMAKE_BINARY_DIR}/ 
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/tilesets/scn2_2/TSCN22.DAT
-    ${CMAKE_BINARY_DIR}/ 
-    COMMAND ${CMAKE_COMMAND} -E copy
     ${CMAKE_CURRENT_SOURCE_DIR}/assets/tilesets/scn3_1/TSCN31.DAT
     ${CMAKE_BINARY_DIR}/    
     COMMAND ${CMAKE_COMMAND} -E copy
@@ -176,10 +170,16 @@ add_custom_target(sprites
     ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/actor/ACTOR.DAT
     ${CMAKE_BINARY_DIR}/
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/actor/ACTANI.DAT
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/cursor/CURSOR.DAT
     ${CMAKE_BINARY_DIR}/
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/cursor/CURSOR.DAT
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/objects/object1/OBJECT1.DAT
+    ${CMAKE_BINARY_DIR}/
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/objects/object2/OBJECT2.DAT
+    ${CMAKE_BINARY_DIR}/
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/objects/object3/OBJECT3.DAT
     ${CMAKE_BINARY_DIR}/
     COMMAND ${CMAKE_COMMAND} -E copy
     ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/misc/MISC.DAT
@@ -215,19 +215,40 @@ add_custom_target(sprites
     ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/enemies/enemy6/ENEMY6.DAT
     ${CMAKE_BINARY_DIR}/
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/enemies/anim_gen/ENEMANI.DAT
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/enemies/enemy7/ENEMY7.DAT
     ${CMAKE_BINARY_DIR}/
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/enemies/anim_rat/RATANI.DAT
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/enemies/enemy8/ENEMY8.DAT
     ${CMAKE_BINARY_DIR}/
     COMMAND ${CMAKE_COMMAND} -E copy
     ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/boss/boss1/BOSS1.DAT
     ${CMAKE_BINARY_DIR}/
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/boss/anim/BOSSANI.DAT
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/boss/boss2/BOSS2.DAT
     ${CMAKE_BINARY_DIR}/
     COMMAND ${CMAKE_COMMAND} -E copy
-    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/npcs/NPCS.DAT
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/npcs/npc1/NPC1.DAT
+    ${CMAKE_BINARY_DIR}/
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/npcs/npc2/NPC2.DAT
+    ${CMAKE_BINARY_DIR}/
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/npcs/npc3/NPC3.DAT
+    ${CMAKE_BINARY_DIR}/
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/npcs/npc4/NPC4.DAT
+    ${CMAKE_BINARY_DIR}/
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/npcs/npc5/NPC5.DAT
+    ${CMAKE_BINARY_DIR}/
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/npcs/npc6/NPC6.DAT
+    ${CMAKE_BINARY_DIR}/
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/npcs/npc7/NPC7.DAT
+    ${CMAKE_BINARY_DIR}/
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/npcs/npc8/NPC8.DAT
     ${CMAKE_BINARY_DIR}/
     COMMAND ${CMAKE_COMMAND} -E copy
     ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/menu/SMENU.DAT

@@ -81,9 +81,9 @@ void BULLET_InitBullet(int graphics_id, int entity_id, int width, int height, in
 	bullet[number].x_FP = bullet[number].pos_x << FP;
 	bullet[number].y_FP = bullet[number].pos_y << FP;
 
-	bullet[number].steps = distance;
-	if (bullet[number].steps > max_distance)
-		bullet[number].steps = max_distance;
+	bullet[number].steps = max_distance;
+	//if (bullet[number].steps > max_distance)
+	//	bullet[number].steps = max_distance;
 
 	sprite_slot = GFX_FindEmptySpriteSlot();
 	if (sprite_slot == -1) {
@@ -177,7 +177,7 @@ int BULLET_CheckBulletColission(int number) {
 	/////// ENEMIES COLISSIONS ///////////
 	for (i = 0; i < ENEMY_MAX_ENEMIES; i++) {
 		collision_detected = true;
-		if (enemy[i].is_loaded && !enemy[i].action_dead) {
+		if (enemy[i].is_loaded && !enemy[i].action_dead && gfx_sprite_stack[bullet[number].sprite_num].entity_id != ENTITY_ID_ENEMY_BULLET) {
 			if (gfx_sprite_stack[enemy[i].sprite_num].shown) {
 				if (point1_x > enemy[i].pos_x + enemy[i].hit_area.points[1][0]) collision_detected = false;// Out of left side
 				if (point2_x < enemy[i].pos_x + enemy[i].hit_area.points[0][0]) collision_detected = false;//  Out of right side
@@ -190,7 +190,7 @@ int BULLET_CheckBulletColission(int number) {
 
 	/////// ACTOR COLISSIONS /////////////
 	collision_detected = true;
-	if (!actor.action_dead) {
+	if (!actor.action_dead && gfx_sprite_stack[bullet[number].sprite_num].entity_id != ENTITY_ID_ACTOR_BULLET) {
 		if (point1_x > actor.pos_x + actor.hit_area.points[1][0]) collision_detected = false;// Out of left side
 		if (point2_x < actor.pos_x + actor.hit_area.points[0][0]) collision_detected = false;//  Out of right side
 		if (point3_y < actor.pos_y + actor.hit_area.points[0][1]) collision_detected = false;//  Out of top side
@@ -200,7 +200,7 @@ int BULLET_CheckBulletColission(int number) {
 
 	/////// BOSS COLISSIONS /////////////
 	collision_detected = true;
-	if (!boss.action_dead) {
+	if (!boss.action_dead && gfx_sprite_stack[bullet[number].sprite_num].entity_id != ENTITY_ID_ENEMY_BULLET) {
 		if (point1_x > boss.pos_x + boss.hit_area.points[1][0]) collision_detected = false;// Out of left side
 		if (point2_x < boss.pos_x + boss.hit_area.points[0][0]) collision_detected = false;//  Out of right side
 		if (point3_y < boss.pos_y + boss.hit_area.points[0][1]) collision_detected = false;//  Out of top side

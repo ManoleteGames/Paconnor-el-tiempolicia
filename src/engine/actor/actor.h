@@ -21,7 +21,7 @@
 #define ACTOR_IDLE_TICKS 120
 #define ACTOR_MAX_ACCURACY 4
 #define ACTOR_ACCURACY_DELAY 4
-#define ACTOR_LIFE 200
+#define ACTOR_LIFE 400
 #define ACTOR_GRENADES_MAX_DISTANCE 150
 #define ACTOR_GRENADES_MAX_TIME 3
 
@@ -207,6 +207,7 @@
 #define ACTOR_ANIM_DEAD 133
 
 extern Actor actor;
+void ACTOR_LoadActorAssets(const char *dat_name);
 void ACTOR_SetGun(int actor_spr_num, int type);
 void ACTOR_Init(int x, int y, int feet_gfx_id, int body_gfx_id, int head_gfx_id, int larm_gfx_id, int rarm_gfx_id, int facing);
 void ACTOR_Update(void);
@@ -218,6 +219,7 @@ void ACTOR_SetBulletStatus(int pistol_bullets, int shotgun_bullets, int uzi_bull
 void ACTOR_SetPosition(int x, int y, int facing);
 void ACTOR_UnloadActor(void);
 void ACTOR_SetFullWalkAnimation(int facing);
+void ACTOR_SetFreeze(bool freeze);
 
 
 #endif

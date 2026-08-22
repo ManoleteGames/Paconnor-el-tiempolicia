@@ -270,7 +270,7 @@ void MOUSE_MaskRightClick(void) {
 
 /** MOUSE :: Update
  */
-void MOUSE_Update(bool combat_mode) {
+void MOUSE_Update(bool combat_mode, bool freeze) {
 	if (engine.mouse_initialized) {
 		// Check FP
 		cursor.left_click_FP = false;
@@ -294,7 +294,7 @@ void MOUSE_Update(bool combat_mode) {
 			MOUSE_SetCursorGraphics(SPRITE_GRAPHICS_ID_CURSOR);
 			cursor.point_on = MOUSE_CheckCursorColission();
 			// Left click
-			if (cursor.left_click_FP) EFFECT_LoadEffect(ENTITY_ID_EMPTY, SPRITE_GRAPHICS_ID_CLICK, cursor.pos_x - 2 + camera.pos_x, cursor.pos_y - 2 + camera.pos_y, true, 0, false, false, 2);
+			if (cursor.left_click_FP && !freeze) EFFECT_LoadEffect(ENTITY_ID_EMPTY, SPRITE_GRAPHICS_ID_CLICK, cursor.pos_x - 2 + camera.pos_x, cursor.pos_y - 2 + camera.pos_y, true, 0, false, false, 2);
 
 		} else {
 			MOUSE_SetCursorGraphics(SPRITE_GRAPHICS_ID_AIM);

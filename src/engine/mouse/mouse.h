@@ -26,7 +26,7 @@ void MOUSE_SetCursorFrame(int number);
 void MOUSE_SetClick(int number);
 void MOUSE_SetOrigin(int x, int y);
 void MOUSE_InitCursorSprite(byte graphics_id);
-void MOUSE_Update(bool combat_mode);
+void MOUSE_Update(bool combat_mode, bool freeze);
 void MOUSE_SetCursorGraphics(int graphics_id);
 void MOUSE_MaskRightClick(void);
 void MOUSE_HideCursor(void);

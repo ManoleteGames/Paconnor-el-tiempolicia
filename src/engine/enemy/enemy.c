@@ -21,8 +21,6 @@ static byte hide_pattern[6] = {ENEMY_PATTERN_WALK_BACK, ENEMY_PATTERN_WALK_BACK,
 static byte attack_pattern[6] = {ENEMY_PATTERN_ATTACK, ENEMY_PATTERN_HOLD_ON, ENEMY_PATTERN_ATTACK, ENEMY_PATTERN_HOLD_ON, ENEMY_PATTERN_ATTACK, ENEMY_PATTERN_HOLD_ON};
 
 void ENEMY_SetGun(int enemy_number, int type, int graphics_id, int bullet_graphics_id) {
-	int i;
-
 	// Set graphics id
 	enemy[enemy_number].gun.graphics_id = graphics_id;
 	enemy[enemy_number].gun.bullet_graphics_id = bullet_graphics_id;
@@ -32,9 +30,9 @@ void ENEMY_SetGun(int enemy_number, int type, int graphics_id, int bullet_graphi
 	switch (type) {
 		case ENEMY_GUN_BARE_HANDS:
 			enemy[enemy_number].gun.max_accuracy = 4;
-			enemy[enemy_number].gun.damage = 10;
-			enemy[enemy_number].gun.recoil_time = 20;
-			enemy[enemy_number].gun.max_distance = 48;
+			enemy[enemy_number].gun.damage = 5;
+			enemy[enemy_number].gun.recoil_time = 10;
+			enemy[enemy_number].gun.max_distance = 6;
 			enemy[enemy_number].gun.accurate = false;
 			enemy[enemy_number].gun.shoots = 1;
 			enemy[enemy_number].gun.bullet_speed = 1;
@@ -43,58 +41,58 @@ void ENEMY_SetGun(int enemy_number, int type, int graphics_id, int bullet_graphi
 			break;
 		case ENEMY_GUN_PISTOL:
 			enemy[enemy_number].gun.max_accuracy = 4;
-			enemy[enemy_number].gun.damage = 20;
-			enemy[enemy_number].gun.recoil_time = 30;
-			enemy[enemy_number].gun.max_distance = 200;
+			enemy[enemy_number].gun.damage = 10;
+			enemy[enemy_number].gun.recoil_time = 5;
+			enemy[enemy_number].gun.max_distance = 130;
 			enemy[enemy_number].gun.accurate = true;
 			enemy[enemy_number].gun.shoots = 1;
-			enemy[enemy_number].gun.bullet_speed = 2;
+			enemy[enemy_number].gun.bullet_speed = 4;
 			enemy[enemy_number].shoot_accuracy = 4;
-			enemy[enemy_number].shoot_range = 180;
+			enemy[enemy_number].shoot_range = 120;
 			break;
 		case ENEMY_GUN_RIFLE:
 			enemy[enemy_number].gun.max_accuracy = 2;
-			enemy[enemy_number].gun.damage = 30;
-			enemy[enemy_number].gun.recoil_time = 10;
-			enemy[enemy_number].gun.max_distance = 1000;
+			enemy[enemy_number].gun.damage = 15;
+			enemy[enemy_number].gun.recoil_time = 7;
+			enemy[enemy_number].gun.max_distance = 200;
 			enemy[enemy_number].gun.accurate = true;
 			enemy[enemy_number].gun.shoots = 1;
-			enemy[enemy_number].gun.bullet_speed = 3;
+			enemy[enemy_number].gun.bullet_speed = 5;
 			enemy[enemy_number].shoot_accuracy = 2;
-			enemy[enemy_number].shoot_range = 900;
+			enemy[enemy_number].shoot_range = 180;
 			break;
 		case ENEMY_GUN_AK:
 			enemy[enemy_number].gun.max_accuracy = 1;
-			enemy[enemy_number].gun.damage = 20;
+			enemy[enemy_number].gun.damage = 10;
 			enemy[enemy_number].gun.recoil_time = 1;
-			enemy[enemy_number].gun.max_distance = 250;
+			enemy[enemy_number].gun.max_distance = 150;
 			enemy[enemy_number].gun.accurate = false;
 			enemy[enemy_number].gun.shoots = 1;
-			enemy[enemy_number].gun.bullet_speed = 3;
+			enemy[enemy_number].gun.bullet_speed = 5;
 			enemy[enemy_number].shoot_accuracy = 1;
-			enemy[enemy_number].shoot_range = 200;
+			enemy[enemy_number].shoot_range = 130;
 			break;
 		case ENEMY_GUN_SHOTGUN:
 			enemy[enemy_number].gun.max_accuracy = 1;
 			enemy[enemy_number].gun.damage = 40;
-			enemy[enemy_number].gun.recoil_time = 15;
+			enemy[enemy_number].gun.recoil_time = 10;
 			enemy[enemy_number].gun.max_distance = 100;
 			enemy[enemy_number].gun.accurate = false;
-			enemy[enemy_number].gun.shoots = 3;
+			enemy[enemy_number].gun.shoots = 4;
 			enemy[enemy_number].gun.bullet_speed = 2;
 			enemy[enemy_number].shoot_accuracy = 1;
 			enemy[enemy_number].shoot_range = 80;
 			break;
 		case ENEMY_GUN_MISILE:
 			enemy[enemy_number].gun.max_accuracy = 1;
-			enemy[enemy_number].gun.damage = 50;
+			enemy[enemy_number].gun.damage = 20;
 			enemy[enemy_number].gun.recoil_time = 20;
-			enemy[enemy_number].gun.max_distance = 300;
+			enemy[enemy_number].gun.max_distance = 200;
 			enemy[enemy_number].gun.accurate = true;
 			enemy[enemy_number].gun.shoots = 1;
 			enemy[enemy_number].gun.bullet_speed = 1;
 			enemy[enemy_number].shoot_accuracy = 1;
-			enemy[enemy_number].shoot_range = 250;
+			enemy[enemy_number].shoot_range = 180;
 			break;
 		default:
 			sprintf(engine.system_error_message1, "enemy_SetGun function error");
@@ -106,11 +104,11 @@ void ENEMY_SetGun(int enemy_number, int type, int graphics_id, int bullet_graphi
 }
 
 void ENEMY_LoadAnimations(const char *dat_name, int enemy_number, int total_anims) {
-	GFX_LoadAnimations(dat_name, "FEET.ANI", enemy[enemy_number].feet_animation, total_anims);     // feet animations
-	GFX_LoadAnimations(dat_name, "BODY.ANI", enemy[enemy_number].body_animation, total_anims);     // body animations
-	GFX_LoadAnimations(dat_name, "HEAD.ANI", enemy[enemy_number].head_animation, total_anims);     // head animations
-	GFX_LoadAnimations(dat_name, "LARM.ANI", enemy[enemy_number].left_arm_animation, total_anims); // left arm animations
-	GFX_LoadAnimations(dat_name, "RARM.ANI", enemy[enemy_number].right_arm_animation, total_anims);// right arm animations
+	GFX_LoadAnimations(dat_name, "FEET.ANI", &enemy[enemy_number].feet_animation[0], total_anims);     // feet animations
+	GFX_LoadAnimations(dat_name, "BODY.ANI", &enemy[enemy_number].body_animation[0], total_anims);     // body animations
+	GFX_LoadAnimations(dat_name, "HEAD.ANI", &enemy[enemy_number].head_animation[0], total_anims);     // head animations
+	GFX_LoadAnimations(dat_name, "LARM.ANI", &enemy[enemy_number].left_arm_animation[0], total_anims); // left arm animations
+	GFX_LoadAnimations(dat_name, "RARM.ANI", &enemy[enemy_number].right_arm_animation[0], total_anims);// right arm animations
 }
 
 void ENEMY_ResetAnimations(int enemy_number) {
@@ -141,7 +139,7 @@ void ENEMY_Init(void) {
 /** ENEMY :: Initializes enemy data
  * - Sets default values for the enemy structure 
  */
-void ENEMY_Load(byte number, int x, int y, int width_px, int height_px, int portait_gfx_id, int feet_gfx_id, int body_gfx_id, int head_gfx_id, int larm_gfx_id, int rarm_gfx_id, int facing, int gun_type, int gun_graphics_id, int bullet_graphics_id, int behavior, int life) {
+void ENEMY_Load(const char *dat_name, byte number, int x, int y, int face_gfx_id, int portait_gfx_id, int feet_gfx_id, int body_gfx_id, int head_gfx_id, int larm_gfx_id, int rarm_gfx_id, int facing, int gun_type, int gun_graphics_id, int bullet_graphics_id, int behavior, int life) {
 
 	int sprite_slot;
 
@@ -152,6 +150,24 @@ void ENEMY_Load(byte number, int x, int y, int width_px, int height_px, int port
 		sprintf(engine.system_error_message3, " ");
 		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_SYSTEM);
 	}
+
+	// Load configuration
+	FILE_LoadSpriteConfigFile(dat_name, "ENEMY.CFG", &enemy[number].cfg);
+
+	// Load animations
+	ENEMY_LoadAnimations(dat_name, number, 64);
+
+	enemy[number].width_px = enemy[number].cfg.width;
+	enemy[number].height_px = enemy[number].cfg.height;
+
+	// Load graphics
+	if (!gfx_sprite_graphics_stack[face_gfx_id].loaded) GFX_LoadSpriteGraphicsRLE(dat_name, "FACE.PCX", face_gfx_id, enemy[number].cfg.face_width, enemy[number].cfg.face_height, enemy[number].cfg.face_frames, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_TEMPORARY_SPRITE);
+	if (!gfx_sprite_graphics_stack[portait_gfx_id].loaded) GFX_LoadSpriteGraphicsRLE(dat_name, "PORTAIT.PCX", portait_gfx_id, enemy[number].cfg.portait_width, enemy[number].cfg.portait_height, enemy[number].cfg.portait_frames, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_TEMPORARY_SPRITE);
+	if (!gfx_sprite_graphics_stack[feet_gfx_id].loaded) GFX_LoadSpriteGraphicsRLE(dat_name, "FEET.PCX", feet_gfx_id, enemy[number].cfg.feet_width, enemy[number].cfg.feet_height, enemy[number].cfg.feet_frames, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_TEMPORARY_SPRITE);
+	if (!gfx_sprite_graphics_stack[body_gfx_id].loaded) GFX_LoadSpriteGraphicsRLE(dat_name, "BODY.PCX", body_gfx_id, enemy[number].cfg.body_width, enemy[number].cfg.body_height, enemy[number].cfg.body_frames, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_TEMPORARY_SPRITE);
+	if (!gfx_sprite_graphics_stack[head_gfx_id].loaded) GFX_LoadSpriteGraphicsRLE(dat_name, "HEAD.PCX", head_gfx_id, enemy[number].cfg.head_width, enemy[number].cfg.head_height, enemy[number].cfg.head_frames, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_TEMPORARY_SPRITE);
+	if (!gfx_sprite_graphics_stack[larm_gfx_id].loaded) GFX_LoadSpriteGraphicsRLE(dat_name, "LARM.PCX", larm_gfx_id, enemy[number].cfg.larm_width, enemy[number].cfg.larm_height, enemy[number].cfg.larm_frames, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_TEMPORARY_SPRITE);
+	if (!gfx_sprite_graphics_stack[rarm_gfx_id].loaded) GFX_LoadSpriteGraphicsRLE(dat_name, "RARM.PCX", rarm_gfx_id, enemy[number].cfg.rarm_width, enemy[number].cfg.rarm_height, enemy[number].cfg.rarm_frames, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_TEMPORARY_SPRITE);
 
 	enemy[number].is_loaded = true;
 
@@ -197,11 +213,8 @@ void ENEMY_Load(byte number, int x, int y, int width_px, int height_px, int port
 		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_GRAPHICS);
 	} else {
 		enemy[number].sprite_num = sprite_slot;
-		GFX_InitSprite(ENTITY_ID_ENEMY, number, sprite_slot, 0, width_px, height_px);
+		GFX_InitSprite(ENTITY_ID_ENEMY, number, sprite_slot, 0, enemy[number].width_px, enemy[number].height_px);
 	}
-
-	enemy[number].width_px = width_px;
-	enemy[number].height_px = height_px;
 
 	// Set colission points
 	//  ----------------
@@ -1515,10 +1528,8 @@ void ENEMY_Update(void) {
 							}
 							break;
 						case 3:// end
-							if (gfx_sprite_stack[enemy[i].sprite_num].animation[0].end) {
-								enemy[i].action_step = 0;
-								enemy[i].action_shoot = false;
-							}
+							enemy[i].action_step = 0;
+							enemy[i].action_shoot = false;
 							break;
 						default:
 							enemy[i].action_step = 0;
@@ -1538,28 +1549,28 @@ void ENEMY_Update(void) {
 							if (GFX_IsSpriteAnimationEnded(enemy[i].sprite_num, 0)) {
 								switch (enemy[i].status_facing) {
 									case 1:// facing right
-										BULLET_InitBullet(enemy[i].gun.bullet_graphics_id, ENTITY_ID_ENEMY_BULLET, 4, 4, enemy[i].pos_x + enemy[i].width_px + 2, enemy[i].pos_y + (enemy[i].height_px >> 1), enemy[i].pos_x + enemy[i].width_px + 10, enemy[i].pos_y + (enemy[i].height_px >> 1), enemy[i].shoot_accuracy, enemy[i].gun.max_distance, enemy[i].gun.bullet_speed, enemy[i].gun.damage);
+										BULLET_InitBullet(enemy[i].gun.bullet_graphics_id, ENTITY_ID_ENEMY_BULLET, 12, 12, enemy[i].pos_x + enemy[i].width_px + 2, enemy[i].pos_y + (enemy[i].height_px >> 1), enemy[i].pos_x + enemy[i].width_px + 3, enemy[i].pos_y + (enemy[i].height_px >> 1), enemy[i].shoot_accuracy, enemy[i].gun.max_distance, enemy[i].gun.bullet_speed, enemy[i].gun.damage);
 										break;
 									case 2:// facing left
-										BULLET_InitBullet(enemy[i].gun.bullet_graphics_id, ENTITY_ID_ENEMY_BULLET, 4, 4, enemy[i].pos_x - 2, enemy[i].pos_y + (enemy[i].height_px >> 1), enemy[i].pos_x - 10, enemy[i].pos_y + (enemy[i].height_px >> 1), enemy[i].shoot_accuracy, enemy[i].gun.max_distance, enemy[i].gun.bullet_speed, enemy[i].gun.damage);
+										BULLET_InitBullet(enemy[i].gun.bullet_graphics_id, ENTITY_ID_ENEMY_BULLET, 12, 12, enemy[i].pos_x - 2, enemy[i].pos_y + (enemy[i].height_px >> 1), enemy[i].pos_x - 3, enemy[i].pos_y + (enemy[i].height_px >> 1), enemy[i].shoot_accuracy, enemy[i].gun.max_distance, enemy[i].gun.bullet_speed, enemy[i].gun.damage);
 										break;
 									case 4:// facing down
-										BULLET_InitBullet(enemy[i].gun.bullet_graphics_id, ENTITY_ID_ENEMY_BULLET, 4, 4, enemy[i].pos_x + (enemy[i].width_px >> 1), enemy[i].pos_y + enemy[i].height_px + 2, enemy[i].pos_x + (enemy[i].width_px >> 1), enemy[i].pos_y + enemy[i].height_px + 10, enemy[i].shoot_accuracy, enemy[i].gun.max_distance, enemy[i].gun.bullet_speed, enemy[i].gun.damage);
+										BULLET_InitBullet(enemy[i].gun.bullet_graphics_id, ENTITY_ID_ENEMY_BULLET, 12, 12, enemy[i].pos_x + (enemy[i].width_px >> 2), enemy[i].pos_y + enemy[i].height_px + 2, enemy[i].pos_x + (enemy[i].width_px >> 2), enemy[i].pos_y + enemy[i].height_px + 3, enemy[i].shoot_accuracy, enemy[i].gun.max_distance, enemy[i].gun.bullet_speed, enemy[i].gun.damage);
 										break;
 									case 5:// moving down-right
-										BULLET_InitBullet(enemy[i].gun.bullet_graphics_id, ENTITY_ID_ENEMY_BULLET, 4, 4, enemy[i].pos_x + enemy[i].width_px + 2, enemy[i].pos_y + enemy[i].height_px + 2, enemy[i].pos_x + enemy[i].width_px + 10, enemy[i].pos_y + enemy[i].height_px + 10, enemy[i].shoot_accuracy, enemy[i].gun.max_distance, enemy[i].gun.bullet_speed, enemy[i].gun.damage);
+										BULLET_InitBullet(enemy[i].gun.bullet_graphics_id, ENTITY_ID_ENEMY_BULLET, 12, 12, enemy[i].pos_x + enemy[i].width_px + 2, enemy[i].pos_y + enemy[i].height_px + 2, enemy[i].pos_x + enemy[i].width_px + 3, enemy[i].pos_y + enemy[i].height_px + 3, enemy[i].shoot_accuracy, enemy[i].gun.max_distance, enemy[i].gun.bullet_speed, enemy[i].gun.damage);
 										break;
 									case 6:// moving down-left
-										BULLET_InitBullet(enemy[i].gun.bullet_graphics_id, ENTITY_ID_ENEMY_BULLET, 4, 4, enemy[i].pos_x - 2, enemy[i].pos_y + enemy[i].height_px + 2, enemy[i].pos_x - 10, enemy[i].pos_y + enemy[i].height_px + 10, enemy[i].shoot_accuracy, enemy[i].gun.max_distance, enemy[i].gun.bullet_speed, enemy[i].gun.damage);
+										BULLET_InitBullet(enemy[i].gun.bullet_graphics_id, ENTITY_ID_ENEMY_BULLET, 12, 12, enemy[i].pos_x - 2, enemy[i].pos_y + enemy[i].height_px + 2, enemy[i].pos_x - 3, enemy[i].pos_y + enemy[i].height_px + 3, enemy[i].shoot_accuracy, enemy[i].gun.max_distance, enemy[i].gun.bullet_speed, enemy[i].gun.damage);
 										break;
 									case 8:// moving up
-										BULLET_InitBullet(enemy[i].gun.bullet_graphics_id, ENTITY_ID_ENEMY_BULLET, 4, 4, enemy[i].pos_x + (enemy[i].width_px >> 1), enemy[i].pos_y - 2, enemy[i].pos_x + (enemy[i].width_px >> 1), enemy[i].pos_y - 10, enemy[i].shoot_accuracy, enemy[i].gun.max_distance, enemy[i].gun.bullet_speed, enemy[i].gun.damage);
+										BULLET_InitBullet(enemy[i].gun.bullet_graphics_id, ENTITY_ID_ENEMY_BULLET, 12, 12, enemy[i].pos_x + (enemy[i].width_px >> 2), enemy[i].pos_y - 2, enemy[i].pos_x + (enemy[i].width_px >> 2), enemy[i].pos_y - 3, enemy[i].shoot_accuracy, enemy[i].gun.max_distance, enemy[i].gun.bullet_speed, enemy[i].gun.damage);
 										break;
 									case 9:// moving up-right
-										BULLET_InitBullet(enemy[i].gun.bullet_graphics_id, ENTITY_ID_ENEMY_BULLET, 4, 4, enemy[i].pos_x + enemy[i].width_px + 2, enemy[i].pos_y - 2, enemy[i].pos_x + enemy[i].width_px + 10, enemy[i].pos_y - 10, enemy[i].shoot_accuracy, enemy[i].gun.max_distance, enemy[i].gun.bullet_speed, enemy[i].gun.damage);
+										BULLET_InitBullet(enemy[i].gun.bullet_graphics_id, ENTITY_ID_ENEMY_BULLET, 12, 12, enemy[i].pos_x + enemy[i].width_px + 2, enemy[i].pos_y - 2, enemy[i].pos_x + enemy[i].width_px + 3, enemy[i].pos_y - 3, enemy[i].shoot_accuracy, enemy[i].gun.max_distance, enemy[i].gun.bullet_speed, enemy[i].gun.damage);
 										break;
 									case 10:// moving up-left
-										BULLET_InitBullet(enemy[i].gun.bullet_graphics_id, ENTITY_ID_ENEMY_BULLET, 4, 4, enemy[i].pos_x - 2, enemy[i].pos_y - 2, enemy[i].pos_x - 10, enemy[i].pos_y - 10, enemy[i].shoot_accuracy, enemy[i].gun.max_distance, enemy[i].gun.bullet_speed, enemy[i].gun.damage);
+										BULLET_InitBullet(enemy[i].gun.bullet_graphics_id, ENTITY_ID_ENEMY_BULLET, 12, 12, enemy[i].pos_x - 2, enemy[i].pos_y - 2, enemy[i].pos_x - 3, enemy[i].pos_y - 3, enemy[i].shoot_accuracy, enemy[i].gun.max_distance, enemy[i].gun.bullet_speed, enemy[i].gun.damage);
 										break;
 									default:
 										break;
@@ -1954,5 +1965,13 @@ void ENEMY_UnloadEnemies(void) {
 			enemy[i].is_loaded = false;
 			enemy[i].sprite_num = -1;
 		}
+	}
+}
+
+void ENEMY_Unload(int enemy_number) {
+	if (enemy[enemy_number].is_loaded) {
+		GFX_UnloadSprite(enemy[enemy_number].sprite_num);
+		enemy[enemy_number].is_loaded = false;
+		enemy[enemy_number].sprite_num = -1;
 	}
 }

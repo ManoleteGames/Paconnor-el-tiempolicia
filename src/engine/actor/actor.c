@@ -26,9 +26,9 @@ void ACTOR_SetGun(int actor_spr_num, int type) {
 			GFX_SetSpriteGraphicsId(actor.sprite_num, ACTOR_ANIM_RARM_INDEX, SPRITE_GRAPHICS_ID_ACTOR_RARM_BARE_HANDS);
 
 			actor.gun.max_accuracy = 4;
-			actor.gun.damage = 1;
-			actor.gun.recoil_time = 5;
-			actor.gun.max_distance = 32;
+			actor.gun.damage = 10;
+			actor.gun.recoil_time = 3;
+			actor.gun.max_distance = 6;
 			actor.gun.accurate = false;
 			actor.gun.shoots = 1;
 			actor.gun.bullet_speed = 1;
@@ -41,9 +41,9 @@ void ACTOR_SetGun(int actor_spr_num, int type) {
 			GFX_SetSpriteGraphicsId(actor.sprite_num, ACTOR_ANIM_RARM_INDEX, SPRITE_GRAPHICS_ID_ACTOR_RARM_PISTOL);
 
 			actor.gun.max_accuracy = 4;
-			actor.gun.damage = 2;
-			actor.gun.recoil_time = 5;
-			actor.gun.max_distance = 200;
+			actor.gun.damage = 20;
+			actor.gun.recoil_time = 3;
+			actor.gun.max_distance = 150;
 			actor.gun.accurate = true;
 			actor.gun.shoots = 1;
 			actor.gun.bullet_speed = 15;
@@ -56,8 +56,8 @@ void ACTOR_SetGun(int actor_spr_num, int type) {
 			GFX_SetSpriteGraphicsId(actor.sprite_num, ACTOR_ANIM_RARM_INDEX, SPRITE_GRAPHICS_ID_ACTOR_RARM_SHOTGUN);
 
 			actor.gun.max_accuracy = 1;
-			actor.gun.damage = 4;
-			actor.gun.recoil_time = 8;
+			actor.gun.damage = 40;
+			actor.gun.recoil_time = 5;
 			actor.gun.max_distance = 100;
 			actor.gun.accurate = false;
 			actor.gun.shoots = 3;
@@ -71,9 +71,9 @@ void ACTOR_SetGun(int actor_spr_num, int type) {
 			GFX_SetSpriteGraphicsId(actor.sprite_num, ACTOR_ANIM_RARM_INDEX, SPRITE_GRAPHICS_ID_ACTOR_RARM_UZI);
 
 			actor.gun.max_accuracy = 1;
-			actor.gun.damage = 2;
+			actor.gun.damage = 20;
 			actor.gun.recoil_time = 0;
-			actor.gun.max_distance = 250;
+			actor.gun.max_distance = 150;
 			actor.gun.accurate = false;
 			actor.gun.shoots = 1;
 			actor.gun.bullet_speed = 20;
@@ -86,11 +86,10 @@ void ACTOR_SetGun(int actor_spr_num, int type) {
 			actor.gun.bullet_graphics_id = SPRITE_GRAPHICS_ID_BULLET1;
 			GFX_SetSpriteGraphicsId(actor.sprite_num, ACTOR_ANIM_RARM_INDEX, SPRITE_GRAPHICS_ID_ACTOR_RARM_RIFLE);
 
-
 			actor.gun.max_accuracy = 4;
-			actor.gun.damage = 3;
-			actor.gun.recoil_time = 20;
-			actor.gun.max_distance = 1000;
+			actor.gun.damage = 30;
+			actor.gun.recoil_time = 10;
+			actor.gun.max_distance = 200;
 			actor.gun.accurate = true;
 			actor.gun.shoots = 1;
 			actor.gun.bullet_speed = 20;
@@ -1245,6 +1244,29 @@ void ACTOR_SetPosition(int x, int y, int facing) {
 	actor.last_facing = facing;
 }
 
+
+void ACTOR_LoadActorAssets(const char *dat_name) {
+
+	// Load graphics
+	GFX_LoadSpriteGraphicsRLE("ACTOR.DAT", "FACE.PCX", SPRITE_GRAPHICS_ID_ACTORCHAT, 80, 82, 1, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("ACTOR.DAT", "PORTAIT.PCX", SPRITE_GRAPHICS_ID_ACTOR_PORTAIT, 32, 32, 2, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("ACTOR.DAT", "HEAD.PCX", SPRITE_GRAPHICS_ID_ACTOR_HEAD, 12, 12, 30, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("ACTOR.DAT", "FEET.PCX", SPRITE_GRAPHICS_ID_ACTOR_FEET, 27, 16, 84, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("ACTOR.DAT", "BODY.PCX", SPRITE_GRAPHICS_ID_ACTOR_BODY, 20, 15, 100, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("ACTOR.DAT", "LARM1.PCX", SPRITE_GRAPHICS_ID_ACTOR_LARM, 16, 18, 90, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("ACTOR.DAT", "RARM1.PCX", SPRITE_GRAPHICS_ID_ACTOR_RARM_BARE_HANDS, 16, 18, 135, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("ACTOR.DAT", "RARM2.PCX", SPRITE_GRAPHICS_ID_ACTOR_RARM_PISTOL, 20, 20, 72, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("ACTOR.DAT", "RARM3.PCX", SPRITE_GRAPHICS_ID_ACTOR_RARM_SHOTGUN, 20, 20, 72, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("ACTOR.DAT", "RARM4.PCX", SPRITE_GRAPHICS_ID_ACTOR_RARM_UZI, 20, 20, 72, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("ACTOR.DAT", "RARM5.PCX", SPRITE_GRAPHICS_ID_ACTOR_RARM_RIFLE, 20, 20, 72, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	// Load animations
+	GFX_LoadAnimations("ACTOR.DAT", "FEET.ANI", actor.feet_animation, 150);     // feet animations
+	GFX_LoadAnimations("ACTOR.DAT", "BODY.ANI", actor.body_animation, 150);     // body animations
+	GFX_LoadAnimations("ACTOR.DAT", "HEAD.ANI", actor.head_animation, 150);     // body animations
+	GFX_LoadAnimations("ACTOR.DAT", "LARM.ANI", actor.left_arm_animation, 150); // left arm animations
+	GFX_LoadAnimations("ACTOR.DAT", "RARM.ANI", actor.right_arm_animation, 150);// right arm animations
+}
+
 /** ACTOR :: Initializes actor data
  * - Sets default values for the actor structure 
  */
@@ -2020,6 +2042,7 @@ bool ACTOR_CheckRightColission(void) {
 /** ACTOR :: Set combat mode
  */
 void ACTOR_SetCombatMode(bool mode) {
+	ACTOR_SetGun(actor.sprite_num, ACTOR_GUN_TYPE_BARE_HANDS);
 	actor.mode_combat = mode;
 	if (mode) {
 		GFX_ShowPanel(&gfx_actor_status_panel, true, 0);
@@ -2032,6 +2055,10 @@ void ACTOR_SetCombatMode(bool mode) {
  */
 bool ACTOR_IsInCombatMode(void) {
 	return actor.mode_combat;
+}
+
+void ACTOR_SetFreeze(bool freeze) {
+	actor.status_freeze = freeze;
 }
 
 /** ACTOR :: In game update
@@ -2054,7 +2081,7 @@ void ACTOR_Update(void) {
 
 	// Calculate movement
 	movement = 0;
-	if (!ui.freeze) {
+	if (!actor.status_freeze) {
 		movement = movement | (kbKeyState[kbBindingUp] << 3);
 		movement = movement | (kbKeyState[kbBindingDown] << 2);
 		movement = movement | (kbKeyState[kbBindingLeft] << 1);
@@ -2339,13 +2366,13 @@ void ACTOR_Update(void) {
 				if (GFX_IsSpriteAnimationEnded(actor.sprite_num, 0)) {
 					switch (actor.last_facing) {
 						case 1:// facing right
-							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 12, 12, actor.pos_x + 31, actor.pos_y + 11, actor.pos_x + 32, actor.pos_y + 12, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 12, 12, actor.pos_x + 30, actor.pos_y + 11, actor.pos_x + 31, actor.pos_y + 11, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
 							break;
 						case 2:// facing left
-							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 12, 12, actor.pos_x - 9, actor.pos_y + 11, actor.pos_x - 10, actor.pos_y + 12, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 12, 12, actor.pos_x - 9, actor.pos_y + 11, actor.pos_x - 10, actor.pos_y + 11, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
 							break;
 						case 4:// facing down
-							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 12, 12, actor.pos_x + 5, actor.pos_y + 31, actor.pos_x + 6, actor.pos_y + 32, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 12, 12, actor.pos_x + 5, actor.pos_y + 31, actor.pos_x + 5, actor.pos_y + 32, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
 							break;
 						case 5:// facing down-right
 							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 12, 12, actor.pos_x + 23, actor.pos_y + 23, actor.pos_x + 24, actor.pos_y + 24, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
@@ -2354,7 +2381,7 @@ void ACTOR_Update(void) {
 							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 12, 12, actor.pos_x - 7, actor.pos_y + 23, actor.pos_x - 8, actor.pos_y + 24, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
 							break;
 						case 8:// facing up
-							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 12, 12, actor.pos_x + 5, actor.pos_y - 1, actor.pos_x + 6, actor.pos_y - 2, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 12, 12, actor.pos_x + 5, actor.pos_y - 1, actor.pos_x + 5, actor.pos_y - 2, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
 							break;
 						case 9:// facing up-right
 							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 12, 12, actor.pos_x + 27, actor.pos_y - 1, actor.pos_x + 28, actor.pos_y - 2, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
@@ -3033,15 +3060,8 @@ void ACTOR_Update(void) {
 		EFFECT_LoadEffect(ENTITY_ID_BLOOD, SPRITE_GRAPHICS_ID_BLOOD, actor.pos_x + (rand() % 32), actor.pos_y + 24 + (rand() % 8), true, 0, false, false, 5);
 		EFFECT_LoadEffect(ENTITY_ID_BLOOD, SPRITE_GRAPHICS_ID_BLOOD, actor.pos_x + (rand() % 32), actor.pos_y + 24 + (rand() % 8), true, 0, false, false, 5);
 
-		switch (actor.hit_by) {
-			case ENTITY_ID_ENEMY_BULLET:
-				if (actor.action_loop) actor.damage = 0;// avoid damage if actor is looping
-				break;
-			case ENTITY_ID_EXPLOSION:
-				break;
-			default:
-				break;
-		}
+		// avoid damage if actor is looping
+		if ((actor.hit_by == ENTITY_ID_ENEMY_BULLET) && actor.action_loop) actor.damage = 0;
 
 		if (actor.damage > actor.life) actor.damage = actor.life;
 		if (!actor.life_shown) {
