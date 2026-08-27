@@ -48,7 +48,7 @@ Set-Location -Path "$parentPath\images\scn1"
 python3 "$PSScriptRoot/makedat.py" "ISCN1.DAT" "INTRO0.PCX" "INTRO1H.PCX" "INTRO1L.PCX" "INTRO2H.PCX" "INTRO2L.PCX" "INTRO3H.PCX" "INTRO4H.PCX" "INTRO4L.PCX" "INTRO5H.PCX" "INTRO5L.PCX" "INTRO6H.PCX" "INTRO7H.PCX" "INTRO7L.PCX" "INTRO8H.PCX" "INTRO8L.PCX" "INTRO9H.PCX" "INTRO9L.PCX" "INTRO10H.PCX" 
 Write-Host Generating scene 1 outro images DAT file....
 Set-Location -Path "$parentPath\images\scn1"
-python3 "$PSScriptRoot/makedat.py" "OSCN1.DAT" "OUTRO1H.PCX" "OUTRO2H.PCX" "OUTRO2L.PCX" "OUTRO3H.PCX" "OUTRO3L.PCX" "OUTRO4H.PCX" "OUTRO5H.PCX" "OUTRO5L.PCX" "OUTRO6H.PCX" "OUTRO7H.PCX" "OUTRO8H.PCX"
+python3 "$PSScriptRoot/makedat.py" "OSCN1.DAT" "OUTRO1H.PCX" "OUTRO2H.PCX" "OUTRO3H.PCX" "OUTRO4H.PCX" "OUTRO5H.PCX" "OUTRO5L.PCX" "OUTRO6H.PCX" "OUTRO6L.PCX" "OUTRO7H.PCX" "OUTRO8H.PCX" "OUTRO8L.PCX" "OUTRO9H.PCX" "OUTRO10H.PCX" "OUTRO11H.PCX"
 Write-Host Generating scene 2 intro images DAT file....
 Set-Location -Path "$parentPath\images\scn2"
 python3 "$PSScriptRoot/makedat.py" "ISCN2.DAT" "INTRO1H.PCX" "INTRO2H.PCX" "INTRO3H.PCX" "INTRO4H.PCX" "INTRO4L.PCX" "INTRO5H.PCX"
@@ -69,10 +69,10 @@ Set-Location -Path "$parentPath\images\scn4"
 python3 "$PSScriptRoot/makedat.py" "OSCN4.DAT" "OUTRO1H.PCX" "OUTRO1L.PCX" "OUTRO2H.PCX" "OUTRO3H.PCX" "OUTRO4H.PCX" "OUTRO5H.PCX" "OUTRO5L.PCX" "OUTRO6H.PCX" "OUTRO7H.PCX" "OUTRO8H.PCX" "OUTRO9H.PCX" "OUTRO10H.PCX"
 Write-Host Generating scene 5 intro images DAT file....
 Set-Location -Path "$parentPath\images\scn5"
-python3 "$PSScriptRoot/makedat.py" "ISCN5.DAT" "INTRO1H.PCX" "INTRO1L.PCX"
+python3 "$PSScriptRoot/makedat.py" "ISCN5.DAT" "INTRO1H.PCX" "INTRO2H.PCX" "INTRO3H.PCX" "INTRO4H.PCX" "INTRO4L.PCX" "INTRO5H.PCX" "INTRO5L.PCX" "INTRO6H.PCX" "INTRO6L.PCX" "INTRO7H.PCX" "INTRO7L.PCX" "INTRO8H.PCX" "INTRO9H.PCX" "INTRO10H.PCX" "INTRO10L.PCX" "INTRO11H.PCX"
 Write-Host Generating scene 5 outro images DAT file....
 Set-Location -Path "$parentPath\images\scn5"
-python3 "$PSScriptRoot/makedat.py" "OSCN5.DAT" "OUTRO1H.PCX" "OUTRO1L.PCX"
+python3 "$PSScriptRoot/makedat.py" "OSCN5.DAT" "OUTRO1H.PCX" "OUTRO1L.PCX" "OUTRO2H.PCX" "OUTRO3H.PCX" "OUTRO3L.PCX" "OUTRO4H.PCX" "OUTRO5H.PCX" "OUTRO5L.PCX" "OUTRO6H.PCX" "OUTRO7H.PCX" "OUTRO7L.PCX" "OUTRO8H.PCX" "OUTRO9H.PCX" "OUTRO10H.PCX" "OUTRO11H.PCX"
 Write-Host Generating scene 6 intro images DAT file....
 Set-Location -Path "$parentPath\images\scn6"
 python3 "$PSScriptRoot/makedat.py" "ISCN6.DAT" "INTRO1H.PCX" "INTRO1L.PCX"
@@ -118,7 +118,7 @@ python3 "$PSScriptRoot/makedat.py" "MAPSCN62.DAT" "m_back.csv" "m_fore.csv" "m_m
 Write-Host ////////////////////////////// PALETTES /////////////////////////////////
 Write-Host Generating palettes DAT file....
 Set-Location -Path "$parentPath\palettes"
-python3 "$PSScriptRoot/makedat.py" "PALETTES.DAT" "LDOSCLUB.PCX" "LMANOL.PCX" "LCONTEST.PCX" "INTRO.PCX" "MENU.PCX" "LOADING.PCX" "ISCN1.PCX" "SCN11.PCX" "SCN12.PCX" "OSCN1.PCX" "ISCN2.PCX" "SCN21.PCX" "OSCN2.PCX" "ISCN3.PCX" "SCN31.PCX" "SCN32.PCX" "OSCN3.PCX" "ISCN4.PCX" "SCN41.PCX" "SCN42.PCX" "OSCN4.PCX" "SCN51.PCX" "SCN52.PCX" "SCN61.PCX" "SCN62.PCX" "END.PCX"
+python3 "$PSScriptRoot/makedat.py" "PALETTES.DAT" "LDOSCLUB.PCX" "LMANOL.PCX" "LCONTEST.PCX" "INTRO.PCX" "MENU.PCX" "LOADING.PCX" "ISCN1.PCX" "SCN11.PCX" "SCN12.PCX" "OSCN1.PCX" "ISCN2.PCX" "SCN21.PCX" "OSCN2.PCX" "ISCN3.PCX" "SCN31.PCX" "SCN32.PCX" "OSCN3.PCX" "ISCN4.PCX" "SCN41.PCX" "SCN42.PCX" "OSCN4.PCX" "ISCN5.PCX" "SCN51.PCX" "SCN52.PCX" "OSCN5.PCX" "SCN61.PCX" "SCN62.PCX" "END.PCX"
 
 Write-Host ////////////////////////////// SOUND /////////////////////////////////
 Write-Host Generating music DAT file....

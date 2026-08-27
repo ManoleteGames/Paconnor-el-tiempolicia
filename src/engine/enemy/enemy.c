@@ -1876,10 +1876,10 @@ void ENEMY_Update(void) {
 							enemy[i].action_step++;
 							break;
 						case 3:// Move back
-							enemy[i].x_FP += enemy[i].hit_vx_FP << 1;
-							enemy[i].y_FP += enemy[i].hit_vy_FP << 1;
-							enemy[i].pos_x = enemy[i].x_FP >> FP;
-							enemy[i].pos_y = enemy[i].y_FP >> FP;
+							//enemy[i].x_FP += enemy[i].hit_vx_FP << 1;
+							//enemy[i].y_FP += enemy[i].hit_vy_FP << 1;
+							//enemy[i].pos_x = enemy[i].x_FP >> FP;
+							//enemy[i].pos_y = enemy[i].y_FP >> FP;
 							enemy[i].reaction_counter = 0;
 							enemy[i].action_step++;
 							break;
@@ -1911,10 +1911,10 @@ void ENEMY_Update(void) {
 							break;
 						case 1:
 							EFFECT_LoadEffect(ENTITY_ID_BLOOD, SPRITE_GRAPHICS_ID_BLOOD, enemy[i].pos_x + (rand() % 32), enemy[i].pos_y + (rand() % 32), true, 0, false, false, 5);
-							enemy[i].x_FP += enemy[i].hit_vx_FP;
-							enemy[i].y_FP += enemy[i].hit_vy_FP;
-							enemy[i].pos_x = enemy[i].x_FP >> FP;
-							enemy[i].pos_y = enemy[i].y_FP >> FP;
+							//enemy[i].x_FP += enemy[i].hit_vx_FP;
+							//enemy[i].y_FP += enemy[i].hit_vy_FP;
+							//enemy[i].pos_x = enemy[i].x_FP >> FP;
+							//enemy[i].pos_y = enemy[i].y_FP >> FP;
 							if (GFX_IsSpriteAnimationEnded(enemy[i].sprite_num, 0)) {
 								enemy[i].action_step++;
 								enemy[i].idle_counter = 0;

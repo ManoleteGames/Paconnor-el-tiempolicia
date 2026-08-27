@@ -2042,7 +2042,6 @@ bool ACTOR_CheckRightColission(void) {
 /** ACTOR :: Set combat mode
  */
 void ACTOR_SetCombatMode(bool mode) {
-	ACTOR_SetGun(actor.sprite_num, ACTOR_GUN_TYPE_BARE_HANDS);
 	actor.mode_combat = mode;
 	if (mode) {
 		GFX_ShowPanel(&gfx_actor_status_panel, true, 0);

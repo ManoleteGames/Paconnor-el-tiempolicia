@@ -131,52 +131,67 @@ void MAP_ShowSwapableTile(int x_px, int y_px) {
 	int tile_number, tile_screen_x, tile_screen_y, tile_x, tile_y, tile_data, tileset_index;
 
 	tile_number = MAP_GetTileNumber(x_px, y_px);
-	// Get map tile position on screen
-	tile_screen_x = x_px - camera.pos_x;
-	tile_screen_y = y_px - camera.pos_y;
-	// Get map tile position on video buffer
-	tile_x = camera.pos_abs_x + tile_screen_x;
-	if (tile_x >= video.map_buffer_width) {
-		tile_x = tile_x - video.map_buffer_width;
-	}
-	tile_y = camera.pos_abs_y + tile_screen_y;
-	if (tile_y >= video.map_buffer_height) {
-		tile_y = tile_y - video.map_buffer_height;
-	}
 
 	// enable colission
 	map.layer[MAP_COLISSION_LAYER][tile_number] = MAP_COLISSION_HALF;
 
-	// redraw tile
-	tile_data = map.layer[MAP_FOREGROUND_LAYER][tile_number];
-	tileset_index = tile_data << 8;
-	MAP_DrawToVideoBuffer(tile_x, tile_y, MAP_TILE_WIDTH, MAP_TILE_HEIGHT, &map.layer_tiles[MAP_FOREGROUND_LAYER].buffer[tileset_index], video.map_buffer[MAP_BACKGROUND_LAYER]);
+	// enable swapable
+	map.layer[MAP_ANIM_LAYER][tile_number] = MAP_ANIMATION_SWAPABLE;
+
+	// Redraw tile if it is on screen
+	if ((x_px > camera.pos_x) && (x_px < (camera.pos_x + camera.visible_width)) && (y_px > camera.pos_y) && (y_px < (camera.pos_y + camera.visible_height))) {
+		// Get map tile position on screen
+		tile_screen_x = x_px - camera.pos_x;
+		tile_screen_y = y_px - camera.pos_y;
+
+		// Get map tile position on video buffer
+		tile_x = camera.pos_abs_x + tile_screen_x;
+		if (tile_x >= video.map_buffer_width) {
+			tile_x = tile_x - video.map_buffer_width;
+		}
+		tile_y = camera.pos_abs_y + tile_screen_y;
+		if (tile_y >= video.map_buffer_height) {
+			tile_y = tile_y - video.map_buffer_height;
+		}
+
+		tile_data = map.layer[MAP_FOREGROUND_LAYER][tile_number];
+		tileset_index = tile_data << 8;
+		MAP_DrawToVideoBuffer(tile_x, tile_y, MAP_TILE_WIDTH, MAP_TILE_HEIGHT, &map.layer_tiles[MAP_FOREGROUND_LAYER].buffer[tileset_index], video.map_buffer[MAP_BACKGROUND_LAYER]);
+	}
 }
 
 void MAP_HideSwapableTile(int x_px, int y_px) {
 	int tile_number, tile_screen_x, tile_screen_y, tile_x, tile_y, tile_data, tileset_index;
 
 	tile_number = MAP_GetTileNumber(x_px, y_px);
-	// Get map tile position on screen
-	tile_screen_x = x_px - camera.pos_x;
-	tile_screen_y = y_px - camera.pos_y;
-	// Get map tile position on video buffer
-	tile_x = camera.pos_abs_x + tile_screen_x;
-	if (tile_x >= video.map_buffer_width) {
-		tile_x = tile_x - video.map_buffer_width;
-	}
-	tile_y = camera.pos_abs_y + tile_screen_y;
-	if (tile_y >= video.map_buffer_height) {
-		tile_y = tile_y - video.map_buffer_height;
-	}
 
 	// disable colission
 	map.layer[MAP_COLISSION_LAYER][tile_number] = MAP_COLISSION_NONE;
 
-	// redraw tile
-	tile_data = map.layer[MAP_BACKGROUND_LAYER][tile_number];
-	tileset_index = tile_data << 8;
-	MAP_DrawToVideoBuffer(tile_x, tile_y, MAP_TILE_WIDTH, MAP_TILE_HEIGHT, &map.layer_tiles[MAP_BACKGROUND_LAYER].buffer[tileset_index], video.map_buffer[MAP_BACKGROUND_LAYER]);
+	// disable animation
+	map.layer[MAP_ANIM_LAYER][tile_number] = MAP_ANIMATION_NONE;
+
+	// Redraw tile if it is on screen
+	if ((x_px > camera.pos_x) && (x_px < (camera.pos_x + camera.visible_width)) && (y_px > camera.pos_y) && (y_px < (camera.pos_y + camera.visible_height))) {
+
+		// Get map tile position on screen
+		tile_screen_x = x_px - camera.pos_x;
+		tile_screen_y = y_px - camera.pos_y;
+		// Get map tile position on video buffer
+		tile_x = camera.pos_abs_x + tile_screen_x;
+		if (tile_x >= video.map_buffer_width) {
+			tile_x = tile_x - video.map_buffer_width;
+		}
+		tile_y = camera.pos_abs_y + tile_screen_y;
+		if (tile_y >= video.map_buffer_height) {
+			tile_y = tile_y - video.map_buffer_height;
+		}
+
+		// redraw tile
+		tile_data = map.layer[MAP_BACKGROUND_LAYER][tile_number];
+		tileset_index = tile_data << 8;
+		MAP_DrawToVideoBuffer(tile_x, tile_y, MAP_TILE_WIDTH, MAP_TILE_HEIGHT, &map.layer_tiles[MAP_BACKGROUND_LAYER].buffer[tileset_index], video.map_buffer[MAP_BACKGROUND_LAYER]);
+	}
 }
 
 /** MAP :: Clear a solid zone on video buffer
