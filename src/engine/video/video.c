@@ -411,6 +411,35 @@ void VIDEO_PanelToScreenBuffer(StatusPanel *panel) {
 			}
 		}
 
+		// Draw key
+		src_index = 0;
+		s = &gfx_sprite_graphics_stack[panel->key_graphics_id].buffer[src_index];
+		dst_index = ((panel->pos_y + panel->key_y) * video.screen_width) + (panel->pos_x + panel->key_x);
+		d = &video.screen_buffer[VIDEO_SCREEN_BUFFER_BACK][dst_index];
+
+		for (i = 0; i < gfx_sprite_graphics_stack[panel->key_graphics_id].height_px; i++) {
+			end_of_scanline = false;
+			while (!end_of_scanline) {
+				color = *s++;
+				switch (color) {
+					case 1:// start of transparent bunch
+						count = *s++;
+						d += count;
+						break;
+					case SPRITE_TRANSP_COLOR:// transparent pixel
+						d++;
+						break;
+					case 0:// end of scanline
+						d += video.screen_width - gfx_sprite_graphics_stack[panel->key_graphics_id].width_px;
+						end_of_scanline = true;
+						break;
+					default:// just a color!
+						*d++ = color;
+						break;
+				}
+			}
+		}
+
 		// Draw gun
 		src_index = 0;
 		s = &gfx_sprite_graphics_stack[panel->gun_graphics_id].buffer[src_index];
@@ -439,7 +468,6 @@ void VIDEO_PanelToScreenBuffer(StatusPanel *panel) {
 				}
 			}
 		}
-
 
 		// Depending on the gun, draw current and total bullets
 		switch (panel->gun_type) {
@@ -630,7 +658,6 @@ void VIDEO_PanelToScreenBuffer(StatusPanel *panel) {
 				break;
 		}
 
-
 		// Draw grenade
 		src_index = 0;
 		s = &gfx_sprite_graphics_stack[panel->grenade_graphics_id].buffer[src_index];
@@ -695,6 +722,13 @@ void VIDEO_PanelToScreenBuffer(StatusPanel *panel) {
 				panel->old_life--;
 			}
 		}
+		if (panel->old_life < panel->current_life) {
+			panel->life_speed_counter++;
+			if (panel->life_speed_counter > panel->life_speed) {
+				panel->life_speed_counter = 0;
+				panel->old_life++;
+			}
+		}
 
 		// Update time
 		if (panel->timeout != 0) {
@@ -715,13 +749,14 @@ void VIDEO_PanelToScreenBuffer(StatusPanel *panel) {
  *  - width: Width of the status panel
  *  - height: Height of the status panel
  */
-void VIDEO_ChatToScreenBuffer(ChatPanel *panel) {
+bool VIDEO_ChatToScreenBuffer(ChatPanel *panel, bool finish_cmd) {
 	int i;
 	int src_index, dst_index;
 	byte *s, *d;
 	byte color, count;
 	bool end_of_scanline;
 	bool eol[3] = {false, false, false};
+	bool speech_finished;
 
 	// Draw portait
 	src_index = gfx_sprite_graphics_stack[panel->portait_graphics_id].frame_offset[panel->portait_frame];
@@ -813,9 +848,24 @@ void VIDEO_ChatToScreenBuffer(ChatPanel *panel) {
 	}
 
 	// Draw text
+
+	if ((panel->line_count[0] >= strlen(panel->line[0])) && (panel->line_count[1] >= strlen(panel->line[1])) && (panel->line_count[2] >= strlen(panel->line[2]))) {
+		speech_finished = true;
+	} else {
+		speech_finished = false;
+	}
+
+	if (finish_cmd) {
+		panel->line_count[0] = strlen(panel->line[0]);
+		panel->line_count[1] = strlen(panel->line[1]);
+		panel->line_count[2] = strlen(panel->line[2]);
+	}
+
 	eol[0] = VIDEO_StringToScreenBufferChat(panel->pos_x + panel->chat_x + 16, panel->pos_y + panel->chat_y + 16, panel->line[0], FONT_SLIM_BLACK, &panel->line_count[0]);
 	if (eol[0]) eol[1] = VIDEO_StringToScreenBufferChat(panel->pos_x + panel->chat_x + 16, panel->pos_y + panel->chat_y + 32, panel->line[1], FONT_SLIM_BLACK, &panel->line_count[1]);
 	if (eol[1]) eol[2] = VIDEO_StringToScreenBufferChat(panel->pos_x + panel->chat_x + 16, panel->pos_y + panel->chat_y + 48, panel->line[2], FONT_SLIM_BLACK, &panel->line_count[2]);
+
+	return speech_finished;
 }
 
 /** VIDEO :: Draw char on screen buffer

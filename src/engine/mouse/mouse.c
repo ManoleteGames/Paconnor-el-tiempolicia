@@ -145,7 +145,7 @@ void MOUSE_InitCursorSprite(byte graphics_id) {
 
 	GFX_SetSpriteCursorGraphic(graphics_id, 0, 0);
 	GFX_SetDefaultCursorAnimation(false, false, 5);
-	gfx_sprite_cursor.unmasked = true;
+	gfx_sprite_cursor.gfx[0].unmasked = true;
 }
 
 void MOUSE_SetCursorGraphics(int graphics_id) {

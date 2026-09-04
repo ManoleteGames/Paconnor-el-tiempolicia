@@ -9,14 +9,14 @@ Button ui_button[UI_MAX_BUTTONS];
 
 void UI_SetStatusPanels(void) {
 	// Set status panel graphics
-	GFX_SetPanelGraphics(&gfx_actor_status_panel, SPRITE_GRAPHICS_ID_ACTOR_PORTAIT, SPRITE_GRAPHICS_ID_LIFEBAR, actor.gun.graphics_id);
-	GFX_SetPanelPosition(&gfx_actor_status_panel, 0, 0, 0, 0, 32, 0, 32, 8, 64, 8);
+	GFX_SetPanelGraphics(&gfx_actor_status_panel, SPRITE_GRAPHICS_ID_ACTOR_PORTAIT, SPRITE_GRAPHICS_ID_LIFEBAR, actor.gun.graphics_id, actor.key_graphics_id);
+	GFX_SetPanelPosition(&gfx_actor_status_panel, 0, 0, 0, 0, 32, 0, 32, 8, 64, 8, 84, 8);
 	GFX_UpdatePanel(&gfx_actor_status_panel, actor.life, actor.life, actor.max_life, 1);
-	GFX_UpdatePanelGun(&gfx_actor_status_panel, actor.gun.graphics_id, actor.gun.type, actor.gun.total_bullets, actor.gun.current_bullets, SPRITE_GRAPHICS_ID_GRENADE, actor.current_grenades);
+	GFX_UpdatePanelGun(&gfx_actor_status_panel, actor.gun.graphics_id, actor.gun.type, actor.gun.total_bullets, actor.gun.current_bullets, SPRITE_GRAPHICS_ID_GRENADE, actor.current_grenades, actor.key_entity_id, actor.key_graphics_id);
 	GFX_ShowPanel(&gfx_actor_status_panel, actor.mode_combat, 0);
 
-	GFX_SetPanelGraphics(&gfx_enemy_status_panel, SPRITE_GRAPHICS_ID_OBJECT1_PORTAIT, SPRITE_GRAPHICS_ID_LIFEBAR, SPRITE_GRAPHICS_ID_GUN0);
-	GFX_SetPanelPosition(&gfx_enemy_status_panel, 236, 0, 48, 0, 0, 0, 0, 0, 0, 0);
+	GFX_SetPanelGraphics(&gfx_enemy_status_panel, SPRITE_GRAPHICS_ID_OBJECT1_PORTAIT, SPRITE_GRAPHICS_ID_LIFEBAR, SPRITE_GRAPHICS_ID_GUN0, SPRITE_GRAPHICS_ID_EMPTY);
+	GFX_SetPanelPosition(&gfx_enemy_status_panel, 236, 0, 48, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 	GFX_ShowPanel(&gfx_enemy_status_panel, false, 200);
 }
 
@@ -110,11 +110,12 @@ void UI_ShowLoadingScreen(void) {
 
 void UI_UpdateUI(bool combat_mode) {
 	int x, y;
+	bool speech_finished;
 
 	UI_UpdateButtons();
 
 	// Pause
-	if (engine.ingame & kbKeyState[SCANCODE_P]) {
+	if (kbKeyState[SCANCODE_P] && engine.ingame && !ui.exit_request && !ui.show_speech) {
 		if (ui.pause) {
 			ui.pause = false;
 			ui.freeze = false;
@@ -131,7 +132,7 @@ void UI_UpdateUI(bool combat_mode) {
 	}
 
 	// Exit ingame request
-	if (engine.ingame & kbKeyState[SCANCODE_ESC]) {
+	if (kbKeyState[SCANCODE_ESC] && engine.ingame && !ui.pause && !ui.show_speech) {
 		if (!ui.exit_request) {
 			ui.exit_request = true;
 			ui.freeze = true;
@@ -144,8 +145,15 @@ void UI_UpdateUI(bool combat_mode) {
 
 	// Exit ingame
 	if (engine.ingame & ui.exit_request & kbKeyState[SCANCODE_Y]) {
+
+		// Exit from current level
 		engine.ingame = false;
-		engine.exit_game = true;
+
+		// Set menu
+		engine.exit_menu = true;
+		engine.scene = 0;
+		engine.room = 1;
+
 		ui.freeze = false;
 		ACTOR_SetFreeze(false);
 		kbKeyState[SCANCODE_Y] = false;
@@ -165,20 +173,12 @@ void UI_UpdateUI(bool combat_mode) {
 
 	// Show exit request
 	if (ui.exit_request) {
-		x = (video.screen_width >> 1) - 48;
-		y = (video.screen_height >> 1) - 8;
-		sprintf(ui.speech, ui.txt_file[UI_TXT_GLOBAL].line[8]);
-		ui.speech_length = strlen(ui.speech);
-		VIDEO_StringToScreenBuffer(x, y, ui.speech, FONT_BIG_WHITE);
+		VIDEO_StringToScreenBuffer(110, 90, ui.txt_file[UI_TXT_GLOBAL].line[8], FONT_BIG_WHITE);
 	}
 
 	// Show pause
 	if (ui.pause) {
-		x = (video.screen_width >> 1) - 24;
-		y = (video.screen_height >> 1) - 8;
-		sprintf(ui.speech, ui.txt_file[UI_TXT_GLOBAL].line[7]);
-		ui.speech_length = strlen(ui.speech);
-		VIDEO_StringToScreenBuffer(x, y, ui.speech, FONT_BIG_WHITE);
+		VIDEO_StringToScreenBuffer(110, 90, ui.txt_file[UI_TXT_GLOBAL].line[7], FONT_BIG_WHITE);
 	}
 
 	// Show description
@@ -195,29 +195,25 @@ void UI_UpdateUI(bool combat_mode) {
 	if (ui.show_speech) {
 		ui.actor_was_on_combat_mode = actor.mode_combat;
 		ACTOR_SetCombatMode(false);
-		VIDEO_ChatToScreenBuffer(&gfx_chat_panel);
-
+		speech_finished = VIDEO_ChatToScreenBuffer(&gfx_chat_panel, cursor.right_click_FN);
 		ui.speech_time++;
 
 		// Cancel speech by right click
-		if (cursor.right_click_FN) {
+		if (speech_finished && cursor.right_click_FN) {
 			MOUSE_MaskRightClick();
-			ui.show_speech = false;
-			ui.freeze = false;
-			if (ui.actor_was_on_combat_mode) ACTOR_SetCombatMode(true);
-			ACTOR_SetFreeze(false);
+			ui.speech_time = ui.speech_timeout;
 		}
 
 		if (ui.speech_time >= ui.speech_timeout) {
 			ui.show_speech = false;
 			ui.freeze = false;
-			if (ui.actor_was_on_combat_mode) ACTOR_SetCombatMode(true);
+			ACTOR_SetCombatMode(ui.actor_was_on_combat_mode);
 			ACTOR_SetFreeze(false);
 		}
 	}
 
 	if (combat_mode) {
-		GFX_UpdatePanelGun(&gfx_actor_status_panel, actor.gun.graphics_id, actor.gun.type, actor.gun.total_bullets, actor.gun.current_bullets, SPRITE_GRAPHICS_ID_GRENADE, actor.current_grenades);
+		GFX_UpdatePanelGun(&gfx_actor_status_panel, actor.gun.graphics_id, actor.gun.type, actor.gun.total_bullets, actor.gun.current_bullets, SPRITE_GRAPHICS_ID_GRENADE, actor.current_grenades, actor.key_entity_id, actor.key_graphics_id);
 		VIDEO_PanelToScreenBuffer(&gfx_actor_status_panel);
 		VIDEO_PanelToScreenBuffer(&gfx_enemy_status_panel);
 	}

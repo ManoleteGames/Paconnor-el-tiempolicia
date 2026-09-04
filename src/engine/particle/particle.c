@@ -311,18 +311,22 @@ void PARTICLE_UpdateParticles(void) {
 		if (particle[i].loaded) {
 
 			// debug
-			PARTICLE_DrawColissionPixels(particle[i]);
+			//PARTICLE_DrawColissionPixels(particle[i]);
 
 			// Not on target
 			if (!particle[i].on_target) {
 				// Calculate new pos
-
-				//for (j = 0; j < particle[i].speed; j++) {
 				particle[i].x_FP += particle[i].vx_FP;
-				particle[i].y_FP += particle[i].vy_FP;
-
 				particle[i].pos_x = (particle[i].x_FP >> FP);
+				particle[i].y_FP += particle[i].vy_FP;
 				particle[i].pos_y = (particle[i].y_FP >> FP);
+
+				if (PARTICLE_CheckParticleColission(particle[i]) == ENTITY_ID_BACKGROUND) {
+					particle[i].x_FP -= particle[i].vx_FP;
+					particle[i].pos_x = (particle[i].x_FP >> FP);
+					particle[i].y_FP -= particle[i].vy_FP;
+					particle[i].pos_y = (particle[i].y_FP >> FP);
+				}
 
 				// end of travel
 				particle[i].current_step++;

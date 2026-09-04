@@ -58,7 +58,7 @@ void VIDEO_TimerHandler(void);
 void VIDEO_RotatePaletteStart_Async(int first_index, int last_index, int speed);
 void VIDEO_RotatePaletteEnd_Async(void);
 void VIDEO_BufferToScreenBuffer(byte *buffer, word buffer_width, word buffer_height, int window_width, int window_height, int screen_pos_x, int screen_pos_y);
-void VIDEO_ChatToScreenBuffer(ChatPanel *panel);
+bool VIDEO_ChatToScreenBuffer(ChatPanel *panel, bool finish_cmd);
 void VIDEO_DrawSpriteInterlacedToScreenBufferRLE(Graphic *spr_graphics, SpriteGfx *spr, int odd);
 void VIDEO_GraphicsBufferToScreenBuffer(byte *gfx_buffer, int gfx_width_px, int gfx_height_px, int screen_x, int screen_y, Camera cam);
 void VIDEO_DrawSquareToScreenBuffer(byte *buffer, word buffer_width, word buffer_height, int square_width, int square_height, int screen_pos_x, int screen_pos_y, byte color);

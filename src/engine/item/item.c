@@ -10,6 +10,14 @@ byte item_counter;
 void ITEM_LoadItem(byte number, byte entity_id, byte graphics_id, int pos_x, int pos_y) {
 	int i;
 
+	// Check if item is already loaded
+	if (item[number].is_loaded) {
+		sprintf(engine.system_error_message1, "ITEM_LoadItem function error");
+		sprintf(engine.system_error_message2, "Item id %u already loaded", number);
+		sprintf(engine.system_error_message3, "Current scene %u, room %u", engine.scene, engine.room);
+		Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_GRAPHICS);
+	}
+
 	item[number].type = entity_id;
 	item[number].is_loaded = true;
 	item[number].pos_x = pos_x;
@@ -67,6 +75,8 @@ void ITEM_LoadItem(byte number, byte entity_id, byte graphics_id, int pos_x, int
 	// Set initial screen position
 	gfx_sprite_stack[item[number].num_sprite].screen_pos_x = pos_x - camera.pos_x;
 	gfx_sprite_stack[item[number].num_sprite].screen_pos_y = pos_y - camera.pos_y;
+
+	GFX_SetDefaultAnimation(item[number].num_sprite, false, true, 20);
 }
 
 /** ITEM :: Update items

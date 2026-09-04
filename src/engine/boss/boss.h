@@ -3,11 +3,12 @@
 
 #include "../types/types.h"
 
-#define BOSS_SPEED 4
+#define BOSS_SPEED 5
+#define BOSS_RAMPAGE_SPEED 10
 #define BOSS_LIFE 200
 #define BOSS_ANIMATION_SPEED 5
 
-#define BOSS_PUNCH_RANGE 48
+#define BOSS_PUNCH_RANGE 16
 #define BOSS_SHOOT_RANGE 128
 #define BOSS_REACTION_TIME 10
 
@@ -16,6 +17,8 @@
 #define BOSS_STATUS_CHASE 1
 #define BOSS_STATUS_SHORT_ATTACK 2
 #define BOSS_STATUS_LONG_ATTACK 3
+#define BOSS_STATUS_RAMPAGE 4
+#define BOSS_STATUS_STATIC 5
 
 #define BOSS_ACTION_STAND 1
 #define BOSS_ACTION_SHOOT 2
@@ -54,6 +57,7 @@ void BOSS_Load(const char *dat_name, int x, int y, int face_gfx_id, int portait_
 void BOSS_SetPosition(byte number, int x, int y);
 void BOSS_Unload(void);
 void BOSS_Update(void);
+void BOSS_SetBehavior(int behavior);
 
 
 #endif

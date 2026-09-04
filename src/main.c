@@ -274,7 +274,8 @@ static void Logo(void) {
 						case 9:// Load some assets
 							GFX_LoadSpriteGraphicsRLE("BULLETS.DAT", "BULLET1.PCX", SPRITE_GRAPHICS_ID_BULLET1, 8, 8, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 							GFX_LoadSpriteGraphicsRLE("BULLETS.DAT", "BULLET2.PCX", SPRITE_GRAPHICS_ID_BULLET2, 8, 8, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
-							GFX_LoadSpriteGraphicsRLE("BULLETS.DAT", "PUKE.PCX", SPRITE_GRAPHICS_ID_BULLET3, 16, 16, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+							GFX_LoadSpriteGraphicsRLE("BULLETS.DAT", "BULLET3.PCX", SPRITE_GRAPHICS_ID_BULLET3, 8, 8, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+							GFX_LoadSpriteGraphicsRLE("BULLETS.DAT", "PUKE.PCX", SPRITE_GRAPHICS_ID_PUKE, 16, 16, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 							spark_counter++;
 							break;
 						case 10:
@@ -289,6 +290,8 @@ static void Logo(void) {
 							GFX_LoadSpriteGraphicsRLE("BULLETS.DAT", "GRENADE1.PCX", SPRITE_GRAPHICS_ID_GRENADE1, 8, 8, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 							GFX_LoadSpriteGraphicsRLE("BULLETS.DAT", "GRENADES.PCX", SPRITE_GRAPHICS_ID_GRENADE_SHADOW, 8, 8, 2, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 							GFX_LoadSpriteGraphicsRLE("BULLETS.DAT", "PUNCH1.PCX", SPRITE_GRAPHICS_ID_PUNCH, 12, 12, 1, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+							GFX_LoadSpriteGraphicsRLE("BULLETS.DAT", "WEB.PCX", SPRITE_GRAPHICS_ID_WEB, 16, 16, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+							GFX_LoadSpriteGraphicsRLE("BULLETS.DAT", "WEBS.PCX", SPRITE_GRAPHICS_ID_WEBS, 8, 8, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 							spark_counter++;
 							break;
 						case 13:
@@ -305,6 +308,7 @@ static void Logo(void) {
 							GFX_LoadSpriteGraphicsRLE("EFFECTS.DAT", "BLOOD.PCX", SPRITE_GRAPHICS_ID_BLOOD, 4, 4, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 							GFX_LoadSpriteGraphicsRLE("EFFECTS.DAT", "FIRE1.PCX", SPRITE_GRAPHICS_ID_FIRE1, 8, 8, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 							GFX_LoadSpriteGraphicsRLE("EFFECTS.DAT", "ELECTRIC1.PCX", SPRITE_GRAPHICS_ID_ELECTRIC1, 8, 8, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+							GFX_LoadSpriteGraphicsRLE("EFFECTS.DAT", "WATER1.PCX", SPRITE_GRAPHICS_ID_WATER1, 8, 8, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 							GFX_LoadSpriteGraphicsRLE("EFFECTS.DAT", "EXPLOSION.PCX", SPRITE_GRAPHICS_ID_EXPLOSION1, 32, 32, 10, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 							GFX_LoadSpriteGraphicsRLE("EFFECTS.DAT", "TIMER.PCX", SPRITE_GRAPHICS_ID_TIMER, 8, 8, 10, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 							GFX_LoadSpriteGraphicsRLE("EFFECTS.DAT", "CLICK.PCX", SPRITE_GRAPHICS_ID_CLICK, 5, 5, 5, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
@@ -402,14 +406,16 @@ static void Logo(void) {
 			case 47:
 				// Load some more assets
 				GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "MEDIKIT.PCX", SPRITE_GRAPHICS_ID_ITEM_MEDIKIT, 12, 14, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+				GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "DOCU.PCX", SPRITE_GRAPHICS_ID_ITEM_DOCU, 12, 14, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 				GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "AMMO1.PCX", SPRITE_GRAPHICS_ID_ITEM_AMMO1, 15, 13, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 				GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "AMMO2.PCX", SPRITE_GRAPHICS_ID_ITEM_AMMO2, 15, 13, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 				GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "AMMO3.PCX", SPRITE_GRAPHICS_ID_ITEM_AMMO3, 15, 13, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 				GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "AMMO4.PCX", SPRITE_GRAPHICS_ID_ITEM_AMMO4, 15, 13, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 				GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "GRENADE.PCX", SPRITE_GRAPHICS_ID_ITEM_GRENADE, 15, 13, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
-				GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "KEYRED.PCX", SPRITE_GRAPHICS_ID_ITEM_RED_KEY, 15, 13, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
-				GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "KEYBLUE.PCX", SPRITE_GRAPHICS_ID_ITEM_BLUE_KEY, 15, 13, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
-				GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "KEYYELLOW.PCX", SPRITE_GRAPHICS_ID_ITEM_YELLOW_KEY, 15, 13, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+				GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "KEYRED.PCX", SPRITE_GRAPHICS_ID_ITEM_RED_KEY, 12, 14, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+				GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "KEYBLUE.PCX", SPRITE_GRAPHICS_ID_ITEM_BLUE_KEY, 12, 14, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+				GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "KEYYELLOW.PCX", SPRITE_GRAPHICS_ID_ITEM_YELLOW_KEY, 12, 14, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+				GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "KEYGREEN.PCX", SPRITE_GRAPHICS_ID_ITEM_GREEN_KEY, 12, 14, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 
 				VIDEO_BufferToScreenBuffer(gfx.image_buffer1, gfx.image_buffer1_width, gfx.image_buffer1_height, gfx.image_buffer1_width, gfx.image_buffer1_height, 100, 50);
 				VIDEO_VSync();
@@ -1521,7 +1527,8 @@ static void GameOver(void) {
 	}
 
 	engine.ingame = false;
-	engine.room = 0;
+
+	engine.room = 1;
 	engine.scene = 0;
 }
 
@@ -2269,7 +2276,7 @@ static void Scene1_LoadRoom2(void) {
 	ENEMY_Load("ENEMY1.DAT", 2, 44 << 4, 27 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_PUNCH, ENEMY_STATUS_WALKING_RANDOM_NPC, 50);
 	ENEMY_Load("ENEMY1.DAT", 3, 44 << 4, 37 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_PUNCH, ENEMY_STATUS_WALKING_RANDOM_NPC, 50);
 	// Enemy on ring
-	ENEMY_Load("ENEMY1.DAT", 4, 38 << 4, 10 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_PUNCH, ENEMY_STATUS_STATIC_NPC, 50);
+	ENEMY_Load("ENEMY1.DAT", 4, 38 << 4, 10 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_PUNCH, ENEMY_STATUS_STATIC_NPC, 5000);
 	// Sara
 	NPC_Load("NPC8.DAT", 1, 39 << 4, 48 << 4, SPRITE_GRAPHICS_ID_NPC_SARA_CHAT, SPRITE_GRAPHICS_ID_NPC_SARA, NPC_FACING_DOWN, NPC_STATUS_IDLE, 100);
 	// Desk droid
@@ -2285,7 +2292,7 @@ static void Scene1_LoadRoom2(void) {
 	// Jail droid
 	NPC_Load("NPC7.DAT", 7, 28 << 4, 30 << 4, SPRITE_GRAPHICS_ID_NPC_DROID3_CHAT, SPRITE_GRAPHICS_ID_NPC_DROID3, NPC_FACING_DOWN, NPC_STATUS_IDLE, 400);
 	// Training droid
-	NPC_Load("NPC6.DAT", 8, 30 << 4, 18 << 4, SPRITE_GRAPHICS_ID_NPC_DROID2_CHAT, SPRITE_GRAPHICS_ID_NPC_DROID2, NPC_FACING_DOWN, NPC_STATUS_IDLE, 200);
+	NPC_Load("NPC6.DAT", 8, 30 << 4, 18 << 4, SPRITE_GRAPHICS_ID_NPC_DROID2_CHAT, SPRITE_GRAPHICS_ID_NPC_DROID2, NPC_FACING_DOWN, NPC_STATUS_IDLE, 800);
 	NPC_SetRange(8, 64);
 	// Outside bathroom droid
 	NPC_Load("NPC5.DAT", 9, 7 << 4, 47 << 4, SPRITE_GRAPHICS_ID_NPC_DROID1_CHAT, SPRITE_GRAPHICS_ID_NPC_DROID1, NPC_FACING_DOWN, NPC_STATUS_IDLE, 200);
@@ -2451,8 +2458,11 @@ static void Scene1_Loop(void) {
 	VIDEO_ClearScreenBuffer();
 	GFX_LoadPalette("PALETTES.DAT", "ISCN1.PCX", 256);
 
-	VIDEO_StringToScreenBuffer(60, 80, ui.txt_file[UI_TXT_SCN1I].line[10], FONT_BIG_WHITE);
-	VIDEO_StringToScreenBuffer(80, 105, ui.txt_file[UI_TXT_SCN1I].line[11], FONT_BIG_WHITE);
+	VIDEO_StringToScreenBuffer(50, 60, ui.txt_file[UI_TXT_SCN1I].line[10], FONT_BIG_WHITE);
+	VIDEO_StringToScreenBuffer(90, 85, ui.txt_file[UI_TXT_SCN1I].line[11], FONT_BIG_WHITE);
+	VIDEO_StringToScreenBuffer(90, 135, ui.txt_file[UI_TXT_SCN1I].line[12], FONT_SLIM_WHITE);
+	VIDEO_StringToScreenBuffer(160, 135, ui.txt_file[UI_TXT_SCN1I].line[13], FONT_SLIM_WHITE);
+
 	VIDEO_VSync();
 	VIDEO_ScreenBufferToVRAM();
 	VIDEO_FadeIn(4);
@@ -2497,7 +2507,10 @@ static void Scene1_Loop(void) {
 			VIDEO_FadeIn(1);
 			break;
 		default:
-			Error("Scene1_Loop function error", "Undefined room", "", ERROR_SYSTEM);
+			sprintf(engine.system_error_message1, "Scene1_Loop function error");
+			sprintf(engine.system_error_message2, "Undefined room");
+			sprintf(engine.system_error_message3, "Selected room: %u", engine.room);
+			Error(engine.system_error_message1, engine.system_error_message2, engine.system_error_message3, ERROR_SYSTEM);
 			break;
 	}
 
@@ -2911,7 +2924,6 @@ static void Scene1_Loop(void) {
 				break;
 			case 2:// Police office
 				if (!ui.freeze) {
-
 					// Hotspots
 					if (!actor.mode_combat) {
 						// Check point on object or enemy
@@ -3278,6 +3290,7 @@ static void Scene1_Loop(void) {
 								ACTOR_SetGun(actor.sprite_num, ACTOR_GUN_TYPE_PISTOL);
 								ACTOR_SetCombatMode(true);
 								ACTOR_SetBulletStatus(99, 0, 0, 0, 0);
+								ACTOR_Reload();
 							}
 							break;
 						case 7:// Event 7. Practice room shotgun
@@ -3328,7 +3341,8 @@ static void Scene1_Loop(void) {
 								// Set shotgun
 								ACTOR_SetGun(actor.sprite_num, ACTOR_GUN_TYPE_SHOTGUN);
 								ACTOR_SetCombatMode(true);
-								ACTOR_SetBulletStatus(99, 99, 0, 0, 0);
+								ACTOR_SetBulletStatus(0, 99, 0, 0, 0);
+								ACTOR_Reload();
 							}
 							break;
 						case 8:// Event 8. Practice room uzi
@@ -3378,14 +3392,15 @@ static void Scene1_Loop(void) {
 								// Set uzi
 								ACTOR_SetGun(actor.sprite_num, ACTOR_GUN_TYPE_UZI);
 								ACTOR_SetCombatMode(true);
-								ACTOR_SetBulletStatus(99, 0, 999, 0, 0);
+								ACTOR_SetBulletStatus(0, 0, 999, 0, 0);
+								ACTOR_Reload();
 							}
 							break;
 						case 9:// Event 9. Practice room rifle
 							if (event_enabling_room2[9]) {
 								event_enabling_room2[9] = false;
 
-								if (!OBJECT_IsLoaded(4)) OBJECT_LoadObject("OBJECT4.DAT", 4, ENTITY_ID_TARGET, SPRITE_GRAPHICS_ID_OBJECT2, SPRITE_GRAPHICS_ID_OBJECT2_PORTAIT, (19 << 4) + 8, 6 << 4);
+								if (!OBJECT_IsLoaded(4)) OBJECT_LoadObject("OBJECT3.DAT", 4, ENTITY_ID_TARGET, SPRITE_GRAPHICS_ID_OBJECT2, SPRITE_GRAPHICS_ID_OBJECT2_PORTAIT, (19 << 4) + 8, 6 << 4);
 
 								sequence_step = 0;
 								end_sequence = false;
@@ -3434,7 +3449,8 @@ static void Scene1_Loop(void) {
 								// Set snipper rifle
 								ACTOR_SetGun(actor.sprite_num, ACTOR_GUN_TYPE_SNIPPER);
 								ACTOR_SetCombatMode(true);
-								ACTOR_SetBulletStatus(99, 0, 0, 99, 0);
+								ACTOR_SetBulletStatus(0, 0, 0, 99, 0);
+								ACTOR_Reload();
 							}
 							break;
 						case 10:// Event 10. Practice room ring
@@ -3509,12 +3525,12 @@ static void Scene1_Loop(void) {
 									Update(false);
 								}
 
-								NPC_SetBehavior(8, NPC_STATUS_IDLE);
+								ENEMY_SetBehavior(4, ENEMY_STATUS_CHASE);
 
 								// Set pistol
 								ACTOR_SetGun(actor.sprite_num, ACTOR_GUN_TYPE_BARE_HANDS);
 								ACTOR_SetCombatMode(true);
-								ACTOR_SetBulletStatus(99, 0, 0, 0, 0);
+								ACTOR_SetBulletStatus(0, 0, 0, 0, 0);
 							}
 							break;
 						case 11:// Event 11. Sara conversation 1
@@ -4243,6 +4259,8 @@ static void Scene1_Loop(void) {
 					if (!event_enabling_room2[6]) {
 						event_enabling_room2[6] = true;
 
+						OBJECT_UnloadObject(1);
+
 						// Set bare hands
 						ACTOR_SetGun(actor.sprite_num, ACTOR_GUN_TYPE_BARE_HANDS);
 						ACTOR_SetCombatMode(false);
@@ -4254,6 +4272,8 @@ static void Scene1_Loop(void) {
 				if (((map.layer[MAP_EVENT_HSPOT_LAYER][actor_tile_num] >> 8) & 0xFF) != 7) {
 					if (!event_enabling_room2[7]) {
 						event_enabling_room2[7] = true;
+
+						OBJECT_UnloadObject(2);
 
 						// Set bare hands
 						ACTOR_SetGun(actor.sprite_num, ACTOR_GUN_TYPE_BARE_HANDS);
@@ -4267,6 +4287,8 @@ static void Scene1_Loop(void) {
 					if (!event_enabling_room2[8]) {
 						event_enabling_room2[8] = true;
 
+						OBJECT_UnloadObject(3);
+
 						// Set bare hands
 						ACTOR_SetGun(actor.sprite_num, ACTOR_GUN_TYPE_BARE_HANDS);
 						ACTOR_SetCombatMode(false);
@@ -4278,6 +4300,8 @@ static void Scene1_Loop(void) {
 				if (((map.layer[MAP_EVENT_HSPOT_LAYER][actor_tile_num] >> 8) & 0xFF) != 9) {
 					if (!event_enabling_room2[9]) {
 						event_enabling_room2[9] = true;
+
+						OBJECT_UnloadObject(4);
 
 						// Set bare hands
 						ACTOR_SetGun(actor.sprite_num, ACTOR_GUN_TYPE_BARE_HANDS);
@@ -4291,7 +4315,7 @@ static void Scene1_Loop(void) {
 					if (!event_enabling_room2[10]) {
 						event_enabling_room2[10] = true;
 
-						NPC_SetBehavior(8, NPC_STATUS_CHASE);
+						ENEMY_SetBehavior(4, ENEMY_STATUS_STATIC_NPC);
 
 						// Set bare hands
 						ACTOR_SetGun(actor.sprite_num, ACTOR_GUN_TYPE_BARE_HANDS);
@@ -4319,6 +4343,7 @@ static void Scene1_Loop(void) {
 	BULLET_UnloadBullets();
 	PARTICLE_UnloadParticles();
 	GRENADE_UnloadGrenades();
+	ITEM_UnloadItems();
 	NPC_UnloadNpcs();
 	ACTOR_UnloadActor();
 	MAP_UnloadMap();
@@ -5769,8 +5794,22 @@ static void Scene2_LoadRoom1(void) {
 
 	GFX_LoadPalette("PALETTES.DAT", "SCN21.PCX", 256);
 
-	ITEM_LoadItem(0, ENTITY_ID_ITEM_MEDIKIT, SPRITE_GRAPHICS_ID_ITEM_MEDIKIT, 11 << 4, 41 << 4);
-	GFX_SetDefaultAnimation(item[0].num_sprite, false, true, 20);
+	ITEM_LoadItem(0, ENTITY_ID_ITEM_MEDIKIT, SPRITE_GRAPHICS_ID_ITEM_MEDIKIT, 11 << 4, 45 << 4);
+
+	ITEM_LoadItem(1, ENTITY_ID_ITEM_KEYRED, SPRITE_GRAPHICS_ID_ITEM_RED_KEY, 74 << 4, 16 << 4);
+	ITEM_LoadItem(2, ENTITY_ID_ITEM_KEYGREEN, SPRITE_GRAPHICS_ID_ITEM_GREEN_KEY, 51 << 4, 41 << 4);
+	ITEM_LoadItem(3, ENTITY_ID_ITEM_KEYBLUE, SPRITE_GRAPHICS_ID_ITEM_BLUE_KEY, 11 << 4, 13 << 4);
+	ITEM_LoadItem(4, ENTITY_ID_ITEM_KEYYELLOW, SPRITE_GRAPHICS_ID_ITEM_YELLOW_KEY, 18 << 4, 21 << 4);
+
+	ITEM_LoadItem(5, ENTITY_ID_ITEM_AMMO1, SPRITE_GRAPHICS_ID_ITEM_AMMO1, 56 << 4, 41 << 4);
+	ITEM_LoadItem(6, ENTITY_ID_ITEM_AMMO3, SPRITE_GRAPHICS_ID_ITEM_AMMO3, 78 << 4, 29 << 4);
+	ITEM_LoadItem(7, ENTITY_ID_ITEM_MEDIKIT, SPRITE_GRAPHICS_ID_ITEM_MEDIKIT, 29 << 4, 39 << 4);
+
+
+	ITEM_LoadItem(8, ENTITY_ID_ITEM_MEDIKIT, SPRITE_GRAPHICS_ID_ITEM_MEDIKIT, 41 << 4, 18 << 4);
+	ITEM_LoadItem(9, ENTITY_ID_ITEM_AMMO3, SPRITE_GRAPHICS_ID_ITEM_AMMO3, 46 << 4, 4 << 4);
+
+	ITEM_LoadItem(10, ENTITY_ID_ITEM_GRENADE, SPRITE_GRAPHICS_ID_ITEM_GRENADE, 60 << 4, 18 << 4);
 }
 static void Scene2_SetHotspotsAndEvents(void) {
 
@@ -5822,13 +5861,13 @@ static void Scene2_SetHotspotsAndEvents(void) {
 	event_enabling_room1[10] = true;
 	event_enabling_room1[11] = true;
 	event_enabling_room1[12] = true;
-	event_enabling_room1[13] = false;
-	event_enabling_room1[14] = false;
-	event_enabling_room1[15] = false;
+	event_enabling_room1[13] = true;
+	event_enabling_room1[14] = true;
+	event_enabling_room1[15] = true;
 	event_enabling_room1[16] = true;
-	event_enabling_room1[17] = false;
-	event_enabling_room1[18] = false;
-	event_enabling_room1[19] = false;
+	event_enabling_room1[17] = true;
+	event_enabling_room1[18] = true;
+	event_enabling_room1[19] = true;
 	event_enabling_room1[20] = false;
 	event_enabling_room1[21] = false;
 	event_enabling_room1[22] = false;
@@ -5851,8 +5890,11 @@ static void Scene2_Loop(void) {
 	VIDEO_ClearScreenBuffer();
 	GFX_LoadPalette("PALETTES.DAT", "SCN21.PCX", 256);
 
-	VIDEO_StringToScreenBuffer(60, 80, ui.txt_file[UI_TXT_SCN2I].line[40], FONT_BIG_WHITE);
-	VIDEO_StringToScreenBuffer(80, 105, ui.txt_file[UI_TXT_SCN2I].line[41], FONT_BIG_WHITE);
+	VIDEO_StringToScreenBuffer(50, 60, ui.txt_file[UI_TXT_SCN2I].line[40], FONT_BIG_WHITE);
+	VIDEO_StringToScreenBuffer(90, 85, ui.txt_file[UI_TXT_SCN2I].line[41], FONT_BIG_WHITE);
+	VIDEO_StringToScreenBuffer(90, 135, ui.txt_file[UI_TXT_SCN2I].line[48], FONT_SLIM_WHITE);
+	VIDEO_StringToScreenBuffer(160, 135, ui.txt_file[UI_TXT_SCN2I].line[49], FONT_SLIM_WHITE);
+
 	VIDEO_VSync();
 	VIDEO_ScreenBufferToVRAM();
 	VIDEO_FadeIn(4);
@@ -5897,7 +5939,23 @@ static void Scene2_Loop(void) {
 	while (engine.ingame) {
 		switch (engine.room) {
 			case 1:// Room 1. Sewer
-				   // Hotspots
+				// Scene steps
+				// - Event 3: Starts the party! >> Step = 1 - Load rats
+				// - Event 4: Open red door >> Step = 2
+				// - Event 6: Get green key >> Step = 3 - Load more rats
+				// - Event 13: Open green door. Access to boss 1 >> Step = 4 - Clear all rats
+				// - Event 7: Load boss 1 >> Step = 5
+				// - Boss 1 dead >> Step = 6 - Open boss door
+				// - Event 8: Out of boss room >> Step 7
+				// - Event 9: Entering spiders zone >> Step 8 - Show spiders
+				// - Event 18: Open blue door >> Step 9 -
+				// - Event 10: Entering water spiders zone >> Step 10 -
+				// - Event 19: Open yellow door >> Step 11 - Unload all spiders
+				// - Event 11: Enter boss room >> Step 12 - Load boss 2
+				// - Boss 2 dead >> Step 13 - Unlock exit door
+				// - Event 12: End level >> Step 14
+
+				// Hotspots
 				if (!actor.mode_combat) {
 					// Check point on object or enemy
 					switch (cursor.point_on & 0xFF) {
@@ -5933,6 +5991,7 @@ static void Scene2_Loop(void) {
 
 				// Events
 				actor_tile_num = MAP_GetTileNumber(actor.pos_x + (gfx_sprite_stack[actor.sprite_num].width_px >> 1), actor.pos_y + (gfx_sprite_stack[actor.sprite_num].height_px >> 1));
+
 				switch ((map.layer[MAP_EVENT_HSPOT_LAYER][actor_tile_num] >> 8) & 0xFF) {
 					case 1:// Event 1. Spare
 						if (event_enabling_room1[1]) {
@@ -5955,6 +6014,7 @@ static void Scene2_Loop(void) {
 										if (UI_IsSpeechFinished()) {
 											ACTOR_SetCombatMode(true);
 											ACTOR_SetGun(actor.sprite_num, ACTOR_GUN_TYPE_PISTOL);
+											ACTOR_Reload();
 											end_sequence = true;
 										}
 										break;
@@ -5973,11 +6033,24 @@ static void Scene2_Loop(void) {
 							scene_step = 1;
 						}
 						break;
-					case 4:// Event 4. Water 1
+					case 4:// Event 4. Red Door, access to water
 						if (event_enabling_room1[4]) {
-							if (scene_step == 2) {
-								scene_step = 3;
-								event_enabling_room1[4] = false;
+							event_enabling_room1[4] = false;
+
+							if (actor.key_entity_id != ENTITY_ID_ITEM_KEYRED) {
+								AUDIO_PlaySound(AUDIO_SHOT_FAIL_EFFECT, 1);
+							} else {
+
+								scene_step = 2;
+								ACTOR_LeaveKey();
+								AUDIO_PlaySound(AUDIO_OPEN_DOOR_EFFECT, 1);
+
+								MAP_HideSwapableTile(69 << 4, 40 << 4);
+								MAP_HideSwapableTile(70 << 4, 40 << 4);
+								MAP_HideSwapableTile(71 << 4, 40 << 4);
+								MAP_HideSwapableTile(69 << 4, 41 << 4);
+								MAP_HideSwapableTile(70 << 4, 41 << 4);
+								MAP_HideSwapableTile(71 << 4, 41 << 4);
 							}
 						}
 						break;
@@ -5986,18 +6059,56 @@ static void Scene2_Loop(void) {
 							event_enabling_room1[5] = false;
 						}
 						break;
-					case 6:// Event 6. Water surprise
+					case 6:// Event 6. Get green key
 						if (event_enabling_room1[6]) {
 							event_enabling_room1[6] = false;
 
-							scene_step = 2;
+							scene_step = 3;
 						}
 						break;
 					case 7:// Event 7. BIG Surprise
 						if (event_enabling_room1[7]) {
 							event_enabling_room1[7] = false;
-							scene_step = 4;
-							BOSS_Load("BOSS1.DAT", 47 << 4, 27 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_BULLET3, BOSS_STATUS_CHASE, 200);
+							scene_step = 5;
+
+							MAP_ShowSwapableTile(45 << 4, 40 << 4);
+							MAP_ShowSwapableTile(46 << 4, 40 << 4);
+							MAP_ShowSwapableTile(47 << 4, 40 << 4);
+							MAP_ShowSwapableTile(45 << 4, 41 << 4);
+							MAP_ShowSwapableTile(46 << 4, 41 << 4);
+							MAP_ShowSwapableTile(47 << 4, 41 << 4);
+
+							BOSS_Load("BOSS1.DAT", 47 << 4, 27 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_PUKE, BOSS_STATUS_STATIC, 3000);
+
+							sequence_step = 0;
+							end_sequence = false;
+							while (!end_sequence) {
+								switch (sequence_step) {
+									case 0://
+										UI_ShowSpeech(&gfx_chat_panel, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_CHAT, UI_TXT_SCN2D, 1, 355, 355, true, 100);
+										sequence_step++;
+										break;
+									case 1://
+										if (UI_IsSpeechFinished()) {
+											UI_ShowSpeech(&gfx_chat_panel, SPRITE_GRAPHICS_ID_ACTORCHAT, SPRITE_GRAPHICS_ID_CHAT, UI_TXT_SCN2D, 3, 4, 355, false, 100);
+											sequence_step++;
+										}
+										break;
+									case 2://
+										if (UI_IsSpeechFinished()) {
+											end_sequence = true;
+										}
+										break;
+									default:
+										end_sequence = true;
+										break;
+								}
+								Update(false);
+							}
+							end_sequence = false;
+
+							BOSS_SetBehavior(BOSS_STATUS_CHASE);
+							ACTOR_SetCombatMode(true);
 						}
 						break;
 					case 8:// Event 8. Bye bye rats
@@ -6011,18 +6122,13 @@ static void Scene2_Loop(void) {
 							event_enabling_room1[9] = false;
 
 							if (!enemy[0].is_loaded) {
-								ENEMY_Load("ENEMY2.DAT", 0, 41 << 4, 7 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_SHOOTER, 10);
-							}
-
-							if (!enemy[1].is_loaded) {
-								ENEMY_Load("ENEMY2.DAT", 1, 27 << 4, 9 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_SHOOTER, 10);
-							}
-							if (!enemy[2].is_loaded) {
-								ENEMY_Load("ENEMY2.DAT", 2, 35 << 4, 13 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_UP, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_SHOOTER, 10);
-							}
-
-							if (!enemy[3].is_loaded) {
-								ENEMY_Load("ENEMY2.DAT", 3, 32 << 4, 35 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_SHOOTER, 10);
+								ENEMY_Load("ENEMY7.DAT", 0, 41 << 4, 7 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_WEBS, ENEMY_STATUS_STATIC_SHOOTER, 10);
+							} else if (!enemy[1].is_loaded) {
+								ENEMY_Load("ENEMY7.DAT", 1, 27 << 4, 9 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_WEBS, ENEMY_STATUS_STATIC_SHOOTER, 10);
+							} else if (!enemy[2].is_loaded) {
+								ENEMY_Load("ENEMY7.DAT", 2, 35 << 4, 13 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_UP, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_WEBS, ENEMY_STATUS_STATIC_SHOOTER, 10);
+							} else if (!enemy[3].is_loaded) {
+								ENEMY_Load("ENEMY7.DAT", 3, 32 << 4, 35 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_WEBS, ENEMY_STATUS_STATIC_SHOOTER, 10);
 							}
 
 							scene_step = 8;
@@ -6031,14 +6137,81 @@ static void Scene2_Loop(void) {
 					case 10:// Event 10. End spiders!
 						if (event_enabling_room1[10]) {
 							event_enabling_room1[10] = false;
-							scene_step = 9;
+							scene_step = 10;
 						}
 						break;
 					case 11:// Event 11. The big one!
 						if (event_enabling_room1[11]) {
 							event_enabling_room1[11] = false;
-							scene_step = 10;
-							BOSS_Load("BOSS2.DAT", 5 << 4, 32 << 4, SPRITE_GRAPHICS_ID_ENEMY4_CHAT, SPRITE_GRAPHICS_ID_ENEMY4_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY4_FEET, SPRITE_GRAPHICS_ID_ENEMY4_BODY, SPRITE_GRAPHICS_ID_ENEMY4_HEAD, SPRITE_GRAPHICS_ID_ENEMY4_LARM, SPRITE_GRAPHICS_ID_ENEMY4_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_BULLET3, BOSS_STATUS_CHASE, 200);
+							scene_step = 12;
+
+							MAP_ShowSwapableTile(9 << 4, 41 << 4);
+							MAP_ShowSwapableTile(10 << 4, 41 << 4);
+							MAP_ShowSwapableTile(11 << 4, 41 << 4);
+							MAP_ShowSwapableTile(9 << 4, 42 << 4);
+							MAP_ShowSwapableTile(10 << 4, 42 << 4);
+							MAP_ShowSwapableTile(11 << 4, 42 << 4);
+
+							BOSS_Load("BOSS2.DAT", 5 << 4, 28 << 4, SPRITE_GRAPHICS_ID_ENEMY4_CHAT, SPRITE_GRAPHICS_ID_ENEMY4_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY4_FEET, SPRITE_GRAPHICS_ID_ENEMY4_BODY, SPRITE_GRAPHICS_ID_ENEMY4_HEAD, SPRITE_GRAPHICS_ID_ENEMY4_LARM, SPRITE_GRAPHICS_ID_ENEMY4_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_WEB, BOSS_STATUS_STATIC, 3000);//
+
+							sequence_step = 0;
+							end_sequence = false;
+							while (!end_sequence) {
+								switch (sequence_step) {
+									case 0://
+										UI_ShowSpeech(&gfx_chat_panel, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_CHAT, UI_TXT_SCN2D, 7, 355, 355, true, 100);
+										sequence_step++;
+										break;
+									case 1://
+										if (UI_IsSpeechFinished()) {
+											UI_ShowSpeech(&gfx_chat_panel, SPRITE_GRAPHICS_ID_ACTORCHAT, SPRITE_GRAPHICS_ID_CHAT, UI_TXT_SCN2D, 9, 10, 355, false, 100);
+											sequence_step++;
+										}
+										break;
+									case 2://
+										if (UI_IsSpeechFinished()) {
+											end_sequence = true;
+										}
+										break;
+									default:
+										end_sequence = true;
+										break;
+								}
+								Update(false);
+							}
+							end_sequence = false;
+
+							BOSS_SetBehavior(BOSS_STATUS_CHASE);
+							ACTOR_SetCombatMode(true);
+						}
+						break;
+					case 12:// Event 12: End of scene
+						if (event_enabling_room1[12]) {
+							event_enabling_room1[12] = false;
+							scene_step = 15;
+						}
+						break;
+					case 13:// Event 13. Green Door to boss 1
+						if (event_enabling_room1[13]) {
+							event_enabling_room1[13] = false;
+
+							if (actor.key_entity_id != ENTITY_ID_ITEM_KEYGREEN) {
+								AUDIO_PlaySound(AUDIO_SHOT_FAIL_EFFECT, 1);
+							} else {
+								ENEMY_UnloadEnemies();
+
+								ACTOR_LeaveKey();
+								scene_step = 4;
+
+								AUDIO_PlaySound(AUDIO_OPEN_DOOR_EFFECT, 1);
+
+								MAP_HideSwapableTile(45 << 4, 40 << 4);
+								MAP_HideSwapableTile(46 << 4, 40 << 4);
+								MAP_HideSwapableTile(47 << 4, 40 << 4);
+								MAP_HideSwapableTile(45 << 4, 41 << 4);
+								MAP_HideSwapableTile(46 << 4, 41 << 4);
+								MAP_HideSwapableTile(47 << 4, 41 << 4);
+							}
 						}
 						break;
 					case 16:// Event 16. Enter building
@@ -6051,12 +6224,74 @@ static void Scene2_Loop(void) {
 							engine.room = 1;
 						}
 						break;
+					case 18:// Event 18. Blue door
+						if (event_enabling_room1[18]) {
+							event_enabling_room1[18] = false;
+
+							if (actor.key_entity_id != ENTITY_ID_ITEM_KEYBLUE) {
+								AUDIO_PlaySound(AUDIO_SHOT_FAIL_EFFECT, 1);
+							} else {
+								ACTOR_LeaveKey();
+								scene_step = 9;
+
+								AUDIO_PlaySound(AUDIO_OPEN_DOOR_EFFECT, 1);
+
+								MAP_HideSwapableTile(34 << 4, 31 << 4);
+								MAP_HideSwapableTile(35 << 4, 31 << 4);
+								MAP_HideSwapableTile(36 << 4, 31 << 4);
+								MAP_HideSwapableTile(34 << 4, 32 << 4);
+								MAP_HideSwapableTile(35 << 4, 32 << 4);
+								MAP_HideSwapableTile(36 << 4, 32 << 4);
+							}
+						}
+						break;
+					case 19:// Event 19. Yellow door
+						if (event_enabling_room1[19]) {
+							event_enabling_room1[19] = false;
+
+							if (actor.key_entity_id != ENTITY_ID_ITEM_KEYYELLOW) {
+								AUDIO_PlaySound(AUDIO_SHOT_FAIL_EFFECT, 1);
+							} else {
+								ACTOR_LeaveKey();
+								scene_step = 11;
+
+								AUDIO_PlaySound(AUDIO_OPEN_DOOR_EFFECT, 1);
+
+								MAP_HideSwapableTile(9 << 4, 41 << 4);
+								MAP_HideSwapableTile(10 << 4, 41 << 4);
+								MAP_HideSwapableTile(11 << 4, 41 << 4);
+								MAP_HideSwapableTile(9 << 4, 42 << 4);
+								MAP_HideSwapableTile(10 << 4, 42 << 4);
+								MAP_HideSwapableTile(11 << 4, 42 << 4);
+							}
+						}
+						break;
 					default:
+						// Reenable red door event if actor did not have key
+						if (!event_enabling_room1[4] && (scene_step < 2)) {
+							event_enabling_room1[4] = true;
+						}
+
+						// Reenable green door event if actor did not have key
+						if (!event_enabling_room1[13] && (scene_step < 4)) {
+							event_enabling_room1[13] = true;
+						}
+
+						// Reenable blue door event if actor did not have key
+						if (!event_enabling_room1[18] && (scene_step < 9)) {
+							event_enabling_room1[18] = true;
+						}
+
+						// Reenable yellow door event if actor did not have key
+						if (!event_enabling_room1[19] && (scene_step < 11)) {
+							event_enabling_room1[19] = true;
+						}
+
 						break;
 				}
 
 				switch (scene_step) {
-					case 1:
+					case 1:// more rats!!
 						if (!enemy[0].is_loaded) {
 							ENEMY_Load("ENEMY6.DAT", 0, 57 << 4, 2 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_PUNCH, ENEMY_STATUS_CHASE, 1);
 
@@ -6080,6 +6315,9 @@ static void Scene2_Loop(void) {
 						}
 						break;
 					case 2:
+
+						break;
+					case 3:// more rats!!
 						if (!enemy[7].is_loaded) {
 							ENEMY_Load("ENEMY6.DAT", 7, 61 << 4, 44 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_LEFT, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_PUNCH, ENEMY_STATUS_CHASE, 1);
 
@@ -6093,113 +6331,82 @@ static void Scene2_Loop(void) {
 							ENEMY_Load("ENEMY6.DAT", 10, 63 << 4, 45 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_LEFT, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_PUNCH, ENEMY_STATUS_CHASE, 1);
 						}
 						break;
-					case 3:
 
-						break;
-					case 4:
-						if (enemy[0].is_loaded) {
-							ENEMY_Unload(0);
-						} else if (enemy[1].is_loaded) {
-							ENEMY_Unload(1);
-						} else if (enemy[2].is_loaded) {
-							ENEMY_Unload(2);
-						} else if (enemy[3].is_loaded) {
-							ENEMY_Unload(3);
-						} else if (enemy[4].is_loaded) {
-							ENEMY_Unload(4);
-						} else if (enemy[5].is_loaded) {
-							ENEMY_Unload(5);
-						} else if (enemy[6].is_loaded) {
-							ENEMY_Unload(6);
-						} else if (enemy[7].is_loaded) {
-							ENEMY_Unload(7);
-						} else if (enemy[8].is_loaded) {
-							ENEMY_Unload(8);
-						} else if (enemy[9].is_loaded) {
-							ENEMY_Unload(9);
-						} else if (enemy[10].is_loaded) {
-							ENEMY_Unload(10);
-						}
-
-						if (!boss.is_loaded) scene_step = 5;
+					case 4:// kill all rats
 						break;
 					case 5:
-						//MAP_HideSwapableTile(56 << 4, 23 << 4);
-						//MAP_HideSwapableTile(57 << 4, 23 << 4);
-						//MAP_HideSwapableTile(56 << 4, 24 << 4);
-						//MAP_HideSwapableTile(57 << 4, 24 << 4);
-						//MAP_HideSwapableTile(56 << 4, 25 << 4);
-						//MAP_HideSwapableTile(57 << 4, 25 << 4);
+						if (!enemy[0].is_loaded) {
+							ENEMY_Load("ENEMY6.DAT", 0, 50 << 4, 26 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_LEFT, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_PUNCH, ENEMY_STATUS_CHASE, 1);
+						} else if (!enemy[1].is_loaded) {
+							ENEMY_Load("ENEMY6.DAT", 1, 51 << 4, 26 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_LEFT, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_PUNCH, ENEMY_STATUS_CHASE, 1);
+						}
 
-						scene_step = 6;
+						if (!boss.is_loaded) {
+							MAP_HideSwapableTile(56 << 4, 23 << 4);
+							MAP_HideSwapableTile(57 << 4, 23 << 4);
+							MAP_HideSwapableTile(56 << 4, 24 << 4);
+							MAP_HideSwapableTile(57 << 4, 24 << 4);
+							MAP_HideSwapableTile(56 << 4, 25 << 4);
+							MAP_HideSwapableTile(57 << 4, 25 << 4);
+
+							scene_step = 6;
+						}
 						break;
 					case 6:
+						ENEMY_UnloadEnemies();
 						break;
 					case 7:
 						break;
-					case 8:
+					case 8:// more spiders
 						if (!enemy[4].is_loaded) {
-							ENEMY_Load("ENEMY7.DAT", 4, 47 << 4, 4 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_CHASE, 10);
+							ENEMY_Load("ENEMY7.DAT", 4, 47 << 4, 4 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_WEBS, ENEMY_STATUS_CHASE, 10);
 
 						} else if (!enemy[5].is_loaded) {
-							ENEMY_Load("ENEMY7.DAT", 5, 14 << 4, 4 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_CHASE, 10);
+							ENEMY_Load("ENEMY7.DAT", 5, 14 << 4, 4 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_WEBS, ENEMY_STATUS_CHASE, 10);
 
 						} else if (!enemy[6].is_loaded) {
-							ENEMY_Load("ENEMY7.DAT", 6, 11 << 4, 13 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_CHASE, 10);
+							ENEMY_Load("ENEMY7.DAT", 6, 11 << 4, 13 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_WEBS, ENEMY_STATUS_CHASE, 10);
 
 						} else if (!enemy[7].is_loaded) {
-							ENEMY_Load("ENEMY7.DAT", 7, 19 << 4, 17 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_CHASE, 10);
+							ENEMY_Load("ENEMY7.DAT", 7, 19 << 4, 17 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_WEBS, ENEMY_STATUS_CHASE, 10);
 
 						} else if (!enemy[8].is_loaded) {
-							ENEMY_Load("ENEMY7.DAT", 8, 27 << 4, 28 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_CHASE, 10);
+							ENEMY_Load("ENEMY7.DAT", 8, 27 << 4, 28 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_WEBS, ENEMY_STATUS_CHASE, 10);
 						}
 						break;
 					case 9:
 						break;
 					case 10:
-						if (enemy[0].is_loaded) {
-							ENEMY_Unload(0);
-						} else if (enemy[1].is_loaded) {
-							ENEMY_Unload(1);
-						} else if (enemy[2].is_loaded) {
-							ENEMY_Unload(2);
-						} else if (enemy[3].is_loaded) {
-							ENEMY_Unload(3);
-						} else if (enemy[4].is_loaded) {
-							ENEMY_Unload(4);
-						} else if (enemy[5].is_loaded) {
-							ENEMY_Unload(5);
-						} else if (enemy[6].is_loaded) {
-							ENEMY_Unload(6);
-						} else if (enemy[7].is_loaded) {
-							ENEMY_Unload(7);
-						} else if (enemy[8].is_loaded) {
-							ENEMY_Unload(8);
-						}
-
-						if (!enemy[9].is_loaded) {
-							ENEMY_Load("ENEMY7.DAT", 9, 3 << 4, 29 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_CHASE, 10);
-
-						} else if (!enemy[10].is_loaded) {
-							ENEMY_Load("ENEMY7.DAT", 10, 4 << 4, 29 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_CHASE, 10);
-						}
-
-						if (!boss.is_loaded) scene_step = 11;
-
 						break;
-					case 11:
-						//UI_ShowSpeech(&gfx_chat_panel, SPRITE_GRAPHICS_ID_ACTORCHAT, SPRITE_GRAPHICS_ID_CHAT, UI_TXT_SCN2D, 33, 355, 355, false, 100);
-
-						//scene_step = 12;
-
+					case 11:// kill all spiders
+						ENEMY_UnloadEnemies();
 						break;
 					case 12:
+						if (!enemy[9].is_loaded) {
+							ENEMY_Load("ENEMY7.DAT", 9, 3 << 4, 29 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_WEBS, ENEMY_STATUS_CHASE, 10);
+
+						} else if (!enemy[10].is_loaded) {
+							ENEMY_Load("ENEMY7.DAT", 10, 4 << 4, 29 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_WEBS, ENEMY_STATUS_CHASE, 10);
+						}
+
+						if (!boss.is_loaded) {
+							MAP_HideSwapableTile(9 << 4, 26 << 4);
+							MAP_HideSwapableTile(10 << 4, 26 << 4);
+							MAP_HideSwapableTile(9 << 4, 27 << 4);
+							MAP_HideSwapableTile(10 << 4, 27 << 4);
+							MAP_HideSwapableTile(9 << 4, 28 << 4);
+							MAP_HideSwapableTile(10 << 4, 28 << 4);
+
+							scene_step = 13;
+						}
+						break;
+					case 13:
+						break;
+					case 14:// End of level
 						break;
 					default:
 						break;
 				}
-
-				engine.debug1_INT = scene_step;
 
 				break;
 		}
@@ -6219,6 +6426,9 @@ static void Scene2_Loop(void) {
 	BULLET_UnloadBullets();
 	PARTICLE_UnloadParticles();
 	GRENADE_UnloadGrenades();
+	BOSS_Unload();
+	NPC_UnloadNpcs();
+	ITEM_UnloadItems();
 	ACTOR_UnloadActor();
 	MAP_UnloadMap();
 	Scene2_UnloadAssets();
@@ -6602,9 +6812,9 @@ static void Scene3_LoadAssets(void) {
 	ENEMY_Init();// Initialize enemy system
 
 	// Load enemies and unload them just to get graphics
-	ENEMY_Load("ENEMY2.DAT", 0, 0, 0, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_GUN0, SPRITE_GRAPHICS_ID_EMPTY, ENEMY_STATUS_STATIC_NPC, 1);
-	ENEMY_Load("ENEMY5.DAT", 1, 0, 0, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_GUN0, SPRITE_GRAPHICS_ID_EMPTY, ENEMY_STATUS_STATIC_NPC, 1);
-	ENEMY_Load("ENEMY8.DAT", 2, 0, 0, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_GUN0, SPRITE_GRAPHICS_ID_EMPTY, ENEMY_STATUS_STATIC_NPC, 1);
+	ENEMY_Load("ENEMY1.DAT", 0, 0, 0, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_GUN0, SPRITE_GRAPHICS_ID_EMPTY, ENEMY_STATUS_STATIC_NPC, 1);
+	ENEMY_Load("ENEMY8.DAT", 1, 0, 0, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_GUN0, SPRITE_GRAPHICS_ID_EMPTY, ENEMY_STATUS_STATIC_NPC, 1);
+	ENEMY_Load("ENEMY9.DAT", 2, 0, 0, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_GUN0, SPRITE_GRAPHICS_ID_EMPTY, ENEMY_STATUS_STATIC_NPC, 1);
 	ENEMY_UnloadEnemies();
 
 	// Load objects and unload them just to get graphics
@@ -6643,50 +6853,169 @@ static void Scene3_LoadRoom1(void) {
 
 	// Kitchen
 	// - Chef
-	ENEMY_Load("ENEMY8.DAT", 10, 49 << 4, 5 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_GUN0, SPRITE_GRAPHICS_ID_EMPTY, ENEMY_STATUS_STATIC_NPC, 20);
+	ENEMY_Load("ENEMY8.DAT", 0, 49 << 4, 4 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_GUN0, SPRITE_GRAPHICS_ID_EMPTY, ENEMY_STATUS_STATIC_NPC, 20);
+
 	// Room 1
 	// - Enemy 1
-	ENEMY_Load("ENEMY2.DAT", 0, 49 << 4, 13 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_UP_LEFT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
+	ENEMY_Load("ENEMY9.DAT", 1, 49 << 4, 13 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_UP_LEFT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
 	// - Enemy 2
-	ENEMY_Load("ENEMY5.DAT", 1, 44 << 4, 13 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_UP_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
+	ENEMY_Load("ENEMY9.DAT", 2, 44 << 4, 13 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_UP_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
 	// - Enemy 3
-	ENEMY_Load("ENEMY5.DAT", 2, 34 << 4, 13 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
+	ENEMY_Load("ENEMY9.DAT", 3, 33 << 4, 13 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
 	// - Enemy 4
-	ENEMY_Load("ENEMY2.DAT", 3, 35 << 4, 20 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_UP_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
+	ENEMY_Load("ENEMY9.DAT", 4, 33 << 4, 18 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_UP_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
+	// - Enemy 13
+	ENEMY_Load("ENEMY1.DAT", 13, 41 << 4, 16 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN_RIGHT, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_EMPTY, ENEMY_STATUS_HIDE, 10);
+
+	// Bathroom
+	// Enemy 5
+	ENEMY_Load("ENEMY9.DAT", 5, 22 << 4, 14 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_DOWN_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
+	// Enemy 14
+	ENEMY_Load("ENEMY1.DAT", 14, 27 << 4, 14 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN_RIGHT, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_EMPTY, ENEMY_STATUS_HIDE, 10);
 
 	// Room 2
-	// Enemy 5
-	ENEMY_Load("ENEMY2.DAT", 4, 26 << 4, 19 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
 	// Enemy 6
-	ENEMY_Load("ENEMY2.DAT", 5, 26 << 4, 15 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_UP_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
+	ENEMY_Load("ENEMY9.DAT", 6, 37 << 4, 23 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_UP_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
 	// Enemy 7
-	ENEMY_Load("ENEMY2.DAT", 6, 9 << 4, 18 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_WALKING_ARROUND_NPC, 100);
+	ENEMY_Load("ENEMY9.DAT", 7, 47 << 4, 24 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_WALKING_ARROUND_NPC, 100);
+	// Enemy 15
+	ENEMY_Load("ENEMY1.DAT", 15, 43 << 4, 27 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN_RIGHT, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_EMPTY, ENEMY_STATUS_HIDE, 10);
+
+	// Room 3
+	// Enemy 6
+	ENEMY_Load("ENEMY9.DAT", 8, 12 << 4, 20 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_UP_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
+	// Enemy 7
+	ENEMY_Load("ENEMY9.DAT", 9, 4 << 4, 15 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_WALKING_ARROUND_NPC, 100);
+	// Enemy 16
+	ENEMY_Load("ENEMY1.DAT", 16, 11 << 4, 17 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN_RIGHT, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_EMPTY, ENEMY_STATUS_HIDE, 10);
 
 	// Garden
 	// Enemy 8
-	ENEMY_Load("ENEMY2.DAT", 7, 4 << 4, 5 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
+	ENEMY_Load("ENEMY9.DAT", 10, 4 << 4, 7 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_DOWN_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
 	// Enemy 9
-	ENEMY_Load("ENEMY2.DAT", 8, 10 << 4, 7 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_LEFT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
+	ENEMY_Load("ENEMY9.DAT", 11, 10 << 4, 7 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_LEFT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
 	// Enemy 10
-	ENEMY_Load("ENEMY2.DAT", 9, 34 << 4, 5 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_LEFT, ENEMY_GUN_SHOTGUN, SPRITE_GRAPHICS_ID_GUN2, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_WALKING_ARROUND_NPC, 100);
+	ENEMY_Load("ENEMY9.DAT", 12, 29 << 4, 2 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_LEFT, ENEMY_GUN_SHOTGUN, SPRITE_GRAPHICS_ID_GUN2, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_WALKING_ARROUND_NPC, 100);
+	// Enemy 17
+	ENEMY_Load("ENEMY1.DAT", 17, 35 << 4, 4 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN_RIGHT, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_EMPTY, ENEMY_STATUS_HIDE, 10);
 
 	// Objects
 	// - Gas bottle on kitchen
-	OBJECT_LoadObject("OBJECT2.DAT", 0, ENTITY_ID_BARREL, SPRITE_GRAPHICS_ID_OBJECT2, SPRITE_GRAPHICS_ID_OBJECT2_PORTAIT, 44 << 4, 3 << 4);
+	OBJECT_LoadObject("OBJECT2.DAT", 0, ENTITY_ID_BARREL, SPRITE_GRAPHICS_ID_OBJECT2, SPRITE_GRAPHICS_ID_OBJECT2_PORTAIT, 49 << 4, 3 << 4);
 	// - Gas bottle on warehouse
 	OBJECT_LoadObject("OBJECT2.DAT", 1, ENTITY_ID_BARREL, SPRITE_GRAPHICS_ID_OBJECT2, SPRITE_GRAPHICS_ID_OBJECT2_PORTAIT, 41 << 4, 3 << 4);
 	OBJECT_LoadObject("OBJECT2.DAT", 2, ENTITY_ID_BARREL, SPRITE_GRAPHICS_ID_OBJECT2, SPRITE_GRAPHICS_ID_OBJECT2_PORTAIT, 42 << 4, 3 << 4);
 
 	// Items
-	ITEM_LoadItem(0, ENTITY_ID_ITEM_MEDIKIT, SPRITE_GRAPHICS_ID_ITEM_MEDIKIT, 17 << 4, 12 << 4);
-	ITEM_LoadItem(1, ENTITY_ID_ITEM_AMMO2, SPRITE_GRAPHICS_ID_ITEM_AMMO2, 39 << 4, 4 << 4);
+	ITEM_LoadItem(0, ENTITY_ID_ITEM_KEYRED, SPRITE_GRAPHICS_ID_ITEM_RED_KEY, 44 << 4, 5 << 4);
+	ITEM_LoadItem(1, ENTITY_ID_ITEM_KEYBLUE, SPRITE_GRAPHICS_ID_ITEM_BLUE_KEY, 39 << 4, 4 << 4);
+	ITEM_LoadItem(2, ENTITY_ID_ITEM_KEYYELLOW, SPRITE_GRAPHICS_ID_ITEM_YELLOW_KEY, 36 << 4, 4 << 4);
+	ITEM_LoadItem(3, ENTITY_ID_ITEM_KEYGREEN, SPRITE_GRAPHICS_ID_ITEM_GREEN_KEY, 2 << 4, 40 << 4);
+	ITEM_LoadItem(4, ENTITY_ID_ITEM_MEDIKIT, SPRITE_GRAPHICS_ID_ITEM_MEDIKIT, 36 << 4, 7 << 4);
+	ITEM_LoadItem(5, ENTITY_ID_ITEM_MEDIKIT, SPRITE_GRAPHICS_ID_ITEM_MEDIKIT, 51 << 4, 37 << 4);
+	ITEM_LoadItem(6, ENTITY_ID_ITEM_AMMO1, SPRITE_GRAPHICS_ID_ITEM_AMMO1, 42 << 4, 5 << 4);
+	ITEM_LoadItem(7, ENTITY_ID_ITEM_AMMO1, SPRITE_GRAPHICS_ID_ITEM_AMMO1, 36 << 4, 7 << 4);
 
-	MAP_LoadMap("MAPSCN31.DAT", 70, 50, "TSCN31.DAT", "SCN3_1_BACK.PCX", "SCN3_1_FORE.PCX", "SCN3_1_MASK.PCX", 320 * 416, 128 * 128, 128 * 128);
+	MAP_LoadMap("MAPSCN31.DAT", 70, 50, "TSCN31.DAT", "SCN3_1_BACK.PCX", "SCN3_1_FORE.PCX", "SCN3_1_MASK.PCX", 320 * 416, 128 * 256, 128 * 128);
 	GFX_LoadPalette("PALETTES.DAT", "SCN31.PCX", 256);
 }
 static void Scene3_LoadRoom2(void) {
-	MAP_LoadMap("MAPSCN32.DAT", 57, 48, "TSCN32.DAT", "SCN3_2_BACK.PCX", "SCN3_2_FORE.PCX", "SCN3_2_MASK.PCX", 320 * 416, 128 * 128, 128 * 128);
+
+	// Entry
+	// - Enemy 0
+	ENEMY_Load("ENEMY9.DAT", 0, 24 << 4, 20 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_AK, SPRITE_GRAPHICS_ID_GUN3, SPRITE_GRAPHICS_ID_EMPTY, ENEMY_STATUS_STATIC_NPC, 100);
+	// - Enemy 1
+	ENEMY_Load("ENEMY9.DAT", 1, 31 << 4, 20 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_UP_LEFT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
+
+	// Room 1
+	// - Enemy 2
+	ENEMY_Load("ENEMY9.DAT", 2, 8 << 4, 7 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_UP_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
+	// - Enemy 3
+	ENEMY_Load("ENEMY9.DAT", 3, 21 << 4, 6 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
+
+	// Room 2
+	// - Enemy 4
+	ENEMY_Load("ENEMY9.DAT", 4, 33 << 4, 6 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_UP_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
+
+	// Room 3
+	// Enemy 5
+	ENEMY_Load("ENEMY9.DAT", 5, 45 << 4, 5 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_DOWN_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
+	// Enemy 6
+	ENEMY_Load("ENEMY9.DAT", 6, 53 << 4, 6 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_UP_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
+
+	// Room 4
+	// Enemy 7
+	ENEMY_Load("ENEMY9.DAT", 7, 5 << 4, 13 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_WALKING_ARROUND_NPC, 100);
+	// Enemy 8
+	ENEMY_Load("ENEMY9.DAT", 8, 8 << 4, 15 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_UP_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
+
+	// Room 5
+	// Enemy 9
+	ENEMY_Load("ENEMY9.DAT", 9, 14 << 4, 15 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_WALKING_ARROUND_NPC, 100);
+	// Enemy 10
+	ENEMY_Load("ENEMY9.DAT", 10, 22 << 4, 13 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_DOWN_RIGHT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
+
+	// Room 6
+
+	// Room 7
+	// Enemy 11
+	ENEMY_Load("ENEMY9.DAT", 11, 46 << 4, 14 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_LEFT, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_NPC, 100);
+
+	// Room 8
+	// Enemy 12
+	ENEMY_Load("ENEMY9.DAT", 12, 8 << 4, 25 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_LEFT, ENEMY_GUN_SHOTGUN, SPRITE_GRAPHICS_ID_GUN2, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_WALKING_ARROUND_NPC, 100);
+
+
+	// Enemy 13
+	ENEMY_Load("ENEMY1.DAT", 13, 14 << 4, 8 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN_RIGHT, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_EMPTY, ENEMY_STATUS_HIDE, 10);
+	// Enemy 14
+	ENEMY_Load("ENEMY1.DAT", 14, 35 << 4, 6 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN_RIGHT, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_EMPTY, ENEMY_STATUS_HIDE, 10);
+	// Enemy 15
+	ENEMY_Load("ENEMY1.DAT", 15, 47 << 4, 26 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN_RIGHT, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_EMPTY, ENEMY_STATUS_HIDE, 10);
+	// Enemy 16
+	ENEMY_Load("ENEMY1.DAT", 16, 8 << 4, 15 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN_RIGHT, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_EMPTY, ENEMY_STATUS_HIDE, 10);
+	// Enemy 17
+	ENEMY_Load("ENEMY1.DAT", 17, 35 << 4, 4 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN_RIGHT, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_EMPTY, ENEMY_STATUS_HIDE, 10);
+
+
+	// Objects
+
+	// Items
+	ITEM_LoadItem(0, ENTITY_ID_ITEM_KEYRED, SPRITE_GRAPHICS_ID_ITEM_RED_KEY, 23 << 4, 33 << 4);
+	ITEM_LoadItem(1, ENTITY_ID_ITEM_KEYBLUE, SPRITE_GRAPHICS_ID_ITEM_BLUE_KEY, 12 << 4, 15 << 4);
+	ITEM_LoadItem(2, ENTITY_ID_ITEM_KEYYELLOW, SPRITE_GRAPHICS_ID_ITEM_YELLOW_KEY, 52 << 4, 4 << 4);
+	ITEM_LoadItem(3, ENTITY_ID_ITEM_KEYGREEN, SPRITE_GRAPHICS_ID_ITEM_GREEN_KEY, 44 << 4, 34 << 4);
+
+	ITEM_LoadItem(4, ENTITY_ID_ITEM_MEDIKIT, SPRITE_GRAPHICS_ID_ITEM_MEDIKIT, 54 << 4, 32 << 4);
+	ITEM_LoadItem(5, ENTITY_ID_ITEM_MEDIKIT, SPRITE_GRAPHICS_ID_ITEM_MEDIKIT, 5 << 4, 3 << 4);
+
+	ITEM_LoadItem(6, ENTITY_ID_ITEM_AMMO3, SPRITE_GRAPHICS_ID_ITEM_AMMO3, 44 << 4, 3 << 4);
+	ITEM_LoadItem(7, ENTITY_ID_ITEM_AMMO3, SPRITE_GRAPHICS_ID_ITEM_AMMO3, 21 << 4, 32 << 4);
+	ITEM_LoadItem(8, ENTITY_ID_ITEM_DOCU, SPRITE_GRAPHICS_ID_ITEM_DOCU, 2 << 4, 12 << 4);
+	ITEM_LoadItem(9, ENTITY_ID_ITEM_AMMO4, SPRITE_GRAPHICS_ID_ITEM_AMMO4, 6 << 4, 6 << 4);
+
+
+	MAP_LoadMap("MAPSCN32.DAT", 57, 48, "TSCN32.DAT", "SCN3_2_BACK.PCX", "SCN3_2_FORE.PCX", "SCN3_2_MASK.PCX", 320 * 416, 128 * 256, 128 * 128);
 	GFX_LoadPalette("PALETTES.DAT", "SCN32.PCX", 256);
+}
+static void Scene3_LoadRoom3(void) {
+
+	// Hall
+	// - Enemy 0
+	ENEMY_Load("ENEMY9.DAT", 0, 21 << 4, 38 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_UP_LEFT, ENEMY_GUN_AK, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_RAMPAGE, 100);
+	// - Enemy 1
+	ENEMY_Load("ENEMY9.DAT", 1, 24 << 4, 39 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_UP_RIGHT, ENEMY_GUN_AK, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_RAMPAGE, 100);
+	// - Enemy 2
+	ENEMY_Load("ENEMY9.DAT", 2, 27 << 4, 39 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_RIGHT, ENEMY_GUN_AK, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_RAMPAGE, 100);
+	// - Enemy 3
+	ENEMY_Load("ENEMY9.DAT", 3, 33 << 4, 39 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_UP_RIGHT, ENEMY_GUN_AK, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_RAMPAGE, 100);
+	// - Enemy 4
+	ENEMY_Load("ENEMY9.DAT", 5, 35 << 4, 38 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_DOWN_RIGHT, ENEMY_GUN_AK, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_RAMPAGE, 100);
+	// - Enemy 5
+	ENEMY_Load("ENEMY9.DAT", 6, 28 << 4, 37 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_UP_RIGHT, ENEMY_GUN_AK, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_RAMPAGE, 100);
+
+	MAP_LoadMap("MAPSCN31.DAT", 70, 50, "TSCN31.DAT", "SCN3_1_BACK.PCX", "SCN3_1_FORE.PCX", "SCN3_1_MASK.PCX", 320 * 416, 128 * 256, 128 * 128);
+	GFX_LoadPalette("PALETTES.DAT", "SCN31.PCX", 256);
 }
 static void Scene3_SetHotspotsAndEvents(void) {
 
@@ -6729,10 +7058,10 @@ static void Scene3_SetHotspotsAndEvents(void) {
 	event_enabling_room1[0] = false;
 	event_enabling_room1[1] = true;
 	event_enabling_room1[2] = true;
-	event_enabling_room1[3] = false;
-	event_enabling_room1[4] = false;
-	event_enabling_room1[5] = false;
-	event_enabling_room1[6] = false;
+	event_enabling_room1[3] = true;
+	event_enabling_room1[4] = true;
+	event_enabling_room1[5] = true;
+	event_enabling_room1[6] = true;
 	event_enabling_room1[7] = false;
 	event_enabling_room1[8] = false;
 	event_enabling_room1[9] = false;
@@ -6799,7 +7128,7 @@ static void Scene3_SetHotspotsAndEvents(void) {
 	event_enabling_room2[2] = true;
 	event_enabling_room2[3] = true;
 	event_enabling_room2[4] = true;
-	event_enabling_room2[5] = true;
+	event_enabling_room2[5] = false;
 	event_enabling_room2[6] = false;
 	event_enabling_room2[7] = false;
 	event_enabling_room2[8] = false;
@@ -6836,8 +7165,11 @@ static void Scene3_Loop(void) {
 	VIDEO_ClearScreenBuffer();
 	GFX_LoadPalette("PALETTES.DAT", "SCN31.PCX", 256);
 
-	VIDEO_StringToScreenBuffer(60, 80, ui.txt_file[UI_TXT_SCN3I].line[40], FONT_BIG_WHITE);
-	VIDEO_StringToScreenBuffer(80, 105, ui.txt_file[UI_TXT_SCN3I].line[41], FONT_BIG_WHITE);
+	VIDEO_StringToScreenBuffer(50, 60, ui.txt_file[UI_TXT_SCN3I].line[40], FONT_BIG_WHITE);
+	VIDEO_StringToScreenBuffer(80, 85, ui.txt_file[UI_TXT_SCN3I].line[41], FONT_BIG_WHITE);
+	VIDEO_StringToScreenBuffer(90, 135, ui.txt_file[UI_TXT_SCN3I].line[42], FONT_SLIM_WHITE);
+	VIDEO_StringToScreenBuffer(160, 135, ui.txt_file[UI_TXT_SCN3I].line[43], FONT_SLIM_WHITE);
+
 	VIDEO_VSync();
 	VIDEO_ScreenBufferToVRAM();
 	VIDEO_FadeIn(4);
@@ -6865,7 +7197,7 @@ static void Scene3_Loop(void) {
 		case 1:// Room 1. Lower floor
 			Scene3_LoadRoom1();
 
-			ACTOR_SetPosition(60 << 4, 6 << 4, ACTOR_FACING_LEFT);// Set actor position
+			ACTOR_SetPosition(65 << 4, 8 << 4, ACTOR_FACING_LEFT);// Set actor position
 			ACTOR_SetCombatMode(true);
 
 			CAM_Init(map.width_px, map.height_px, 46 << 4, 0 << 4);// Initialize camera
@@ -6880,29 +7212,10 @@ static void Scene3_Loop(void) {
 		case 2:// Room 2. Upper floor
 			Scene3_LoadRoom2();
 
-			// Enemy 1
-			ENEMY_Load("ENEMY2.DAT", 0, 24 << 4, 20 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_SHOOTER, 20);
-			// Enemy 2
-			ENEMY_Load("ENEMY2.DAT", 1, 29 << 4, 20 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_STATIC_SHOOTER, 20);
-			// Enemy 3
-			ENEMY_Load("ENEMY2.DAT", 2, 49 << 4, 34 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_WALKING_ARROUND_NPC, 20);
-			// Enemy 4
-			ENEMY_Load("ENEMY2.DAT", 3, 33 << 4, 37 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_WALKING_ARROUND_NPC, 20);
-			// Enemy 5
-			ENEMY_Load("ENEMY2.DAT", 4, 20 << 4, 37 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_WALKING_ARROUND_NPC, 20);
-			// Enemy 6
-			ENEMY_Load("ENEMY2.DAT", 5, 7 << 4, 35 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_WALKING_ARROUND_NPC, 20);
-			// Enemy 7
-			ENEMY_Load("ENEMY2.DAT", 6, 7 << 4, 35 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_WALKING_ARROUND_NPC, 20);
-			// Enemy 8
-			ENEMY_Load("ENEMY2.DAT", 7, 10 << 4, 27 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_WALKING_ARROUND_NPC, 20);
-			// Enemy 9
-			ENEMY_Load("ENEMY2.DAT", 8, 14 << 4, 18 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_WALKING_ARROUND_NPC, 20);
-			// Enemy 10
-			ENEMY_Load("ENEMY2.DAT", 9, 17 << 4, 6 << 4, SPRITE_GRAPHICS_ID_ENEMY1_CHAT, SPRITE_GRAPHICS_ID_ENEMY1_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY1_FEET, SPRITE_GRAPHICS_ID_ENEMY1_BODY, SPRITE_GRAPHICS_ID_ENEMY1_HEAD, SPRITE_GRAPHICS_ID_ENEMY1_LARM, SPRITE_GRAPHICS_ID_ENEMY1_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_PISTOL, SPRITE_GRAPHICS_ID_GUN1, SPRITE_GRAPHICS_ID_BULLET1, ENEMY_STATUS_WALKING_ARROUND_NPC, 20);
+			ACTOR_SetPosition(27 << 4, 23 << 4, ACTOR_FACING_UP);// Set actor position
+			ACTOR_SetCombatMode(true);
 
-			ACTOR_SetPosition(27 << 4, 34 << 4, ACTOR_FACING_UP);   // Set actor position
-			CAM_Init(map.width_px, map.height_px, 17 << 4, 24 << 4);// Initialize camera
+			CAM_Init(map.width_px, map.height_px, 17 << 4, 14 << 4);// Initialize camera
 			MAP_DrawMapToMapVideoBuffer();
 
 			Update(true);
@@ -6916,8 +7229,21 @@ static void Scene3_Loop(void) {
 
 	// Loop until the game is over
 	while (engine.ingame) {
+
+		engine.debug1_INT = scene_step;
+
 		switch (engine.room) {
 			case 1:// Room 1. Lower floor
+				   // Scene steps
+				// - Event 1: Starts the party! >> Step = 1 - Keep guns
+				// - Event 2: Chef spot >> Step = 2 - Starts the party!
+				// - Event 3: Open red door >> Step = 3
+				// - Event 4: Open blue door >> Step = 4
+				// - Event 5: Open yellow door >> Step = 5
+				// - Event 6: Get green key >> Step = 6
+				// - Event 16: Go to the second floor >> Step = 16
+				// - Event 15: Exit building
+
 				// Hotspots
 				if (!actor.mode_combat) {
 					// Check point on object or enemy
@@ -6993,7 +7319,7 @@ static void Scene3_Loop(void) {
 										break;
 									case 2://
 										if (UI_IsSpeechFinished()) {
-											UI_ShowSpeech(&gfx_chat_panel, SPRITE_GRAPHICS_ID_ACTORCHAT, SPRITE_GRAPHICS_ID_CHAT, UI_TXT_SCN3D, 5, 6, 7, false, 100);
+											UI_ShowSpeech(&gfx_chat_panel, SPRITE_GRAPHICS_ID_ACTORCHAT, SPRITE_GRAPHICS_ID_CHAT, UI_TXT_SCN3D, 5, 6, 355, false, 100);
 											sequence_step++;
 										}
 										break;
@@ -7008,6 +7334,7 @@ static void Scene3_Loop(void) {
 								}
 								Update(false);
 							}
+							scene_step = 1;
 							end_sequence = false;
 						}
 						break;
@@ -7019,7 +7346,7 @@ static void Scene3_Loop(void) {
 							while (!end_sequence) {
 								switch (sequence_step) {
 									case 0://
-										UI_ShowSpeech(&gfx_chat_panel, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_CHAT, UI_TXT_SCN3D, 12, 13, 14, true, 100);
+										UI_ShowSpeech(&gfx_chat_panel, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_CHAT, UI_TXT_SCN3D, 12, 13, 14, true, 100);
 										sequence_step++;
 										break;
 									case 1://
@@ -7030,7 +7357,7 @@ static void Scene3_Loop(void) {
 										break;
 									case 2://
 										if (UI_IsSpeechFinished()) {
-											UI_ShowSpeech(&gfx_chat_panel, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_CHAT, UI_TXT_SCN3D, 18, 19, 20, true, 100);
+											UI_ShowSpeech(&gfx_chat_panel, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_CHAT, UI_TXT_SCN3D, 18, 19, 20, true, 100);
 											sequence_step++;
 										}
 										break;
@@ -7042,7 +7369,7 @@ static void Scene3_Loop(void) {
 										break;
 									case 4://
 										if (UI_IsSpeechFinished()) {
-											UI_ShowSpeech(&gfx_chat_panel, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_CHAT, UI_TXT_SCN3D, 22, 355, 355, true, 100);
+											UI_ShowSpeech(&gfx_chat_panel, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_CHAT, UI_TXT_SCN3D, 22, 355, 355, true, 100);
 											sequence_step++;
 										}
 										break;
@@ -7051,18 +7378,183 @@ static void Scene3_Loop(void) {
 
 											ACTOR_SetCombatMode(true);
 											ACTOR_SetGun(actor.sprite_num, ACTOR_GUN_TYPE_PISTOL);
+											ACTOR_Reload();
 
-											ENEMY_SetBehavior(0, ENEMY_STATUS_STATIC_SHOOTER);
+											ENEMY_SetBehavior(0, ENEMY_STATUS_CHASE);
 											ENEMY_SetBehavior(1, ENEMY_STATUS_STATIC_SHOOTER);
-											ENEMY_SetBehavior(2, ENEMY_STATUS_STATIC_SHOOTER);
+											ENEMY_SetBehavior(2, ENEMY_STATUS_CHASE);
 											ENEMY_SetBehavior(3, ENEMY_STATUS_STATIC_SHOOTER);
 											ENEMY_SetBehavior(4, ENEMY_STATUS_STATIC_SHOOTER);
 											ENEMY_SetBehavior(5, ENEMY_STATUS_STATIC_SHOOTER);
 											ENEMY_SetBehavior(6, ENEMY_STATUS_STATIC_SHOOTER);
-											ENEMY_SetBehavior(7, ENEMY_STATUS_CHASE);
+											ENEMY_SetBehavior(7, ENEMY_STATUS_STATIC_SHOOTER);
 											ENEMY_SetBehavior(8, ENEMY_STATUS_STATIC_SHOOTER);
 											ENEMY_SetBehavior(9, ENEMY_STATUS_STATIC_SHOOTER);
-											ENEMY_SetBehavior(10, ENEMY_STATUS_CHASE);
+											ENEMY_SetBehavior(10, ENEMY_STATUS_STATIC_SHOOTER);
+											ENEMY_SetBehavior(11, ENEMY_STATUS_STATIC_SHOOTER);
+											ENEMY_SetBehavior(12, ENEMY_STATUS_STATIC_SHOOTER);
+											end_sequence = true;
+										}
+										break;
+									default:
+										end_sequence = true;
+										break;
+								}
+								Update(false);
+							}
+							scene_step = 2;
+							end_sequence = false;
+						}
+						break;
+					case 3:// Event 3. Entry storeroom. Red key
+						if (event_enabling_room1[3]) {
+							event_enabling_room1[3] = false;
+
+							if (actor.key_entity_id != ENTITY_ID_ITEM_KEYRED) {
+								AUDIO_PlaySound(AUDIO_SHOT_FAIL_EFFECT, 1);
+							} else {
+
+								scene_step = 3;
+								ACTOR_LeaveKey();
+								AUDIO_PlaySound(AUDIO_OPEN_DOOR_EFFECT, 1);
+
+								MAP_HideSwapableTile(40 << 4, 10 << 4);
+								MAP_HideSwapableTile(41 << 4, 10 << 4);
+								MAP_HideSwapableTile(40 << 4, 11 << 4);
+								MAP_HideSwapableTile(41 << 4, 11 << 4);
+							}
+						}
+						break;
+					case 4:// Event 4. Entry blue door. Blue key
+						if (event_enabling_room1[4]) {
+							event_enabling_room1[4] = false;
+
+							if (actor.key_entity_id != ENTITY_ID_ITEM_KEYBLUE) {
+								AUDIO_PlaySound(AUDIO_SHOT_FAIL_EFFECT, 1);
+							} else {
+
+								scene_step = 4;
+								ACTOR_LeaveKey();
+								AUDIO_PlaySound(AUDIO_OPEN_DOOR_EFFECT, 1);
+
+								MAP_HideSwapableTile(18 << 4, 19 << 4);
+								MAP_HideSwapableTile(19 << 4, 19 << 4);
+								MAP_HideSwapableTile(18 << 4, 20 << 4);
+								MAP_HideSwapableTile(19 << 4, 20 << 4);
+							}
+						}
+						break;
+					case 5:// Event 5. Entry yellow door. Yellow key
+						if (event_enabling_room1[5]) {
+							event_enabling_room1[5] = false;
+
+							if (actor.key_entity_id != ENTITY_ID_ITEM_KEYYELLOW) {
+								AUDIO_PlaySound(AUDIO_SHOT_FAIL_EFFECT, 1);
+							} else {
+
+								scene_step = 5;
+								ACTOR_LeaveKey();
+								AUDIO_PlaySound(AUDIO_OPEN_DOOR_EFFECT, 1);
+
+								MAP_HideSwapableTile(10 << 4, 23 << 4);
+								MAP_HideSwapableTile(11 << 4, 23 << 4);
+								MAP_HideSwapableTile(10 << 4, 24 << 4);
+								MAP_HideSwapableTile(11 << 4, 24 << 4);
+							}
+						}
+						break;
+					case 6:// Event 6. Entry green door. Green key
+						if (event_enabling_room1[6]) {
+							event_enabling_room1[6] = false;
+
+							if (actor.key_entity_id != ENTITY_ID_ITEM_KEYGREEN) {
+								AUDIO_PlaySound(AUDIO_SHOT_FAIL_EFFECT, 1);
+							} else {
+
+								scene_step = 6;
+								ACTOR_LeaveKey();
+								AUDIO_PlaySound(AUDIO_OPEN_DOOR_EFFECT, 1);
+
+								MAP_HideSwapableTile(47 << 4, 30 << 4);
+								MAP_HideSwapableTile(48 << 4, 30 << 4);
+								MAP_HideSwapableTile(47 << 4, 31 << 4);
+								MAP_HideSwapableTile(48 << 4, 31 << 4);
+							}
+						}
+						break;
+					case 15:// Event 15. Exit building
+						if (event_enabling_room1[15]) {
+							event_enabling_room1[15] = false;
+
+							if (scene_step < 32) {
+
+								sequence_step = 0;
+								end_sequence = false;
+								while (!end_sequence) {
+									switch (sequence_step) {
+										case 0://
+											UI_ShowSpeech(&gfx_chat_panel, SPRITE_GRAPHICS_ID_ACTORCHAT, SPRITE_GRAPHICS_ID_CHAT, UI_TXT_SCN3D, 24, 25, 355, false, 100);
+											sequence_step++;
+											break;
+										case 1://
+											if (UI_IsSpeechFinished()) {
+												end_sequence = true;
+											}
+											break;
+										default:
+											end_sequence = true;
+											break;
+									}
+									Update(false);
+								}
+								end_sequence = false;
+							} else {
+								engine.ingame = false;
+
+								engine.scene = 4;
+								engine.room = 1;
+							}
+						}
+						break;
+					case 16:// Event 16. Go to second floor
+						if (event_enabling_room1[16]) {
+							event_enabling_room1[16] = false;
+							VIDEO_FadeOut(4);
+							ENEMY_UnloadEnemies();
+							ITEM_UnloadItems();
+							OBJECT_UnloadObjects();
+							EFFECT_UnloadEffects();
+							BULLET_UnloadBullets();
+							PARTICLE_UnloadParticles();
+							GRENADE_UnloadGrenades();
+							NPC_UnloadNpcs();
+							MAP_UnloadMap();
+
+							Scene3_LoadRoom2();
+							ACTOR_SetPosition(27 << 4, 24 << 4, ACTOR_FACING_UP);   // Set actor position
+							CAM_Init(map.width_px, map.height_px, 17 << 4, 12 << 4);// Initialize camera
+							MAP_DrawMapToMapVideoBuffer();
+
+							Update(false);
+							Update(false);
+
+							engine.room = 2;
+							scene_step = 16;
+
+							VIDEO_FadeIn(1);
+
+							Update(false);
+
+							sequence_step = 0;
+							end_sequence = false;
+							while (!end_sequence) {
+								switch (sequence_step) {
+									case 0://
+										UI_ShowSpeech(&gfx_chat_panel, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_CHAT, UI_TXT_SCN3D, 34, 35, 36, false, 100);
+										sequence_step++;
+										break;
+									case 1://
+										if (UI_IsSpeechFinished()) {
 											end_sequence = true;
 										}
 										break;
@@ -7073,51 +7565,74 @@ static void Scene3_Loop(void) {
 								Update(false);
 							}
 							end_sequence = false;
-						}
-						break;
-					case 15:// Event 15. End of level
-						if (event_enabling_room1[15]) {
-							event_enabling_room1[15] = false;
 
-							VIDEO_FadeOut(4);
-							engine.ingame = false;
-							engine.scene = 4;
-							engine.room = 1;
-						}
-						break;
-					case 16:// Event 16. Go to second floor
-						if (event_enabling_room1[16]) {
-							event_enabling_room1[16] = false;
-							VIDEO_FadeOut(4);
-							ENEMY_UnloadEnemies();
-							OBJECT_UnloadObjects();
-							EFFECT_UnloadEffects();
-							BULLET_UnloadBullets();
-							PARTICLE_UnloadParticles();
-							GRENADE_UnloadGrenades();
-							NPC_UnloadNpcs();
-							MAP_UnloadMap();
+							ENEMY_SetBehavior(0, ENEMY_STATUS_STATIC_SHOOTER);
+							ENEMY_SetBehavior(1, ENEMY_STATUS_STATIC_SHOOTER);
 
-							Scene3_LoadRoom2();
-							ACTOR_SetPosition(27 << 4, 22 << 4, ACTOR_FACING_UP);   // Set actor position
-							CAM_Init(map.width_px, map.height_px, 17 << 4, 12 << 4);// Initialize camera
-							MAP_DrawMapToMapVideoBuffer();
+							ENEMY_SetBehavior(2, ENEMY_STATUS_STATIC_SHOOTER);
+							ENEMY_SetBehavior(3, ENEMY_STATUS_CHASE);
 
-							Update(true);
-							Update(true);
+							ENEMY_SetBehavior(4, ENEMY_STATUS_STATIC_SHOOTER);
 
-							engine.room = 2;
+							ENEMY_SetBehavior(5, ENEMY_STATUS_STATIC_SHOOTER);
+							ENEMY_SetBehavior(6, ENEMY_STATUS_CHASE);
 
-							VIDEO_FadeIn(1);
+							ENEMY_SetBehavior(7, ENEMY_STATUS_STATIC_SHOOTER);
+							ENEMY_SetBehavior(8, ENEMY_STATUS_CHASE);
+
+							ENEMY_SetBehavior(9, ENEMY_STATUS_STATIC_SHOOTER);
+							ENEMY_SetBehavior(10, ENEMY_STATUS_CHASE);
+
+							ENEMY_SetBehavior(11, ENEMY_STATUS_STATIC_SHOOTER);
+
+							ENEMY_SetBehavior(12, ENEMY_STATUS_STATIC_SHOOTER);
+
+							ACTOR_SetCombatMode(true);
 						}
 						break;
 					default:
+						// Reenable red door event if actor did not have key
+						if (!event_enabling_room1[3] && (scene_step < 3)) {
+							event_enabling_room1[3] = true;
+						}
+
+						// Reenable blue door event if actor did not have key
+						if (!event_enabling_room1[4] && (scene_step < 4)) {
+							event_enabling_room1[4] = true;
+						}
+
+						// Reenable yellow door event if actor did not have key
+						if (!event_enabling_room1[5] && (scene_step < 5)) {
+							event_enabling_room1[5] = true;
+						}
+
+						// Reenable green door event if actor did not have key
+						if (!event_enabling_room1[6] && (scene_step < 6)) {
+							event_enabling_room1[6] = true;
+						}
+
+						// Reenable end of level event if actor leave event
+						if (!event_enabling_room1[15] && (scene_step != 32)) {
+							event_enabling_room1[15] = true;
+						}
+
+						// Reenable go to second floor event if actor leave event
+						if (!event_enabling_room1[16] && (scene_step == 32)) {
+							event_enabling_room1[16] = true;
+						}
 						break;
 				}
 				break;
 
 			case 2:// Room 2. Upper floor
-				   // Hotspots
+				// Scene steps
+				// - Event 1: Open red door >> Step = 17
+				// - Event 4: Open green door >> Step = 18
+				// - Event 5: Open yellow door >> Step = 19
+				// - Event 6: Get blue key >> Step = 20
+				// - Take documents >> Step = 31
+
+				// Hotspots
 				if (!actor.mode_combat) {
 					// Check point on object or enemy
 					switch (cursor.point_on & 0xFF) {
@@ -7154,63 +7669,220 @@ static void Scene3_Loop(void) {
 				// Events
 				actor_tile_num = MAP_GetTileNumber(actor.pos_x + (gfx_sprite_stack[actor.sprite_num].width_px >> 1), actor.pos_y + (gfx_sprite_stack[actor.sprite_num].height_px >> 1));
 				switch ((map.layer[MAP_EVENT_HSPOT_LAYER][actor_tile_num] >> 8) & 0xFF) {
-					case 1:// Event 1.
+					case 1:// Event 1. Red door
 						if (event_enabling_room2[1]) {
+							event_enabling_room2[1] = false;
+
+							if (actor.key_entity_id != ENTITY_ID_ITEM_KEYRED) {
+								AUDIO_PlaySound(AUDIO_SHOT_FAIL_EFFECT, 1);
+							} else {
+
+								scene_step = 17;
+								ACTOR_LeaveKey();
+								AUDIO_PlaySound(AUDIO_OPEN_DOOR_EFFECT, 1);
+
+								MAP_HideSwapableTile(21 << 4, 16 << 4);
+								MAP_HideSwapableTile(22 << 4, 16 << 4);
+								MAP_HideSwapableTile(21 << 4, 17 << 4);
+								MAP_HideSwapableTile(22 << 4, 17 << 4);
+							}
 						}
+
 						break;
-					case 2:// Event 2.
+					case 2:// Event 2. Green door
 						if (event_enabling_room2[2]) {
 							event_enabling_room2[2] = false;
+
+							if (actor.key_entity_id != ENTITY_ID_ITEM_KEYGREEN) {
+								AUDIO_PlaySound(AUDIO_SHOT_FAIL_EFFECT, 1);
+							} else {
+
+								scene_step = 18;
+								ACTOR_LeaveKey();
+								AUDIO_PlaySound(AUDIO_OPEN_DOOR_EFFECT, 1);
+
+								MAP_HideSwapableTile(46 << 4, 9 << 4);
+								MAP_HideSwapableTile(47 << 4, 9 << 4);
+								MAP_HideSwapableTile(46 << 4, 10 << 4);
+								MAP_HideSwapableTile(47 << 4, 10 << 4);
+							}
 						}
 						break;
-					case 3:// Event 3.
+					case 3:// Event 3. Yellow door
 						if (event_enabling_room2[3]) {
 							event_enabling_room2[3] = false;
+
+							if (actor.key_entity_id != ENTITY_ID_ITEM_KEYYELLOW) {
+								AUDIO_PlaySound(AUDIO_SHOT_FAIL_EFFECT, 1);
+							} else {
+
+								scene_step = 19;
+								ACTOR_LeaveKey();
+								AUDIO_PlaySound(AUDIO_OPEN_DOOR_EFFECT, 1);
+
+								MAP_HideSwapableTile(5 << 4, 18 << 4);
+								MAP_HideSwapableTile(6 << 4, 18 << 4);
+								MAP_HideSwapableTile(5 << 4, 19 << 4);
+								MAP_HideSwapableTile(6 << 4, 19 << 4);
+							}
 						}
 						break;
-					case 4:// Event 4.
+					case 4:// Event 4. Blue door
 						if (event_enabling_room2[4]) {
 							event_enabling_room2[4] = false;
-						}
-						break;
-					case 5:// Event 5.
-						if (event_enabling_room2[5]) {
-						}
-						break;
-					case 6:// Event 6.
-						if (event_enabling_room2[6]) {
-							event_enabling_room2[6] = false;
+
+							if (actor.key_entity_id != ENTITY_ID_ITEM_KEYBLUE) {
+								AUDIO_PlaySound(AUDIO_SHOT_FAIL_EFFECT, 1);
+							} else {
+
+								scene_step = 20;
+								ACTOR_LeaveKey();
+								AUDIO_PlaySound(AUDIO_OPEN_DOOR_EFFECT, 1);
+
+								MAP_HideSwapableTile(51 << 4, 29 << 4);
+								MAP_HideSwapableTile(52 << 4, 29 << 4);
+								MAP_HideSwapableTile(51 << 4, 30 << 4);
+								MAP_HideSwapableTile(52 << 4, 30 << 4);
+							}
 						}
 						break;
 					case 16:// Event 16. Go to first floor
 						if (event_enabling_room2[16]) {
-							VIDEO_FadeOut(4);
-							ENEMY_UnloadEnemies();
-							OBJECT_UnloadObjects();
-							EFFECT_UnloadEffects();
-							BULLET_UnloadBullets();
-							PARTICLE_UnloadParticles();
-							GRENADE_UnloadGrenades();
-							MAP_UnloadMap();
+							event_enabling_room2[16] = false;
 
-							Scene3_LoadRoom1();
-							ACTOR_SetPosition(27 << 4, 29 << 4, ACTOR_FACING_LEFT);// Set actor position
+							if (scene_step < 31) {
+								sequence_step = 0;
+								end_sequence = false;
+								while (!end_sequence) {
+									switch (sequence_step) {
+										case 0://
+											UI_ShowSpeech(&gfx_chat_panel, SPRITE_GRAPHICS_ID_ACTORCHAT, SPRITE_GRAPHICS_ID_CHAT, UI_TXT_SCN3D, 24, 25, 355, false, 100);
+											sequence_step++;
+											break;
+										case 1://
+											if (UI_IsSpeechFinished()) {
+												end_sequence = true;
+											}
+											break;
+										default:
+											end_sequence = true;
+											break;
+									}
+									Update(false);
+								}
+								end_sequence = false;
+							} else {// Go back to floor 1
 
-							CAM_Init(map.width_px, map.height_px, 17 << 4, 19 << 4);// Initialize camera
-							MAP_DrawMapToMapVideoBuffer();
+								VIDEO_FadeOut(4);
+								ENEMY_UnloadEnemies();
+								OBJECT_UnloadObjects();
+								EFFECT_UnloadEffects();
+								BULLET_UnloadBullets();
+								PARTICLE_UnloadParticles();
+								GRENADE_UnloadGrenades();
+								NPC_UnloadNpcs();
+								MAP_UnloadMap();
 
-							Update(true);
-							Update(true);
+								Scene3_LoadRoom3();
+								ACTOR_SetPosition(27 << 4, 32 << 4, ACTOR_FACING_DOWN); // Set actor position
+								CAM_Init(map.width_px, map.height_px, 17 << 4, 28 << 4);// Initialize camera
+								MAP_DrawMapToMapVideoBuffer();
 
-							engine.room = 1;
+								Update(false);
+								Update(false);
 
-							VIDEO_FadeIn(1);
+								engine.room = 1;
+								scene_step = 32;
+
+								VIDEO_FadeIn(1);
+
+								// Enemies chat
+								sequence_step = 0;
+								end_sequence = false;
+								while (!end_sequence) {
+									switch (sequence_step) {
+										case 0://
+											UI_ShowSpeech(&gfx_chat_panel, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_CHAT, UI_TXT_SCN3D, 31, 32, 355, true, 100);
+											sequence_step++;
+											break;
+										case 1://
+											if (UI_IsSpeechFinished()) {
+												end_sequence = true;
+											}
+											break;
+										default:
+											end_sequence = true;
+											break;
+									}
+									Update(false);
+								}
+								end_sequence = false;
+
+								ACTOR_SetCombatMode(true);
+							}
 						}
 						break;
 					default:
+						// Reenable red door event if actor did not have key
+						if (!event_enabling_room2[1] && (scene_step < 17)) {
+							event_enabling_room2[1] = true;
+						}
+
+						// Reenable green door event if actor did not have key
+						if (!event_enabling_room2[2] && (scene_step < 18)) {
+							event_enabling_room2[2] = true;
+						}
+
+						// Reenable yellow door event if actor did not have key
+						if (!event_enabling_room2[3] && (scene_step < 19)) {
+							event_enabling_room2[3] = true;
+						}
+
+						// Reenable blue door event if actor did not have key
+						if (!event_enabling_room2[4] && (scene_step < 20)) {
+							event_enabling_room2[4] = true;
+						}
+
+						// Reenable go to back to first floor event if actor leave event
+						if (!event_enabling_room2[16] && (scene_step < 31)) {
+							event_enabling_room2[16] = true;
+						}
 						break;
 				}
 
+				// If actor find documents. End of level
+				if ((actor.key_entity_id == ENTITY_ID_ITEM_DOCU) && (scene_step < 31)) {
+					scene_step = 31;
+
+					sequence_step = 0;
+					end_sequence = false;
+					while (!end_sequence) {
+						switch (sequence_step) {
+							case 0://
+								UI_ShowSpeech(&gfx_chat_panel, SPRITE_GRAPHICS_ID_ACTORCHAT, SPRITE_GRAPHICS_ID_CHAT, UI_TXT_SCN3D, 26, 27, 355, false, 100);
+								sequence_step++;
+								break;
+							case 1://
+								if (UI_IsSpeechFinished()) {
+									UI_ShowSpeech(&gfx_chat_panel, SPRITE_GRAPHICS_ID_ACTORCHAT, SPRITE_GRAPHICS_ID_CHAT, UI_TXT_SCN3D, 28, 29, 355, false, 100);
+									sequence_step++;
+								}
+								break;
+							case 2://
+								if (UI_IsSpeechFinished()) {
+									end_sequence = true;
+								}
+								break;
+							default:
+								end_sequence = true;
+								break;
+						}
+						Update(false);
+					}
+					end_sequence = false;
+
+					ACTOR_SetCombatMode(true);
+				}
 				break;
 		}
 
@@ -7229,6 +7901,8 @@ static void Scene3_Loop(void) {
 	BULLET_UnloadBullets();
 	PARTICLE_UnloadParticles();
 	GRENADE_UnloadGrenades();
+	NPC_UnloadNpcs();
+	ITEM_UnloadItems();
 	ACTOR_UnloadActor();
 	MAP_UnloadMap();
 	Scene3_UnloadAssets();
@@ -8566,8 +9240,12 @@ static void Scene4_Loop(void) {
 	VIDEO_ClearScreenBuffer();
 	GFX_LoadPalette("PALETTES.DAT", "SCN41.PCX", 256);
 
-	VIDEO_StringToScreenBuffer(60, 80, ui.txt_file[UI_TXT_SCN4I].line[40], FONT_BIG_WHITE);
-	VIDEO_StringToScreenBuffer(80, 105, ui.txt_file[UI_TXT_SCN4I].line[41], FONT_BIG_WHITE);
+	VIDEO_StringToScreenBuffer(50, 60, ui.txt_file[UI_TXT_SCN4I].line[40], FONT_BIG_WHITE);
+	VIDEO_StringToScreenBuffer(70, 85, ui.txt_file[UI_TXT_SCN4I].line[41], FONT_BIG_WHITE);
+	VIDEO_StringToScreenBuffer(90, 135, ui.txt_file[UI_TXT_SCN4I].line[42], FONT_SLIM_WHITE);
+	VIDEO_StringToScreenBuffer(160, 135, ui.txt_file[UI_TXT_SCN4I].line[43], FONT_SLIM_WHITE);
+
+
 	VIDEO_VSync();
 	VIDEO_ScreenBufferToVRAM();
 	VIDEO_FadeIn(4);
@@ -8604,8 +9282,10 @@ static void Scene4_Loop(void) {
 
 			Update(true);
 			Update(true);
+
 			VIDEO_FadeIn(1);
-			break;
+
+			ACTOR_SetCombatMode(true);
 
 			break;
 		case 2:// Room 2. Church
@@ -8618,6 +9298,9 @@ static void Scene4_Loop(void) {
 			Update(true);
 			Update(true);
 			VIDEO_FadeIn(1);
+
+			ACTOR_SetCombatMode(true);
+
 			break;
 		default:
 			Error("Scene4_Loop function error", "Undefined room", "", ERROR_SYSTEM);
@@ -8705,6 +9388,8 @@ static void Scene4_Loop(void) {
 							engine.room = 2;
 
 							VIDEO_FadeIn(1);
+
+							ACTOR_SetCombatMode(true);
 						}
 						break;
 					default:
@@ -11640,7 +12325,6 @@ static void Scene7_EndCredits(void) {
 static void Test(void) {
 
 	GFX_LoadSpriteGraphicsRLE("ISPR.DAT", "ACTOR.PCX", SPRITE_GRAPHICS_ID_ACTOR_INTRO, 20, 33, 12, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
-	GFX_LoadSpriteGraphicsRLE("SMENU.DAT", "MTITLE.PCX", SPRITE_GRAPHICS_ID_TITLE, 243, 41, 1, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 
 	GFX_LoadSpriteGraphicsRLE("EFFECTS.DAT", "SPARK.PCX", SPRITE_GRAPHICS_ID_SPARK_EFFECT, 16, 16, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 	GFX_LoadSpriteGraphicsRLE("EFFECTS.DAT", "PUNCHL.PCX", SPRITE_GRAPHICS_ID_PUNCH_EFFECT, 24, 16, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
@@ -11655,29 +12339,37 @@ static void Test(void) {
 
 	GFX_LoadSpriteGraphicsRLE("BULLETS.DAT", "BULLET1.PCX", SPRITE_GRAPHICS_ID_BULLET1, 8, 8, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 	GFX_LoadSpriteGraphicsRLE("BULLETS.DAT", "BULLET2.PCX", SPRITE_GRAPHICS_ID_BULLET2, 8, 8, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("BULLETS.DAT", "BULLET3.PCX", SPRITE_GRAPHICS_ID_BULLET3, 8, 8, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("BULLETS.DAT", "WEBS.PCX", SPRITE_GRAPHICS_ID_WEBS, 8, 8, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+
 	GFX_LoadSpriteGraphicsRLE("BULLETS.DAT", "GRENADE1.PCX", SPRITE_GRAPHICS_ID_GRENADE1, 8, 8, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 	GFX_LoadSpriteGraphicsRLE("BULLETS.DAT", "GRENADES.PCX", SPRITE_GRAPHICS_ID_GRENADE_SHADOW, 8, 8, 2, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 	GFX_LoadSpriteGraphicsRLE("BULLETS.DAT", "PUNCH1.PCX", SPRITE_GRAPHICS_ID_PUNCH, 12, 12, 1, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
-	GFX_LoadSpriteGraphicsRLE("BULLETS.DAT", "PUKE.PCX", SPRITE_GRAPHICS_ID_BULLET3, 16, 16, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("BULLETS.DAT", "PUKE.PCX", SPRITE_GRAPHICS_ID_PUKE, 16, 16, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("BULLETS.DAT", "WEB.PCX", SPRITE_GRAPHICS_ID_WEB, 16, 16, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 
 	GFX_LoadSpriteGraphicsRLE("EFFECTS.DAT", "SNIPPERL.PCX", SPRITE_GRAPHICS_ID_SNIPPER_EFFECT, 24, 16, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 	GFX_LoadSpriteGraphicsRLE("EFFECTS.DAT", "BLOOD.PCX", SPRITE_GRAPHICS_ID_BLOOD, 4, 4, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 	GFX_LoadSpriteGraphicsRLE("EFFECTS.DAT", "FIRE1.PCX", SPRITE_GRAPHICS_ID_FIRE1, 8, 8, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 	GFX_LoadSpriteGraphicsRLE("EFFECTS.DAT", "ELECTRIC1.PCX", SPRITE_GRAPHICS_ID_ELECTRIC1, 8, 8, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("EFFECTS.DAT", "WATER1.PCX", SPRITE_GRAPHICS_ID_WATER1, 8, 8, 4, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+
 	GFX_LoadSpriteGraphicsRLE("EFFECTS.DAT", "EXPLOSION.PCX", SPRITE_GRAPHICS_ID_EXPLOSION1, 32, 32, 10, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 	GFX_LoadSpriteGraphicsRLE("EFFECTS.DAT", "TIMER.PCX", SPRITE_GRAPHICS_ID_TIMER, 8, 8, 10, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 	GFX_LoadSpriteGraphicsRLE("EFFECTS.DAT", "CLICK.PCX", SPRITE_GRAPHICS_ID_CLICK, 5, 5, 5, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 	GFX_LoadSpriteGraphicsRLE("EFFECTS.DAT", "RAIN.PCX", SPRITE_GRAPHICS_ID_RAIN_EFFECT, 5, 5, 5, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 
 	GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "MEDIKIT.PCX", SPRITE_GRAPHICS_ID_ITEM_MEDIKIT, 12, 14, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "DOCU.PCX", SPRITE_GRAPHICS_ID_ITEM_DOCU, 12, 14, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 	GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "AMMO1.PCX", SPRITE_GRAPHICS_ID_ITEM_AMMO1, 15, 13, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 	GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "AMMO2.PCX", SPRITE_GRAPHICS_ID_ITEM_AMMO2, 15, 13, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 	GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "AMMO3.PCX", SPRITE_GRAPHICS_ID_ITEM_AMMO3, 15, 13, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 	GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "AMMO4.PCX", SPRITE_GRAPHICS_ID_ITEM_AMMO4, 15, 13, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 	GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "GRENADE.PCX", SPRITE_GRAPHICS_ID_ITEM_GRENADE, 15, 13, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
-	GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "KEYRED.PCX", SPRITE_GRAPHICS_ID_ITEM_RED_KEY, 15, 13, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
-	GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "KEYBLUE.PCX", SPRITE_GRAPHICS_ID_ITEM_BLUE_KEY, 15, 13, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
-	GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "KEYYELLOW.PCX", SPRITE_GRAPHICS_ID_ITEM_YELLOW_KEY, 15, 13, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "KEYRED.PCX", SPRITE_GRAPHICS_ID_ITEM_RED_KEY, 12, 14, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "KEYBLUE.PCX", SPRITE_GRAPHICS_ID_ITEM_BLUE_KEY, 12, 14, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "KEYYELLOW.PCX", SPRITE_GRAPHICS_ID_ITEM_YELLOW_KEY, 12, 14, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("ITEMS.DAT", "KEYGREEN.PCX", SPRITE_GRAPHICS_ID_ITEM_GREEN_KEY, 12, 14, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 
 	GFX_LoadSpriteGraphicsRLE("PANEL.DAT", "GUN00.PCX", SPRITE_GRAPHICS_ID_GUN0, 32, 16, 1, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 	GFX_LoadSpriteGraphicsRLE("PANEL.DAT", "GUN01.PCX", SPRITE_GRAPHICS_ID_GUN1, 32, 16, 1, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
@@ -11695,6 +12387,21 @@ static void Test(void) {
 
 	GFX_LoadSpriteGraphicsRLE("MISC.DAT", "CHAT.PCX", SPRITE_GRAPHICS_ID_CHAT_SMALL, 55, 30, 1, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 	GFX_LoadSpriteGraphicsRLE("MISC.DAT", "CHAT_BIG.PCX", SPRITE_GRAPHICS_ID_CHAT_BIG, 140, 50, 1, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+
+	GFX_LoadSpriteGraphicsRLE("SMENU.DAT", "BTNNEW.PCX", SPRITE_GRAPHICS_ID_BTN_NEW, 63, 14, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("SMENU.DAT", "BTNOPT.PCX", SPRITE_GRAPHICS_ID_BTN_OPT, 63, 14, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("SMENU.DAT", "BTNPASS.PCX", SPRITE_GRAPHICS_ID_BTN_PASS, 63, 14, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("SMENU.DAT", "BTNCRED.PCX", SPRITE_GRAPHICS_ID_BTN_CREDITS, 63, 14, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("SMENU.DAT", "BTNEXIT.PCX", SPRITE_GRAPHICS_ID_BTN_EXIT, 63, 14, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("SMENU.DAT", "BTNBACK.PCX", SPRITE_GRAPHICS_ID_BTN_BACK, 31, 15, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("SMENU.DAT", "BTNOK.PCX", SPRITE_GRAPHICS_ID_BTN_OK, 31, 15, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("SMENU.DAT", "BTNRIGHT.PCX", SPRITE_GRAPHICS_ID_BTN_RIGHT, 15, 15, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("SMENU.DAT", "BTNLEFT.PCX", SPRITE_GRAPHICS_ID_BTN_LEFT, 15, 15, 3, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+
+	GFX_LoadSpriteGraphicsRLE("SMENU.DAT", "POPTIONS.PCX", SPRITE_GRAPHICS_ID_PNL_OPTIONS, 62, 130, 1, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("SMENU.DAT", "PPASS.PCX", SPRITE_GRAPHICS_ID_PNL_PASS, 120, 41, 1, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("SMENU.DAT", "MTITLE.PCX", SPRITE_GRAPHICS_ID_TITLE, 243, 41, 1, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
+	GFX_LoadSpriteGraphicsRLE("SMENU.DAT", "MCHAT.PCX", SPRITE_GRAPHICS_ID_MCHAT, 136, 88, 1, SPRITE_TRANSP_COLOR, SPRITE_HIT_COLOR, CT_SPRITE);
 }
 
 void set_video_mode(int mode) {
@@ -11762,7 +12469,8 @@ int main(int argc, char **argv) {
 	//Intro();
 
 	engine.exit_game = false;
-	engine.scene = 2;
+
+	engine.scene = 0;
 	engine.room = 1;
 
 	MOUSE_InitCursorSprite(SPRITE_GRAPHICS_ID_CURSOR);// Initialize mouse cursor
@@ -11770,43 +12478,38 @@ int main(int argc, char **argv) {
 	while (!engine.exit_game) {
 		switch (engine.scene) {
 			case 0:// main menu
+				engine.exit_menu = false;
 				Menu();
 				break;
-			case 1:// scene 1 :: Mission 1 :: The travel
+			case 1:// scene 1 :: Mission 1 :: The travel. Pass: TRAVEL
 				Scene1_Intro();
 				Scene1_Loop();
-				engine.scene = 2;
-				if (!actor.status_dead) Scene1_Outro();
+				if (!actor.status_dead && !engine.exit_menu) Scene1_Outro();
 				break;
-			case 2:// scene 2 :: Mission 2 :: Down to the hell
+			case 2:// scene 2 :: Mission 2 :: Down to the hell. Pass: GODOWN
 				Scene2_Intro();
 				Scene2_Loop();
-				engine.scene = 3;
-				if (!actor.status_dead) Scene2_Outro();
+				if (!actor.status_dead && !engine.exit_menu) Scene2_Outro();
 				break;
-			case 3:// scene 3 :: Mission 3 :: Behind enemy lines
+			case 3:// scene 3 :: Mission 3 :: Behind enemy lines. Pass: INSIDE
 				Scene3_Intro();
 				Scene3_Loop();
-				engine.scene = 4;
-				if (!actor.status_dead) Scene3_Outro();
+				if (!actor.status_dead && !engine.exit_menu) Scene3_Outro();
 				break;
 			case 4:// scene 4 :: Mission 4 :: Praise for mercy
 				Scene4_Intro();
 				Scene4_Loop();
-				engine.scene = 5;
-				if (!actor.status_dead) Scene4_Outro();
+				if (!actor.status_dead && !engine.exit_menu) Scene4_Outro();
 				break;
 			case 5:// scene 5 :: Mission 5 :: Hit and run
 				Scene5_Intro();
 				Scene5_Loop();
-				engine.scene = 6;
-				if (!actor.status_dead) Scene5_Outro();
+				if (!actor.status_dead && !engine.exit_menu) Scene5_Outro();
 				break;
 			case 6:// scene 6 :: Mission 6 :: Bullet hell
 				Scene6_Intro();
 				Scene6_Loop();
-				engine.scene = 7;
-				if (!actor.status_dead) Scene6_Outro();
+				if (!actor.status_dead && !engine.exit_menu) Scene6_Outro();
 				break;
 			case 7:// scene 7 :: End scene
 				Scene7_EndCredits();

@@ -11,7 +11,9 @@ byte boss_counter;
 
 static byte boss_hold_on_pattern[6] = {BOSS_PATTERN_HOLD_ON, BOSS_PATTERN_HOLD_ON, BOSS_PATTERN_HOLD_ON, BOSS_PATTERN_HOLD_ON, BOSS_PATTERN_HOLD_ON, BOSS_PATTERN_HOLD_ON};
 static byte boss_chase_pattern[6] = {BOSS_PATTERN_WALK_FORWARD, BOSS_PATTERN_WALK_FORWARD, BOSS_PATTERN_WALK_FORWARD, BOSS_PATTERN_WALK_ARROUND, BOSS_PATTERN_WALK_FORWARD, BOSS_PATTERN_WALK_FORWARD};
-static byte boss_attack_pattern[6] = {BOSS_PATTERN_ATTACK, BOSS_PATTERN_HOLD_ON, BOSS_PATTERN_ATTACK, BOSS_PATTERN_HOLD_ON, BOSS_PATTERN_ATTACK, BOSS_PATTERN_HOLD_ON};
+static byte boss_attack_pattern[6] = {BOSS_PATTERN_ATTACK, BOSS_PATTERN_ATTACK, BOSS_PATTERN_HOLD_ON, BOSS_PATTERN_ATTACK, BOSS_PATTERN_ATTACK, BOSS_PATTERN_HOLD_ON};
+static byte boss_rampage_pattern[6] = {BOSS_PATTERN_ATTACK, BOSS_PATTERN_ATTACK, BOSS_PATTERN_WALK_FORWARD, BOSS_PATTERN_ATTACK, BOSS_PATTERN_ATTACK, BOSS_PATTERN_WALK_FORWARD};
+static byte boss_static_pattern[6] = {BOSS_PATTERN_HOLD_ON, BOSS_PATTERN_HOLD_ON, BOSS_PATTERN_HOLD_ON, BOSS_PATTERN_HOLD_ON, BOSS_PATTERN_HOLD_ON, BOSS_PATTERN_HOLD_ON};
 
 void BOSS_LoadAnimations(const char *dat_name, int total_anims) {
 	GFX_LoadAnimations(dat_name, "FEET.ANI", boss.feet_animation, total_anims);     // feet animations
@@ -41,6 +43,10 @@ void BOSS_Init(void) {
 	boss.is_loaded = false;
 	boss.sprite_num = -1;
 	BOSS_ResetAnimations();
+}
+
+void BOSS_SetBehavior(int behavior) {
+	boss.status_behavior = behavior;
 }
 
 /** BOSS :: Initializes boss data
@@ -763,7 +769,7 @@ void BOSS_Update(void) {
 
 		// Calculate boss middle point
 		boss.middle_x = GFX_GetSpriteScreenPosX(boss.sprite_num) + (boss.width_px >> 1);
-		boss.middle_y = GFX_GetSpriteScreenPosY(boss.sprite_num) + (boss.height_px) + 32;
+		boss.middle_y = GFX_GetSpriteScreenPosY(boss.sprite_num) + (boss.height_px) + 16;
 
 		// Update boss position on screen
 		GFX_SetSpritePosition(boss.sprite_num, boss.pos_x - camera.pos_x, boss.pos_y - camera.pos_y);
@@ -782,6 +788,10 @@ void BOSS_Update(void) {
 			// - updates boss.can_see_actor
 			// - updates boss.in_shoot_range
 			BOSS_UpdateRangeStatus();
+			if (boss.life < 1000) {
+				boss.status_behavior = BOSS_STATUS_RAMPAGE;
+				boss.speed = BOSS_RAMPAGE_SPEED;
+			}
 
 			// Set current behavior and pattern
 			switch (boss.status_behavior) {
@@ -815,6 +825,10 @@ void BOSS_Update(void) {
 						boss.pattern_step = 0;
 					}
 					break;
+				case BOSS_STATUS_STATIC:
+					break;
+				case BOSS_STATUS_RAMPAGE:
+					break;
 				default:
 					break;
 			}
@@ -837,6 +851,12 @@ void BOSS_Update(void) {
 					case BOSS_STATUS_LONG_ATTACK:
 					case BOSS_STATUS_SHORT_ATTACK:
 						boss.current_pattern = boss_attack_pattern[boss.pattern_step];
+						break;
+					case BOSS_STATUS_RAMPAGE:
+						boss.current_pattern = boss_rampage_pattern[boss.pattern_step];
+						break;
+					case BOSS_STATUS_STATIC:
+						boss.current_pattern = boss_static_pattern[boss.pattern_step];
 						break;
 					default:
 						boss.current_pattern = boss_hold_on_pattern[boss.pattern_step];
@@ -943,6 +963,18 @@ void BOSS_Update(void) {
 						boss.shoot_y = actor.pos_y + (actor.height_px >> 1);
 						BULLET_InitBullet(boss.gun.bullet_graphics_id, ENTITY_ID_ENEMY_BULLET, 16, 16, boss.pos_x + (boss.width_px >> 1), boss.pos_y + (boss.height_px >> 1), boss.shoot_x, boss.shoot_y, boss.shoot_accuracy, boss.gun.max_distance, boss.gun.bullet_speed, boss.gun.damage);
 						boss.action_step++;
+
+						// Rampage add 2 more bullets
+						if (boss.status_behavior == BOSS_STATUS_RAMPAGE) {
+							boss.shoot_x = actor.pos_x + (actor.width_px >> 1) + 5;
+							boss.shoot_y = actor.pos_y + (actor.height_px >> 1) + 5;
+							BULLET_InitBullet(boss.gun.bullet_graphics_id, ENTITY_ID_ENEMY_BULLET, 16, 16, boss.pos_x + (boss.width_px >> 1), boss.pos_y + (boss.height_px >> 1), boss.shoot_x, boss.shoot_y, boss.shoot_accuracy, boss.gun.max_distance, boss.gun.bullet_speed, boss.gun.damage);
+							boss.shoot_x = actor.pos_x + (actor.width_px >> 1) - 5;
+							boss.shoot_y = actor.pos_y + (actor.height_px >> 1) + 5;
+							BULLET_InitBullet(boss.gun.bullet_graphics_id, ENTITY_ID_ENEMY_BULLET, 16, 16, boss.pos_x + (boss.width_px >> 1), boss.pos_y + (boss.height_px >> 1), boss.shoot_x, boss.shoot_y, boss.shoot_accuracy, boss.gun.max_distance, boss.gun.bullet_speed, boss.gun.damage);
+						}
+
+
 						break;
 					case 1:// animation end
 						if (GFX_IsSpriteAnimationEnded(boss.sprite_num, 0)) boss.action_step++;
@@ -1161,57 +1193,6 @@ void BOSS_Update(void) {
 				}
 			}
 
-			// Check hit by something
-			//  - sets "is_hit" property
-			if (!boss.action_dead) {// avoid double hit when is already hit
-
-				// Check for particles
-				/*for (j = 0; j < PARTICLE_MAX_PARTICLES; j++) {
-						if (particle[j].loaded) {
-							if (particle[j].pos_x + particle[j].colission_area.points[0][0] < boss.pos_x + boss.hit_area.points[1][0]
-
-								&& particle[j].pos_x + particle[j].colission_area.points[1][0] > boss.pos_x + boss.hit_area.points[0][0]
-
-								&& particle[j].pos_y + particle[j].colission_area.points[0][1] < boss.pos_y + boss.hit_area.points[2][1]
-
-								&& particle[j].pos_y + particle[j].colission_area.points[2][1] > boss.pos_y + boss.hit_area.points[0][1]) {
-								boss.hit_by = gfx_sprite_stack[particle[j].sprite_num].id;
-								boss.is_hit = true;
-								boss.damage += particle[j].damage;
-
-								boss.hit_vx_FP = particle[j].vx_FP;
-								boss.hit_vy_FP = particle[j].vy_FP;
-							}
-						}
-					}
-
-					// Check for bullets
-					for (j = 0; j < BULLET_MAX_BULLETS; j++) {
-						if (bullet[j].loaded) {
-							switch (gfx_sprite_stack[bullet[j].sprite_num].entity_id) {
-								case ENTITY_ID_ACTOR_BULLET:
-								case ENTITY_ID_ACTOR_PUNCH:
-								case ENTITY_ID_ACTOR_KICK:
-									if (bullet[j].pos_x + bullet[j].colission_area.points[0][0] < boss.pos_x + boss.hit_area.points[1][0]
-
-										&& bullet[j].pos_x + bullet[j].colission_area.points[1][0] > boss.pos_x + boss.hit_area.points[0][0]
-
-										&& bullet[j].pos_y + bullet[j].colission_area.points[0][1] < boss.pos_y + boss.hit_area.points[2][1]
-
-										&& bullet[j].pos_y + bullet[j].colission_area.points[2][1] > boss.pos_y + boss.hit_area.points[0][1]) {
-										boss.hit_by = gfx_sprite_stack[bullet[j].sprite_num].id;
-										boss.is_hit = true;
-										boss.damage += bullet[j].damage;
-
-										boss.hit_vx_FP = bullet[j].vx_FP;
-										boss.hit_vy_FP = bullet[j].vy_FP;
-									}
-									break;
-							}
-						}
-					}*/
-			}
-
 			// Checks if is hit but still alive
 			// - sets action hit or dead
 			if (boss.is_hit && !boss.action_dead) {
@@ -1239,7 +1220,7 @@ void BOSS_Update(void) {
 						boss.action_hit = true;
 					}
 				}
-				GFX_SetPanelGraphics(&gfx_enemy_status_panel, boss.gfx_portait, SPRITE_GRAPHICS_ID_LIFEBAR, SPRITE_GRAPHICS_ID_GUN0);
+				GFX_SetPanelGraphics(&gfx_enemy_status_panel, boss.gfx_portait, SPRITE_GRAPHICS_ID_LIFEBAR, SPRITE_GRAPHICS_ID_GUN0, SPRITE_GRAPHICS_ID_EMPTY);
 				GFX_UpdatePanel(&gfx_enemy_status_panel, boss.life, boss.life + boss.damage, boss.max_life, 1);
 				GFX_ShowPanel(&gfx_enemy_status_panel, true, 200);
 			}
@@ -1270,8 +1251,8 @@ void BOSS_Update(void) {
 						boss.action_step++;
 						break;
 					case 2:
-						EFFECT_LoadEffect(ENTITY_ID_BLOOD, SPRITE_GRAPHICS_ID_BLOOD, boss.pos_x + (rand() % 32), boss.pos_y + (rand() % 32), true, 0, false, false, 5);
-						EFFECT_LoadEffect(ENTITY_ID_BLOOD, SPRITE_GRAPHICS_ID_BLOOD, boss.pos_x + (rand() % 32), boss.pos_y + (rand() % 32), true, 0, false, false, 5);
+						EFFECT_LoadEffect(ENTITY_ID_BLOOD, SPRITE_GRAPHICS_ID_BLOOD, boss.pos_x + boss.width_px + (rand() % 32), boss.pos_y + boss.height_px + (rand() % 32), true, 0, false, false, 5);
+						EFFECT_LoadEffect(ENTITY_ID_BLOOD, SPRITE_GRAPHICS_ID_BLOOD, boss.pos_x - (rand() % 32), boss.pos_y + boss.height_px + (rand() % 32), true, 0, false, false, 5);
 						boss.action_step++;
 						break;
 					case 3:// Move back
@@ -1285,7 +1266,7 @@ void BOSS_Update(void) {
 					case 4:// finish action
 						if (GFX_IsSpriteAnimationEnded(boss.sprite_num, 0)) boss.action_hit = false;
 						boss.reaction_counter++;
-						if (boss.reaction_counter > 10) {
+						if (boss.reaction_counter > boss.reaction_time) {
 							boss.action_hit = false;
 							boss.reaction_counter = 0;
 						}

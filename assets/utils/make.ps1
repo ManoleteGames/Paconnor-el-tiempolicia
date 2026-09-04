@@ -138,7 +138,7 @@ Set-Location -Path "$parentPath\sprites\actor"
 python3 "$PSScriptRoot/makedat.py" "ACTOR.DAT" "FEET.PCX" "BODY.PCX" "HEAD.PCX" "LARM1.PCX" "RARM1.PCX" "RARM2.PCX" "RARM3.PCX" "RARM4.PCX" "RARM5.PCX" "FEET.ANI" "BODY.ANI" "HEAD.ANI" "LARM.ANI" "RARM.ANI" "FACE.PCX" "PORTAIT.PCX" "FEET.ANI" "BODY.ANI" "HEAD.ANI" "RARM.ANI" "LARM.ANI"
 Write-Host Generating bullet sprites DAT file....
 Set-Location -Path "$parentPath\sprites\bullets"
-python3 "$PSScriptRoot/makedat.py" "BULLETS.DAT" "BULLET1.PCX" "BULLET2.PCX" "PUKE.PCX" "PUNCH1.PCX" "GRENADE1.PCX" "GRENADES.PCX"
+python3 "$PSScriptRoot/makedat.py" "BULLETS.DAT" "BULLET1.PCX" "BULLET2.PCX" "BULLET3.PCX" "PUKE.PCX" "WEB.PCX" "WEBS.PCX" "PUNCH1.PCX" "GRENADE1.PCX" "GRENADES.PCX"
 
 Write-Host ////////////////////////////// ENEMIES SPRITES /////////////////////////////////
 Write-Host Generating enemy 1 sprites DAT file....
@@ -165,6 +165,9 @@ python3 "$PSScriptRoot/makedat.py" "ENEMY7.DAT" "FACE.PCX" "PORTAIT.PCX" "FEET.P
 Write-Host Generating enemy 8 sprites DAT file....
 Set-Location -Path "$parentPath\sprites\enemies\enemy8"
 python3 "$PSScriptRoot/makedat.py" "ENEMY8.DAT" "FACE.PCX" "PORTAIT.PCX" "FEET.PCX" "BODY.PCX" "HEAD.PCX" "LARM.PCX" "RARM.PCX" "FEET.ANI" "BODY.ANI" "HEAD.ANI" "RARM.ANI" "LARM.ANI" "ENEMY.CFG"
+Write-Host Generating enemy 9 sprites DAT file....
+Set-Location -Path "$parentPath\sprites\enemies\enemy9"
+python3 "$PSScriptRoot/makedat.py" "ENEMY9.DAT" "FACE.PCX" "PORTAIT.PCX" "FEET.PCX" "BODY.PCX" "HEAD.PCX" "LARM.PCX" "RARM.PCX" "FEET.ANI" "BODY.ANI" "HEAD.ANI" "RARM.ANI" "LARM.ANI" "ENEMY.CFG"
 
 Write-Host ////////////////////////////// BOSS SPRITES /////////////////////////////////
 Write-Host Generating boss1 sprites DAT file....
@@ -220,13 +223,13 @@ Set-Location -Path "$parentPath\sprites\misc"
 python3 "$PSScriptRoot/makedat.py" "MISC.DAT" "IWORMS.PCX" "CHAT.PCX" "CHAT_BIG.PCX" "FUCK.PCX" "EMPTY.PCX"
 Write-Host Generating effects sprites DAT file....
 Set-Location -Path "$parentPath\sprites\effects"
-python3 "$PSScriptRoot/makedat.py" "EFFECTS.DAT" "FIRE1.PCX" "ELECTRIC1.PCX" "SPARK.PCX" "PUNCHL.PCX" "PISTOLL.PCX" "SHOTGUNL.PCX" "UZIL.PCX" "SNIPPERL.PCX" "BLOOD.PCX" "EXPLOSION.PCX" "TIMER.PCX" "CLICK.PCX" "RAIN.PCX"
+python3 "$PSScriptRoot/makedat.py" "EFFECTS.DAT" "FIRE1.PCX" "ELECTRIC1.PCX" "WATER1.PCX" "SPARK.PCX" "PUNCHL.PCX" "PISTOLL.PCX" "SHOTGUNL.PCX" "UZIL.PCX" "SNIPPERL.PCX" "BLOOD.PCX" "EXPLOSION.PCX" "TIMER.PCX" "CLICK.PCX" "RAIN.PCX"
 Write-Host Generating panel sprites DAT file....
 Set-Location -Path "$parentPath\sprites\panel"
 python3 "$PSScriptRoot/makedat.py" "PANEL.DAT" "LIFEBAR.PCX" "CHAT.PCX" "GUN00.PCX" "GUN01.PCX" "GUN02.PCX" "GUN03.PCX" "GUN04.PCX" "GUN05.PCX" "GRENADE.PCX"
 Write-Host Generating items sprites DAT file....
 Set-Location -Path "$parentPath\sprites\items"
-python3 "$PSScriptRoot/makedat.py" "ITEMS.DAT" "MEDIKIT.PCX" "AMMO1.PCX" "AMMO2.PCX" "AMMO3.PCX" "AMMO4.PCX" "GRENADE.PCX" "KEYRED.PCX" "KEYBLUE.PCX" "KEYYELLOW.PCX"
+python3 "$PSScriptRoot/makedat.py" "ITEMS.DAT" "MEDIKIT.PCX" "DOCU.PCX" "AMMO1.PCX" "AMMO2.PCX" "AMMO3.PCX" "AMMO4.PCX" "GRENADE.PCX" "KEYRED.PCX" "KEYBLUE.PCX" "KEYYELLOW.PCX" "KEYGREEN.PCX"
 Write-Host Generating button sprites DAT file....
 Set-Location -Path "$parentPath\sprites\menu"
 python3 "$PSScriptRoot/makedat.py" "SMENU.DAT" "BTNNEW.PCX" "BTNPASS.PCX" "BTNOPT.PCX" "BTNCRED.PCX" "BTNEXIT.PCX" "BTNBACK.PCX" "BTNOK.PCX" "BTNLEFT.PCX" "BTNRIGHT.PCX" "MCHAT.PCX" "POPTIONS.PCX" "PPASS.PCX" "MTITLE.PCX"

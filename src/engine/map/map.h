@@ -34,6 +34,11 @@
 #define MAP_ANIMATION_BREAKABLE 1
 #define MAP_ANIMATION_SWAPABLE 2
 #define MAP_ANIMATION_ANIMATED 3
+#define MAP_ANIMATION_BREAKABLE_ELECTRIC 4
+#define MAP_ANIMATION_BREAKABLE_FIRE 5
+#define MAP_ANIMATION_BREAKABLE_WATER 6
+
+#define MAP_MASK_NONE 0
 
 #define MAP_ANIMATION_SPEED 15
 
@@ -47,6 +52,7 @@ void MAP_Update(void);
 void MAP_Update_Paralax(void);
 int MAP_GetTileNumber(int x_px, int y_px);
 int MAP_CheckColissionTile(int x_px, int y_px);
+int MAP_CheckAnimationTile(int x_px, int y_px);
 void MAP_DrawForegroundTile(int x, int y, int num_tile);
 void MAP_DrawToVideoBuffer(int x_px, int y_px, int width_px, int height_px, byte *src_buffer, byte *video_buffer);
 int MAP_CheckHotspotTile(int x_px, int y_px);

@@ -470,7 +470,7 @@ void Update(int player_follow) {
 
 	// Update
 	MOUSE_Update(actor.mode_combat, ui.freeze);
-	ACTOR_Update();
+	if (!ui.freeze) ACTOR_Update();
 	if (!ui.freeze) GRENADE_Update();
 	if (!ui.freeze) BULLET_Update();
 	if (!ui.freeze) OBJECT_UpdateObjects();

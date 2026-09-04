@@ -42,7 +42,7 @@ int GRENADE_InitGrenade(int graphics_id, int entity_id, int pos_x, int pos_y, in
 	grenade[number].pos_y = pos_y;
 	grenade[number].pos_z = 1;
 	grenade[number].speed = 3;
-	grenade[number].damage = 30;
+	grenade[number].damage = GRENADE_DAMAGE;
 	grenade[number].graphics_id = graphics_id;
 
 	sprite_slot = GFX_FindEmptySpriteSlot();
@@ -209,7 +209,7 @@ int GRENADE_CheckGrenadeColission(int number) {
 		case 3:// breakable
 		case 4:// ..
 		case 5:///
-			if (grenade[number].pos_z < 5) { return 3; }
+			if (grenade[number].pos_z < 5) { return 1; }
 			break;
 		default:
 			break;
@@ -241,7 +241,7 @@ int GRENADE_CheckGrenadeColission(int number) {
 		case 3:// breakable
 		case 4:// ..
 		case 5:///
-			if (grenade[number].pos_z < 5) { return 3; }
+			if (grenade[number].pos_z < 5) { return 2; }
 			break;
 		default:
 			break;
@@ -257,7 +257,7 @@ int GRENADE_CheckGrenadeColission(int number) {
 		case 3:// breakable
 		case 4:// ..
 		case 5:///
-			if (grenade[number].pos_z < 5) { return 3; }
+			if (grenade[number].pos_z < 5) { return 1; }
 			break;
 		default:
 			break;
@@ -273,7 +273,7 @@ int GRENADE_CheckGrenadeColission(int number) {
 		case 3:// breakable
 		case 4:// ..
 		case 5:///
-			if (grenade[number].pos_z < 5) { return 3; }
+			if (grenade[number].pos_z < 5) { return 4; }
 			break;
 		default:
 			break;
@@ -289,7 +289,7 @@ int GRENADE_CheckGrenadeColission(int number) {
 		case 3:// breakable
 		case 4:// ..
 		case 5:///
-			if (grenade[number].pos_z < 5) { return 3; }
+			if (grenade[number].pos_z < 5) { return 2; }
 			break;
 		default:
 			break;
@@ -306,7 +306,7 @@ int GRENADE_CheckGrenadeColission(int number) {
 		case 3:// breakable
 		case 4:// ..
 		case 5:///
-			if (grenade[number].pos_z < 5) { return 3; }
+			if (grenade[number].pos_z < 5) { return 4; }
 			break;
 		default:
 			break;
@@ -532,7 +532,7 @@ void GRENADE_Update(void) {
 				grenade[i].current_step = 0;
 
 				if (grenade[i].pos_z < 5) {// Explode on the floor
-					PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_EXPLOSION1, ENTITY_ID_EXPLOSION, grenade[i].pos_x - 16, grenade[i].pos_y - grenade[i].pos_z - 16, grenade[i].pos_x - 16, grenade[i].pos_y - grenade[i].pos_z - 16, 3, 50, 20, 16);
+					PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_EXPLOSION1, ENTITY_ID_EXPLOSION, grenade[i].pos_x - 16, grenade[i].pos_y - grenade[i].pos_z - 16, grenade[i].pos_x - 16, grenade[i].pos_y - grenade[i].pos_z - 16, 3, grenade[i].damage, 20, 16);
 				} else {// Explode on the air
 					PARTICLE_InitParticle(SPRITE_GRAPHICS_ID_EXPLOSION1, ENTITY_ID_EXPLOSION, grenade[i].pos_x - 16, grenade[i].pos_y - grenade[i].pos_z - 16, grenade[i].pos_x - 16, grenade[i].pos_y - grenade[i].pos_z - 16, 3, 0, 0, 0);
 				}

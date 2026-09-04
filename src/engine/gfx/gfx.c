@@ -245,14 +245,15 @@ void GFX_SetSpriteCursorGraphic(int graphics_id, int offset_x, int offset_y) {
 	gfx_sprite_cursor.gfx[0].loaded = true;
 }
 
-void GFX_SetPanelGraphics(StatusPanel *panel, int portait_graphics_id, int lifebar_graphics_id, int gun_graphics_id) {
+void GFX_SetPanelGraphics(StatusPanel *panel, int portait_graphics_id, int lifebar_graphics_id, int gun_graphics_id, int key_graphics_id) {
 	panel->portait_graphics_id = portait_graphics_id;
 	panel->lifebar_graphics_id = lifebar_graphics_id;
 	panel->portait_frame = 0;
 	panel->gun_graphics_id = gun_graphics_id;
+	panel->key_graphics_id = key_graphics_id;
 }
 
-void GFX_SetPanelPosition(StatusPanel *panel, int x, int y, int portait_x, int portait_y, int lifebar_x, int lifebar_y, int gun_x, int gun_y, int grenade_x, int grenade_y) {
+void GFX_SetPanelPosition(StatusPanel *panel, int x, int y, int portait_x, int portait_y, int lifebar_x, int lifebar_y, int gun_x, int gun_y, int grenade_x, int grenade_y, int key_x, int key_y) {
 
 	panel->pos_x = x;
 	panel->pos_y = y;
@@ -265,6 +266,8 @@ void GFX_SetPanelPosition(StatusPanel *panel, int x, int y, int portait_x, int p
 	panel->gun_y = gun_y;
 	panel->grenade_x = grenade_x;
 	panel->grenade_y = grenade_y;
+	panel->key_x = key_x;
+	panel->key_y = key_y;
 }
 
 void GFX_ShowPanel(StatusPanel *panel, bool show, int timeout) {
@@ -282,13 +285,15 @@ void GFX_UpdatePanel(StatusPanel *panel, int life, int old_life, int max_life, i
 	panel->portait_frame = portait_frame - 1;
 }
 
-void GFX_UpdatePanelGun(StatusPanel *panel, int gun_graphics_id, int gun_type, int total_bullets, int bullets_number, int grenade_graphics_id, int grenades_number) {
+void GFX_UpdatePanelGun(StatusPanel *panel, int gun_graphics_id, int gun_type, int total_bullets, int bullets_number, int grenade_graphics_id, int grenades_number, int key_type, int key_graphics_id) {
 	panel->gun_type = gun_type;
 	panel->gun_graphics_id = gun_graphics_id;
 	panel->bullets_number = bullets_number;
 	panel->total_bullets = total_bullets;
 	panel->grenade_graphics_id = grenade_graphics_id;
 	panel->grenades_number = grenades_number;
+	panel->key_type = key_type;
+	panel->key_graphics_id = key_graphics_id;
 }
 
 void GFX_SetPanelPortait(StatusPanel *panel, int portait_frame) {

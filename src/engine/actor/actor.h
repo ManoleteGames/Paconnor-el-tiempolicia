@@ -220,6 +220,8 @@ void ACTOR_SetPosition(int x, int y, int facing);
 void ACTOR_UnloadActor(void);
 void ACTOR_SetFullWalkAnimation(int facing);
 void ACTOR_SetFreeze(bool freeze);
+void ACTOR_LeaveKey(void);
+void ACTOR_Reload(void);
 
 
 #endif

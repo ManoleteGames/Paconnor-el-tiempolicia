@@ -782,12 +782,12 @@ void FILE_LoadTextFile(const char *dat_name, const char *asset_name, TextFile *t
 			fgets(tf->line[line_readed], 40, f);
 		}
 
-		if (line_readed == 355) {// EOF
+		if (line_readed == 356) {// EOF
 			eof = true;
 		}
 
 		line_counter++;
-		if (line_counter == 355) {// EOF
+		if (line_counter == 356) {// EOF
 			eof = true;
 		}
 	}

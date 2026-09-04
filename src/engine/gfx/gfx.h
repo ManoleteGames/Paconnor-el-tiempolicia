@@ -51,6 +51,7 @@
 #define SPRITE_GRAPHICS_ID_ACTOR_SNIPPER 24
 
 // Items graphics
+#define SPRITE_GRAPHICS_ID_ITEM_DOCU 29
 #define SPRITE_GRAPHICS_ID_ITEM_MEDIKIT 30
 #define SPRITE_GRAPHICS_ID_ITEM_AMMO1 31
 #define SPRITE_GRAPHICS_ID_ITEM_AMMO2 32
@@ -60,6 +61,7 @@
 #define SPRITE_GRAPHICS_ID_ITEM_RED_KEY 36
 #define SPRITE_GRAPHICS_ID_ITEM_BLUE_KEY 37
 #define SPRITE_GRAPHICS_ID_ITEM_YELLOW_KEY 38
+#define SPRITE_GRAPHICS_ID_ITEM_GREEN_KEY 39
 
 // Ammo graphics
 #define SPRITE_GRAPHICS_ID_BULLET1 40
@@ -67,12 +69,15 @@
 #define SPRITE_GRAPHICS_ID_BULLET3 42
 #define SPRITE_GRAPHICS_ID_BULLET4 43
 #define SPRITE_GRAPHICS_ID_BULLET5 44
-#define SPRITE_GRAPHICS_ID_GRENADE1 45
-#define SPRITE_GRAPHICS_ID_GRENADE2 46
-#define SPRITE_GRAPHICS_ID_GRENADE_SHADOW 47
-#define SPRITE_GRAPHICS_ID_MISILE1 48
-#define SPRITE_GRAPHICS_ID_MISILE2 49
-#define SPRITE_GRAPHICS_ID_MISILE_SHADOW 50
+#define SPRITE_GRAPHICS_ID_PUKE 45
+#define SPRITE_GRAPHICS_ID_WEB 46
+#define SPRITE_GRAPHICS_ID_WEBS 47
+#define SPRITE_GRAPHICS_ID_GRENADE1 48
+#define SPRITE_GRAPHICS_ID_GRENADE2 49
+#define SPRITE_GRAPHICS_ID_GRENADE_SHADOW 50
+#define SPRITE_GRAPHICS_ID_MISILE1 51
+#define SPRITE_GRAPHICS_ID_MISILE2 52
+#define SPRITE_GRAPHICS_ID_MISILE_SHADOW 53
 
 // Object graphics
 #define SPRITE_GRAPHICS_ID_OBJECT1 60
@@ -101,6 +106,7 @@
 #define SPRITE_GRAPHICS_ID_SNIPPER_EFFECT 81
 #define SPRITE_GRAPHICS_ID_SPARK_EFFECT 82
 #define SPRITE_GRAPHICS_ID_RAIN_EFFECT 83
+#define SPRITE_GRAPHICS_ID_WATER1 84
 
 // Panel graphics
 #define SPRITE_GRAPHICS_ID_LIFEBAR 85
@@ -237,9 +243,9 @@ void GFX_LoadFont(const char *filename, const char *subfile, int size, word char
 void GFX_LoadPalette(const char *dat_file, const char *asset_file, int size);
 void GFX_UpdateSprites(void);
 void GFX_UpdateCursorSprite(void);
-void GFX_SetPanelGraphics(StatusPanel *panel, int portait_graphics_id, int lifebar_graphics_id, int gun_graphics_id);
-void GFX_SetPanelPosition(StatusPanel *panel, int x, int y, int portait_x, int portait_y, int lifebar_x, int lifebar_y, int gun_x, int gun_y, int grenade_x, int grenade_y);
-void GFX_UpdatePanelGun(StatusPanel *panel, int gun_graphics_id, int gun_type, int total_bullets, int bullets_number, int grenade_graphics_id, int grenades_number);
+void GFX_SetPanelGraphics(StatusPanel *panel, int portait_graphics_id, int lifebar_graphics_id, int gun_graphics_id, int key_graphics_id);
+void GFX_SetPanelPosition(StatusPanel *panel, int x, int y, int portait_x, int portait_y, int lifebar_x, int lifebar_y, int gun_x, int gun_y, int grenade_x, int grenade_y, int key_x, int key_y);
+void GFX_UpdatePanelGun(StatusPanel *panel, int gun_graphics_id, int gun_type, int total_bullets, int bullets_number, int grenade_graphics_id, int grenades_number, int key_type, int key_graphics_id);
 void GFX_ShowPanel(StatusPanel *panel, bool show, int timeout);
 void GFX_UpdatePanel(StatusPanel *panel, int life, int old_life, int max_life, int portait_frame);
 void GFX_SetPanelPortait(StatusPanel *panel, int portait_frame);

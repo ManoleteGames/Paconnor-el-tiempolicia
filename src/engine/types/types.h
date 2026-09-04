@@ -48,6 +48,7 @@ typedef struct {
 	bool sequence;
 	bool ingame;
 	bool exit_game;
+	bool exit_menu;
 	int scene;
 	int room;
 
@@ -152,6 +153,10 @@ typedef struct {
 	int lifebar_x, lifebar_y;
 	int current_life, old_life;
 	int life_speed, life_speed_counter;
+
+	int key_type;
+	int key_graphics_id;
+	int key_x, key_y;
 
 	int gun_type;
 	int gun_graphics_id;
@@ -688,6 +693,9 @@ typedef struct {
 
 	Gun gun;
 	int new_gun;
+
+	int key_entity_id;
+	int key_graphics_id;
 
 	SpriteAnimation feet_animation[150];
 	SpriteAnimation body_animation[150];

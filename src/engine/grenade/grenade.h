@@ -5,6 +5,7 @@
 
 #define GRENADE_MAX_GRENADES 16
 #define GRENADE_BLINK_COLOR 253
+#define GRENADE_DAMAGE 100
 
 void GRENADE_DrawColissionPixels(Grenade g);
 int GRENADE_InitGrenade(int graphics_id, int entity_id, int pos_x, int pos_y, int max_time, int max_distance);

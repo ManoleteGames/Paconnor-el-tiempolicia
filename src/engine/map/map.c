@@ -35,6 +35,10 @@ int MAP_CheckColissionTile(int x_px, int y_px) {
 	return map.layer[MAP_COLISSION_LAYER][MAP_GetTileNumber(x_px, y_px)];
 }
 
+int MAP_CheckAnimationTile(int x_px, int y_px) {
+	return map.layer[MAP_ANIM_LAYER][MAP_GetTileNumber(x_px, y_px)];
+}
+
 int MAP_CheckHotspotTile(int x_px, int y_px) {
 	return (map.layer[MAP_EVENT_HSPOT_LAYER][MAP_GetTileNumber(x_px, y_px)]) & 0xFF;
 }
@@ -171,6 +175,9 @@ void MAP_HideSwapableTile(int x_px, int y_px) {
 	// disable animation
 	map.layer[MAP_ANIM_LAYER][tile_number] = MAP_ANIMATION_NONE;
 
+	// disable mask
+	map.layer[MAP_MASK_LAYER][tile_number] = MAP_MASK_NONE;
+
 	// Redraw tile if it is on screen
 	if ((x_px > camera.pos_x) && (x_px < (camera.pos_x + camera.visible_width)) && (y_px > camera.pos_y) && (y_px < (camera.pos_y + camera.visible_height))) {
 
@@ -191,6 +198,11 @@ void MAP_HideSwapableTile(int x_px, int y_px) {
 		tile_data = map.layer[MAP_BACKGROUND_LAYER][tile_number];
 		tileset_index = tile_data << 8;
 		MAP_DrawToVideoBuffer(tile_x, tile_y, MAP_TILE_WIDTH, MAP_TILE_HEIGHT, &map.layer_tiles[MAP_BACKGROUND_LAYER].buffer[tileset_index], video.map_buffer[MAP_BACKGROUND_LAYER]);
+
+		// unmask tile
+		tile_data = map.layer[MAP_MASK_LAYER][tile_number];
+		tileset_index = tile_data << 8;
+		MAP_DrawToVideoBuffer(tile_x, tile_y, MAP_TILE_WIDTH, MAP_TILE_HEIGHT, &map.layer_tiles[MAP_MASK_LAYER].buffer[tileset_index], video.map_buffer[MAP_MASK_LAYER]);
 	}
 }
 
@@ -380,7 +392,10 @@ void MAP_DrawMapColumn(int logical_pos_x, int logical_pos_y, int tile_x, int til
 					tileset_index = tile_data << 8;
 					MAP_DrawToVideoBuffer(logical_x << MAP_TILE_WIDTH_BASE2, logical_y << MAP_TILE_HEIGHT_BASE2, MAP_TILE_WIDTH, MAP_TILE_HEIGHT, &map.layer_tiles[MAP_BACKGROUND_LAYER].buffer[tileset_index], video.map_buffer[MAP_BACKGROUND_LAYER]);
 					break;
-				case MAP_ANIMATION_BREAKABLE:// Breakable. Draw foreground tile
+				case MAP_ANIMATION_BREAKABLE:         // Breakable. Draw foreground tile
+				case MAP_ANIMATION_BREAKABLE_ELECTRIC:// Breakable with electric effect. Draw foreground tile
+				case MAP_ANIMATION_BREAKABLE_FIRE:    // Breakable with fire effect. Draw foreground tile
+				case MAP_ANIMATION_BREAKABLE_WATER:   // Breakable with water effect. Draw foreground tile
 					tile_data = map.layer[MAP_FOREGROUND_LAYER][tile_number];
 					tileset_index = tile_data << 8;
 					MAP_DrawToVideoBuffer(logical_x << MAP_TILE_WIDTH_BASE2, logical_y << MAP_TILE_HEIGHT_BASE2, MAP_TILE_WIDTH, MAP_TILE_HEIGHT, &map.layer_tiles[MAP_FOREGROUND_LAYER].buffer[tileset_index], video.map_buffer[MAP_BACKGROUND_LAYER]);
@@ -485,7 +500,10 @@ void MAP_DrawMapRow(int logical_pos_x, int logical_pos_y, int tile_x, int tile_y
 					tileset_index = tile_data << 8;
 					MAP_DrawToVideoBuffer(logical_x << MAP_TILE_WIDTH_BASE2, logical_y << MAP_TILE_HEIGHT_BASE2, MAP_TILE_WIDTH, MAP_TILE_HEIGHT, &map.layer_tiles[MAP_BACKGROUND_LAYER].buffer[tileset_index], video.map_buffer[MAP_BACKGROUND_LAYER]);
 					break;
-				case MAP_ANIMATION_BREAKABLE:// Breakable. Draw foreground tile
+				case MAP_ANIMATION_BREAKABLE:         // Breakable. Draw foreground tile
+				case MAP_ANIMATION_BREAKABLE_ELECTRIC:// Breakable with electric effect. Draw foreground tile
+				case MAP_ANIMATION_BREAKABLE_FIRE:    // Breakable with fire effect. Draw foreground tile
+				case MAP_ANIMATION_BREAKABLE_WATER:   // Breakable with water effect. Draw foreground tile
 					tile_data = map.layer[MAP_FOREGROUND_LAYER][tile_number];
 					tileset_index = tile_data << 8;
 					MAP_DrawToVideoBuffer(logical_x << MAP_TILE_WIDTH_BASE2, logical_y << MAP_TILE_HEIGHT_BASE2, MAP_TILE_WIDTH, MAP_TILE_HEIGHT, &map.layer_tiles[MAP_FOREGROUND_LAYER].buffer[tileset_index], video.map_buffer[MAP_BACKGROUND_LAYER]);

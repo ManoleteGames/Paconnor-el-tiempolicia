@@ -42,9 +42,9 @@ void ACTOR_SetGun(int actor_spr_num, int type) {
 
 			actor.gun.max_accuracy = 4;
 			actor.gun.damage = 20;
-			actor.gun.recoil_time = 3;
+			actor.gun.recoil_time = 10;
 			actor.gun.max_distance = 150;
-			actor.gun.accurate = true;
+			actor.gun.accurate = false;
 			actor.gun.shoots = 1;
 			actor.gun.bullet_speed = 15;
 			break;
@@ -57,7 +57,7 @@ void ACTOR_SetGun(int actor_spr_num, int type) {
 
 			actor.gun.max_accuracy = 1;
 			actor.gun.damage = 40;
-			actor.gun.recoil_time = 5;
+			actor.gun.recoil_time = 10;
 			actor.gun.max_distance = 100;
 			actor.gun.accurate = false;
 			actor.gun.shoots = 3;
@@ -72,7 +72,7 @@ void ACTOR_SetGun(int actor_spr_num, int type) {
 
 			actor.gun.max_accuracy = 1;
 			actor.gun.damage = 20;
-			actor.gun.recoil_time = 0;
+			actor.gun.recoil_time = 2;
 			actor.gun.max_distance = 150;
 			actor.gun.accurate = false;
 			actor.gun.shoots = 1;
@@ -1319,6 +1319,9 @@ void ACTOR_Init(int x, int y, int feet_gfx_id, int body_gfx_id, int head_gfx_id,
 	actor.last_movement = 0;
 	actor.last_action = ACTOR_ACTION_STAND;
 
+	actor.key_entity_id = 0;
+	actor.key_graphics_id = SPRITE_GRAPHICS_ID_EMPTY;
+
 	actor.mode_combat = false;
 
 	sprite_slot = GFX_FindEmptySpriteSlot();
@@ -1418,6 +1421,7 @@ void ACTOR_DrawHitPixels(void) {
 void ACTOR_CheckItemColission(void) {
 	int i;
 	bool item_found;
+	int old_life;
 
 	int point1_x, point1_y;
 	int point2_x, point2_y;
@@ -1439,66 +1443,97 @@ void ACTOR_CheckItemColission(void) {
 		item_found = false;
 		if (item[i].is_loaded) {
 			if (gfx_sprite_stack[item[i].num_sprite].shown) {
-				//Point 1
-				if (point1_x < item[i].pos_x + item[i].colission_area.points[1][0]
 
-					&& point1_x > item[i].pos_x + item[i].colission_area.points[0][0]
-
-					&& point1_y > item[i].pos_y + item[i].colission_area.points[1][1]
-
-					&& point1_y < item[i].pos_y + item[i].colission_area.points[2][1]) {
-					item_found = true;
-				}
-
-				//Point 2
-				if (point2_x < item[i].pos_x + item[i].colission_area.points[1][0]
-
-					&& point2_x > item[i].pos_x + item[i].colission_area.points[0][0]
-
-					&& point2_y > item[i].pos_y + item[i].colission_area.points[1][1]
-
-					&& point2_y < item[i].pos_y + item[i].colission_area.points[2][1]) {
-					item_found = true;
-				}
-
-				//Point 3
-				if (point3_x < item[i].pos_x + item[i].colission_area.points[1][0]
-
-					&& point3_x > item[i].pos_x + item[i].colission_area.points[0][0]
-
-					&& point3_y > item[i].pos_y + item[i].colission_area.points[1][1]
-
-					&& point3_y < item[i].pos_y + item[i].colission_area.points[2][1]) {
-					item_found = true;
-				}
-
-				//Point 4
-				if (point4_x < item[i].pos_x + item[i].colission_area.points[1][0]
-
-					&& point4_x > item[i].pos_x + item[i].colission_area.points[0][0]
-
-					&& point4_y > item[i].pos_y + item[i].colission_area.points[1][1]
-
-					&& point4_y < item[i].pos_y + item[i].colission_area.points[2][1]) {
-					item_found = true;
-				}
+				item_found = true;
+				if (point1_x > item[i].pos_x + item[i].colission_area.points[1][0]) item_found = false;
+				if (point2_x < item[i].pos_x + item[i].colission_area.points[0][0]) item_found = false;
+				if (point1_y > item[i].pos_y + item[i].colission_area.points[2][1]) item_found = false;
+				if (point3_y < item[i].pos_y + item[i].colission_area.points[0][1]) item_found = false;
 
 				// found
 				if (item_found) {
 					switch (item[i].type) {
 						case ENTITY_ID_ITEM_MEDIKIT:
-							actor.life += 20;
+							old_life = actor.life;
+							actor.life += 100;
 							if (actor.life > actor.max_life) actor.life = actor.max_life;
 							AUDIO_PlaySound(AUDIO_GET_ITEM_EFFECT, 1);
+							ITEM_UnloadItem(i);
+							GFX_UpdatePanel(&gfx_actor_status_panel, actor.life, old_life, actor.max_life, 1);
 							break;
-						case ENTITY_ID_ITEM_AMMO3:
-							actor.gun.total_shotgun_bullets += 30;
+						case ENTITY_ID_ITEM_AMMO1:
+							actor.gun.total_pistol_bullets += 10;
+							if (actor.gun.total_pistol_bullets > 999) actor.gun.total_pistol_bullets = 999;
+							AUDIO_PlaySound(AUDIO_RELOAD_PISTOL_EFFECT, 1);
+							ITEM_UnloadItem(i);
+							break;
+						case ENTITY_ID_ITEM_AMMO2:
+							actor.gun.total_shotgun_bullets += 6;
 							if (actor.gun.total_shotgun_bullets > 999) actor.gun.total_shotgun_bullets = 999;
 							AUDIO_PlaySound(AUDIO_RELOAD_SHOOTGUN_EFFECT, 1);
+							ITEM_UnloadItem(i);
+							break;
+						case ENTITY_ID_ITEM_AMMO3:
+							actor.gun.total_uzi_bullets += 30;
+							if (actor.gun.total_uzi_bullets > 999) actor.gun.total_uzi_bullets = 999;
+							AUDIO_PlaySound(AUDIO_RELOAD_UZI_EFFECT, 1);
+							ITEM_UnloadItem(i);
+							break;
+						case ENTITY_ID_ITEM_AMMO4:
+							actor.gun.total_snipper_bullets += 3;
+							if (actor.gun.total_snipper_bullets > 999) actor.gun.total_snipper_bullets = 999;
+							AUDIO_PlaySound(AUDIO_RELOAD_SNIPPER_EFFECT, 1);
+							ITEM_UnloadItem(i);
+							break;
+						case ENTITY_ID_ITEM_GRENADE:
+							actor.current_grenades += 5;
+							if (actor.current_grenades > 99) actor.current_grenades = 99;
+							AUDIO_PlaySound(AUDIO_GET_ITEM_EFFECT, 1);
+							ITEM_UnloadItem(i);
+							break;
+						case ENTITY_ID_ITEM_KEYRED:
+							if (actor.key_entity_id == 0) {
+								actor.key_entity_id = ENTITY_ID_ITEM_KEYRED;
+								actor.key_graphics_id = SPRITE_GRAPHICS_ID_ITEM_RED_KEY;
+								AUDIO_PlaySound(AUDIO_GET_ITEM_EFFECT, 1);
+								ITEM_UnloadItem(i);
+							}
+							break;
+						case ENTITY_ID_ITEM_KEYGREEN:
+							if (actor.key_entity_id == 0) {
+								actor.key_entity_id = ENTITY_ID_ITEM_KEYGREEN;
+								actor.key_graphics_id = SPRITE_GRAPHICS_ID_ITEM_GREEN_KEY;
+								AUDIO_PlaySound(AUDIO_GET_ITEM_EFFECT, 1);
+								ITEM_UnloadItem(i);
+							}
+							break;
+						case ENTITY_ID_ITEM_KEYYELLOW:
+							if (actor.key_entity_id == 0) {
+								actor.key_entity_id = ENTITY_ID_ITEM_KEYYELLOW;
+								actor.key_graphics_id = SPRITE_GRAPHICS_ID_ITEM_YELLOW_KEY;
+								AUDIO_PlaySound(AUDIO_GET_ITEM_EFFECT, 1);
+								ITEM_UnloadItem(i);
+							}
+							break;
+						case ENTITY_ID_ITEM_KEYBLUE:
+							if (actor.key_entity_id == 0) {
+								actor.key_entity_id = ENTITY_ID_ITEM_KEYBLUE;
+								actor.key_graphics_id = SPRITE_GRAPHICS_ID_ITEM_BLUE_KEY;
+								AUDIO_PlaySound(AUDIO_GET_ITEM_EFFECT, 1);
+								ITEM_UnloadItem(i);
+							}
+							break;
+						case ENTITY_ID_ITEM_DOCU:
+							if (actor.key_entity_id == 0) {
+								actor.key_entity_id = ENTITY_ID_ITEM_DOCU;
+								actor.key_graphics_id = SPRITE_GRAPHICS_ID_EMPTY;
+								AUDIO_PlaySound(AUDIO_GET_ITEM_EFFECT, 1);
+								ITEM_UnloadItem(i);
+							}
+							break;
+						default:
 							break;
 					}
-					// Unload item
-					ITEM_UnloadItem(i);
 				}
 			}
 		}
@@ -2072,7 +2107,7 @@ void ACTOR_Update(void) {
 
 	// DEBUG
 	//ACTOR_DrawColissionPixels();
-	ACTOR_DrawHitPixels();
+	//ACTOR_DrawHitPixels();
 
 	// Calculate actor middle point
 	actor.middle_x = GFX_GetSpriteScreenPosX(actor.sprite_num) + (actor.width_px >> 1);
@@ -2359,42 +2394,236 @@ void ACTOR_Update(void) {
 				break;
 			case 3://combo x3
 				ACTOR_SetKickAnimation(actor.last_facing);
-				actor.action_step = 4;
+				actor.action_step = 8;
 				break;
-			case 4:
-				if (GFX_IsSpriteAnimationEnded(actor.sprite_num, 0)) {
+			case 4:// Punch x1 and x2. First frame
+				if (gfx_sprite_stack[actor.sprite_num].animation[0].current_frame == 1) {
 					switch (actor.last_facing) {
 						case 1:// facing right
-							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 12, 12, actor.pos_x + 30, actor.pos_y + 11, actor.pos_x + 31, actor.pos_y + 11, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x + 30, actor.pos_y + 11, actor.pos_x + 30, actor.pos_y + 11, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
 							break;
 						case 2:// facing left
-							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 12, 12, actor.pos_x - 9, actor.pos_y + 11, actor.pos_x - 10, actor.pos_y + 11, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x - 9, actor.pos_y + 11, actor.pos_x - 9, actor.pos_y + 11, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
 							break;
 						case 4:// facing down
-							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 12, 12, actor.pos_x + 5, actor.pos_y + 31, actor.pos_x + 5, actor.pos_y + 32, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x + 1, actor.pos_y + 31, actor.pos_x + 5, actor.pos_y + 31, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
 							break;
 						case 5:// facing down-right
-							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 12, 12, actor.pos_x + 23, actor.pos_y + 23, actor.pos_x + 24, actor.pos_y + 24, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x + 19, actor.pos_y + 27, actor.pos_x + 19, actor.pos_y + 27, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
 							break;
 						case 6:// facing down-left
-							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 12, 12, actor.pos_x - 7, actor.pos_y + 23, actor.pos_x - 8, actor.pos_y + 24, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x - 3, actor.pos_y + 23, actor.pos_x - 3, actor.pos_y + 23, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
 							break;
 						case 8:// facing up
-							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 12, 12, actor.pos_x + 5, actor.pos_y - 1, actor.pos_x + 5, actor.pos_y - 2, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x + 7, actor.pos_y - 1, actor.pos_x + 7, actor.pos_y - 1, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
 							break;
 						case 9:// facing up-right
-							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 12, 12, actor.pos_x + 27, actor.pos_y - 1, actor.pos_x + 28, actor.pos_y - 2, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x + 27, actor.pos_y - 1, actor.pos_x + 27, actor.pos_y - 1, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
 							break;
 						case 10:// facing up-left
-							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 12, 12, actor.pos_x - 7, actor.pos_y - 1, actor.pos_x - 8, actor.pos_y - 2, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x - 7, actor.pos_y - 1, actor.pos_x - 7, actor.pos_y - 1, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
 							break;
 					}
+					actor.action_step++;
+				}
+				if (GFX_IsSpriteAnimationEnded(actor.sprite_num, 0)) {
+					ACTOR_SetFightAnimation(facing);
+					actor.action_step = 0;
+					actor.action_punch = false;
+					idle = true;
+				}
+			case 5:// Punch x1 and x2. Second frame
+				if (gfx_sprite_stack[actor.sprite_num].animation[0].current_frame == 2) {
+					switch (actor.last_facing) {
+						case 1:// facing right
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x + 34, actor.pos_y + 15, actor.pos_x + 34, actor.pos_y + 15, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 2:// facing left
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x - 9, actor.pos_y + 15, actor.pos_x - 9, actor.pos_y + 15, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 4:// facing down
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x + 5, actor.pos_y + 31, actor.pos_x + 9, actor.pos_y + 31, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 5:// facing down-right
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x + 23, actor.pos_y + 25, actor.pos_x + 23, actor.pos_y + 25, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 6:// facing down-left
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x, actor.pos_y + 25, actor.pos_x, actor.pos_y + 25, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 8:// facing up
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x + 5, actor.pos_y - 1, actor.pos_x + 5, actor.pos_y - 1, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 9:// facing up-right
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x + 25, actor.pos_y - 2, actor.pos_x + 25, actor.pos_y - 2, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 10:// facing up-left
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x - 8, actor.pos_y - 2, actor.pos_x - 8, actor.pos_y - 2, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+					}
+					actor.action_step++;
+				}
+				if (GFX_IsSpriteAnimationEnded(actor.sprite_num, 0)) {
+					ACTOR_SetFightAnimation(facing);
+					actor.action_step = 0;
+					actor.action_punch = false;
+					idle = true;
+				}
+			case 6:// Punch x1 and x2. Third frame
+				if (gfx_sprite_stack[actor.sprite_num].animation[0].current_frame == 3) {
+					switch (actor.last_facing) {
+						case 1:// facing right
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x + 38, actor.pos_y + 19, actor.pos_x + 38, actor.pos_y + 19, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 2:// facing left
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x - 9, actor.pos_y + 19, actor.pos_x - 9, actor.pos_y + 19, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 4:// facing down
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x + 9, actor.pos_y + 31, actor.pos_x + 13, actor.pos_y + 31, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 5:// facing down-right
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x + 24, actor.pos_y + 23, actor.pos_x + 24, actor.pos_y + 23, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 6:// facing down-left
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x + 3, actor.pos_y + 27, actor.pos_x + 3, actor.pos_y + 27, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 8:// facing up
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x + 3, actor.pos_y - 1, actor.pos_x + 3, actor.pos_y - 1, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 9:// facing up-right
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x + 23, actor.pos_y - 1, actor.pos_x + 23, actor.pos_y - 1, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 10:// facing up-left
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_PUNCH, 4, 4, actor.pos_x - 9, actor.pos_y - 3, actor.pos_x - 9, actor.pos_y - 3, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+					}
+					actor.action_step = 16;
+				}
+				if (GFX_IsSpriteAnimationEnded(actor.sprite_num, 0)) {
+					ACTOR_SetFightAnimation(facing);
+					actor.action_step = 0;
+					actor.action_punch = false;
+					idle = true;
+				}
+				break;
+			case 8:// Kick. First frame
+				if (gfx_sprite_stack[actor.sprite_num].animation[0].current_frame == 1) {
+					switch (actor.last_facing) {
+						case 1:// facing right
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x + 30, actor.pos_y + 11, actor.pos_x + 30, actor.pos_y + 11, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 2:// facing left
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x - 9, actor.pos_y + 11, actor.pos_x - 9, actor.pos_y + 11, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 4:// facing down
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x + 1, actor.pos_y + 31, actor.pos_x + 5, actor.pos_y + 31, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 5:// facing down-right
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x + 19, actor.pos_y + 27, actor.pos_x + 19, actor.pos_y + 27, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 6:// facing down-left
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x - 3, actor.pos_y + 23, actor.pos_x - 3, actor.pos_y + 23, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 8:// facing up
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x + 7, actor.pos_y - 1, actor.pos_x + 7, actor.pos_y - 1, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 9:// facing up-right
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x + 27, actor.pos_y - 1, actor.pos_x + 27, actor.pos_y - 1, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 10:// facing up-left
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x - 7, actor.pos_y - 1, actor.pos_x - 7, actor.pos_y - 1, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+					}
+					actor.action_step++;
+				}
+				if (GFX_IsSpriteAnimationEnded(actor.sprite_num, 0)) {
+					ACTOR_SetFightAnimation(facing);
+					actor.action_punch = false;
+					idle = true;
+				}
+				break;
+			case 9:// Kick. Second frame
+				if (gfx_sprite_stack[actor.sprite_num].animation[0].current_frame == 2) {
+					switch (actor.last_facing) {
+						case 1:// facing right
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x + 34, actor.pos_y + 15, actor.pos_x + 34, actor.pos_y + 15, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 2:// facing left
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x - 9, actor.pos_y + 15, actor.pos_x - 9, actor.pos_y + 15, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 4:// facing down
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x + 5, actor.pos_y + 31, actor.pos_x + 9, actor.pos_y + 31, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 5:// facing down-right
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x + 23, actor.pos_y + 25, actor.pos_x + 23, actor.pos_y + 25, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 6:// facing down-left
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x, actor.pos_y + 25, actor.pos_x, actor.pos_y + 25, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 8:// facing up
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x + 5, actor.pos_y - 1, actor.pos_x + 5, actor.pos_y - 1, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 9:// facing up-right
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x + 25, actor.pos_y - 2, actor.pos_x + 25, actor.pos_y - 2, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 10:// facing up-left
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x - 8, actor.pos_y - 2, actor.pos_x - 8, actor.pos_y - 2, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+					}
+					actor.action_step++;
+				}
+				if (GFX_IsSpriteAnimationEnded(actor.sprite_num, 0)) {
+					ACTOR_SetFightAnimation(facing);
+					actor.action_punch = false;
+					idle = true;
+				}
+				break;
+			case 10:// Kick. Third frame
+				if (gfx_sprite_stack[actor.sprite_num].animation[0].current_frame == 3) {
+					switch (actor.last_facing) {
+						case 1:// facing right
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x + 38, actor.pos_y + 19, actor.pos_x + 38, actor.pos_y + 19, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 2:// facing left
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x - 9, actor.pos_y + 19, actor.pos_x - 9, actor.pos_y + 19, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 4:// facing down
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x + 9, actor.pos_y + 31, actor.pos_x + 13, actor.pos_y + 31, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 5:// facing down-right
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x + 24, actor.pos_y + 23, actor.pos_x + 24, actor.pos_y + 23, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 6:// facing down-left
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x + 3, actor.pos_y + 27, actor.pos_x + 3, actor.pos_y + 27, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 8:// facing up
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x + 3, actor.pos_y - 1, actor.pos_x + 3, actor.pos_y - 1, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 9:// facing up-right
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x + 23, actor.pos_y - 1, actor.pos_x + 23, actor.pos_y - 1, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+						case 10:// facing up-left
+							BULLET_InitBullet(actor.gun.bullet_graphics_id, ENTITY_ID_ACTOR_KICK, 4, 4, actor.pos_x - 9, actor.pos_y - 3, actor.pos_x - 9, actor.pos_y - 3, actor.gun.max_accuracy, actor.gun.max_distance, actor.gun.bullet_speed, actor.gun.damage);
+							break;
+					}
+					actor.action_step = 16;
+				}
+				if (GFX_IsSpriteAnimationEnded(actor.sprite_num, 0)) {
+					ACTOR_SetFightAnimation(facing);
+					actor.action_punch = false;
+					idle = true;
+				}
+				break;
+			case 16:// End
+				if (GFX_IsSpriteAnimationEnded(actor.sprite_num, 0)) {
 					ACTOR_SetFightAnimation(facing);
 					actor.action_punch = false;
 					idle = true;
 				}
 				break;
 			default:
+				ACTOR_SetFightAnimation(facing);
+				actor.action_punch = false;
+				idle = true;
 				break;
 		}
 		// Set last action
@@ -2524,13 +2753,13 @@ void ACTOR_Update(void) {
 
 				if (!kbKeyState[kbBindingFire] & !cursor.left_click) actor.action_step = 5;
 				break;
-			case 4:// Check trigger release but uzi
+			case 4:// Check trigger release if snipper rifle
 				switch (actor.gun.type) {
-					case ACTOR_GUN_TYPE_PISTOL:
-					case ACTOR_GUN_TYPE_SHOTGUN:
 					case ACTOR_GUN_TYPE_SNIPPER:
 						if (!kbKeyState[kbBindingFire] & !cursor.left_click) actor.action_step = 5;
 						break;
+					case ACTOR_GUN_TYPE_PISTOL:
+					case ACTOR_GUN_TYPE_SHOTGUN:
 					case ACTOR_GUN_TYPE_UZI:
 						actor.action_step = 5;
 						break;
@@ -2589,22 +2818,22 @@ void ACTOR_Update(void) {
 						EFFECT_LoadEffect(ENTITY_ID_EMPTY, actor.gun.effect_graphics_id, actor.pos_x - 24 - (rand() % 8), actor.pos_y + (rand() % 8), false, (rand() % 3), false, false, 3);
 						break;
 					case 4:// facing down
-						//EFFECT_LoadEffect(ENTITY_ID_EMPTY, actor.gun.effect_graphics_id, actor.pos_x + (rand() % 8), actor.pos_y + 24 + (rand() % 8), 1, rand() % 2 + 1, 2);
+						EFFECT_LoadEffect(ENTITY_ID_EMPTY, actor.gun.effect_graphics_id, actor.pos_x + 12 - (rand() % 8), actor.pos_y + 24 + (rand() % 8), false, (rand() % 3), false, false, 3);
 						break;
 					case 5:// facing down-right
-						//EFFECT_LoadEffect(ENTITY_ID_EMPTY, actor.gun.effect_graphics_id, actor.pos_x + 16 + (rand() % 8), actor.pos_y + 16 + (rand() % 8), 1, rand() % 2 + 1, 2);
+						EFFECT_LoadEffect(ENTITY_ID_EMPTY, actor.gun.effect_graphics_id, actor.pos_x + 24 - (rand() % 8), actor.pos_y + 24 + (rand() % 8), false, (rand() % 3), false, false, 3);
 						break;
 					case 6:// facing down-left
-						//EFFECT_LoadEffect(ENTITY_ID_EMPTY, actor.gun.effect_graphics_id, actor.pos_x - 8 - (rand() % 8), actor.pos_y + 16 + (rand() % 8), 1, rand() % 2 + 1, 2);
+						EFFECT_LoadEffect(ENTITY_ID_EMPTY, actor.gun.effect_graphics_id, actor.pos_x - 24 - (rand() % 8), actor.pos_y + 24 + (rand() % 8), false, (rand() % 3), false, false, 3);
 						break;
 					case 8:// facing up
 						EFFECT_LoadEffect(ENTITY_ID_EMPTY, actor.gun.effect_graphics_id, actor.pos_x + (rand() % 8), actor.pos_y - 16 - (rand() % 8), false, (rand() % 3), false, false, 3);
 						break;
 					case 9:// facing up-right
-						//EFFECT_LoadEffect(ENTITY_ID_EMPTY, actor.gun.effect_graphics_id, actor.pos_x + 24 + (rand() % 8), actor.pos_y - 16 - (rand() % 8), 1, rand() % 2 + 1, 2);
+						EFFECT_LoadEffect(ENTITY_ID_EMPTY, actor.gun.effect_graphics_id, actor.pos_x + (rand() % 8), actor.pos_y - 16 - (rand() % 8), false, (rand() % 3), false, false, 3);
 						break;
 					case 10:// facing up-left
-						//EFFECT_LoadEffect(ENTITY_ID_EMPTY, actor.gun.effect_graphics_id, actor.pos_x - 16 + (rand() % 8), actor.pos_y - 16 - (rand() % 8), 1, rand() % 2 + 1, 2);
+						EFFECT_LoadEffect(ENTITY_ID_EMPTY, actor.gun.effect_graphics_id, actor.pos_x - 24 + (rand() % 8), actor.pos_y - 16 - (rand() % 8), false, (rand() % 3), false, false, 3);
 						break;
 					default:
 						break;
@@ -2698,14 +2927,16 @@ void ACTOR_Update(void) {
 				if (gfx_sprite_stack[actor.sprite_num].animation[ACTOR_ANIM_RARM_INDEX].end) actor.action_step++;
 				break;
 			case 3:
+				actor.action_step = 0;
 				actor.action_change_gun = false;
+				actor.last_action = ACTOR_ACTION_CHANGE_GUN;
 				break;
 			default:
+				actor.action_step = 0;
 				actor.action_change_gun = false;
+				actor.last_action = ACTOR_ACTION_CHANGE_GUN;
 				break;
 		}
-		// Set last action
-		actor.last_action = ACTOR_ACTION_CHANGE_GUN;
 	}
 
 	// Reload
@@ -2801,14 +3032,14 @@ void ACTOR_Update(void) {
 			case 3:// Set next frame
 				actor.action_step = 0;
 				actor.action_reload = false;
+				actor.last_action = ACTOR_ACTION_RELOAD;
 				break;
 			default:
 				actor.action_step = 0;
 				actor.action_reload = false;
+				actor.last_action = ACTOR_ACTION_RELOAD;
 				break;
 		}
-		// Set last action
-		actor.last_action = ACTOR_ACTION_RELOAD;
 	}
 
 	// Hit animation
@@ -3130,8 +3361,7 @@ void ACTOR_Update(void) {
 	ACTOR_CheckItemColission();
 
 	// Update sprite position
-	gfx_sprite_stack[actor.sprite_num]
-			.screen_pos_x = actor.pos_x - camera.pos_x;
+	gfx_sprite_stack[actor.sprite_num].screen_pos_x = actor.pos_x - camera.pos_x;
 	gfx_sprite_stack[actor.sprite_num].screen_pos_y = actor.pos_y - camera.pos_y;
 }
 
@@ -3139,4 +3369,15 @@ void ACTOR_UnloadActor(void) {
 	GFX_UnloadSprite(actor.sprite_num);
 	actor.is_loaded = false;
 	actor.sprite_num = -1;
+}
+
+void ACTOR_LeaveKey(void) {
+	actor.key_entity_id = 0;
+	actor.key_graphics_id = SPRITE_GRAPHICS_ID_EMPTY;
+}
+
+void ACTOR_Reload(void) {
+	actor.action_reload = true;
+	actor.action_shoot = false;
+	actor.action_loop = false;
 }

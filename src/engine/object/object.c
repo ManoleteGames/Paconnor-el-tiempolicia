@@ -182,7 +182,7 @@ void OBJECT_UpdateObjects(void) {
 							// Check if hit by actor bullet and update enemy panel
 							switch (object[i].hit_by) {
 								case ENTITY_ID_ACTOR_BULLET:
-									GFX_SetPanelGraphics(&gfx_enemy_status_panel, object[i].portait_graphics_id, SPRITE_GRAPHICS_ID_LIFEBAR, SPRITE_GRAPHICS_ID_GUN0);
+									GFX_SetPanelGraphics(&gfx_enemy_status_panel, object[i].portait_graphics_id, SPRITE_GRAPHICS_ID_LIFEBAR, SPRITE_GRAPHICS_ID_GUN0, SPRITE_GRAPHICS_ID_EMPTY);
 									GFX_UpdatePanel(&gfx_enemy_status_panel, object[i].life, object[i].life + object[i].damage, object[i].max_life, 1);
 									gfx_enemy_status_panel.shown = true;
 									break;
