@@ -245,6 +245,9 @@ add_custom_target(sprites
     ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/boss/boss3/BOSS3.DAT
     ${CMAKE_BINARY_DIR}/
     COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/boss/boss4/BOSS4.DAT
+    ${CMAKE_BINARY_DIR}/
+    COMMAND ${CMAKE_COMMAND} -E copy
     ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/npcs/npc1/NPC1.DAT
     ${CMAKE_BINARY_DIR}/
     COMMAND ${CMAKE_COMMAND} -E copy

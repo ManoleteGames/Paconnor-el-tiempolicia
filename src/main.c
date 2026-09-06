@@ -9486,9 +9486,6 @@ static void Scene4_Loop(void) {
 
 							BOSS_Load("BOSS3.DAT", 23 << 4, 10 << 4, SPRITE_GRAPHICS_ID_ENEMY3_CHAT, SPRITE_GRAPHICS_ID_ENEMY3_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY3_FEET, SPRITE_GRAPHICS_ID_ENEMY3_BODY, SPRITE_GRAPHICS_ID_ENEMY3_HEAD, SPRITE_GRAPHICS_ID_ENEMY3_LARM, SPRITE_GRAPHICS_ID_ENEMY3_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_BARE_HANDS, SPRITE_GRAPHICS_ID_PUNCH, SPRITE_GRAPHICS_ID_RAY, BOSS_STATUS_STATIC, BOSS_LIFE);
 
-							BOSS_SetBehavior(BOSS_STATUS_CHASE);
-							ACTOR_SetCombatMode(true);
-
 							/*sequence_step = 0;
 							end_sequence = false;
 							while (!end_sequence) {
@@ -12694,6 +12691,10 @@ static void Scene6_LoadAssets(void) {
 	OBJECT_LoadObject("OBJECT1.DAT", 0, ENTITY_ID_BARREL, SPRITE_GRAPHICS_ID_OBJECT1, SPRITE_GRAPHICS_ID_OBJECT1_PORTAIT, 0, 0);
 	OBJECT_UnloadObjects();
 
+	// Load boss and unload it just to preload graphics
+	BOSS_Load("BOSS4.DAT", 0, 0, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_AK, SPRITE_GRAPHICS_ID_GUN0, SPRITE_GRAPHICS_ID_BULLET1, BOSS_STATUS_STATIC, BOSS_LIFE);
+	BOSS_Unload();
+
 	ACTOR_Init(9 << 4, 47 << 4, SPRITE_GRAPHICS_ID_ACTOR_FEET, SPRITE_GRAPHICS_ID_ACTOR_BODY, SPRITE_GRAPHICS_ID_ACTOR_HEAD, SPRITE_GRAPHICS_ID_ACTOR_LARM, SPRITE_GRAPHICS_ID_ACTOR_RARM_BARE_HANDS, ACTOR_FACING_RIGHT);
 	ACTOR_SetGun(actor.sprite_num, ACTOR_GUN_TYPE_BARE_HANDS);
 	ACTOR_SetBulletStatus(99, 19, 199, 9, 9);
@@ -12772,6 +12773,17 @@ static void Scene6_LoadRoom1(void) {
 	GFX_LoadPalette("PALETTES.DAT", "SCN61.PCX", 256);
 }
 static void Scene6_LoadRoom2(void) {
+
+	// Items
+	ITEM_LoadItem(0, ENTITY_ID_ITEM_MEDIKIT, SPRITE_GRAPHICS_ID_ITEM_MEDIKIT, 31 << 4, 26 << 4);
+	ITEM_LoadItem(1, ENTITY_ID_ITEM_MEDIKIT, SPRITE_GRAPHICS_ID_ITEM_MEDIKIT, 2 << 4, 26 << 4);
+
+	ITEM_LoadItem(2, ENTITY_ID_ITEM_GRENADE, SPRITE_GRAPHICS_ID_ITEM_GRENADE, 2 << 4, 27 << 4);
+	ITEM_LoadItem(3, ENTITY_ID_ITEM_AMMO3, SPRITE_GRAPHICS_ID_ITEM_AMMO3, 28 << 4, 26 << 4);
+	ITEM_LoadItem(4, ENTITY_ID_ITEM_AMMO3, SPRITE_GRAPHICS_ID_ITEM_AMMO3, 24 << 4, 28 << 4);
+	ITEM_LoadItem(5, ENTITY_ID_ITEM_AMMO4, SPRITE_GRAPHICS_ID_ITEM_AMMO4, 20 << 4, 4 << 4);
+	ITEM_LoadItem(6, ENTITY_ID_ITEM_GRENADE, SPRITE_GRAPHICS_ID_ITEM_GRENADE, 26 << 4, 26 << 4);
+
 	MAP_LoadMap("MAPSCN62.DAT", 34, 32, "TSCN62.DAT", "SCN6_2_BACK.PCX", "SCN6_2_FORE.PCX", "SCN6_2_MASK.PCX", 320 * 416, 128 * 128, 128 * 128);
 	GFX_LoadPalette("PALETTES.DAT", "SCN62.PCX", 256);
 }
@@ -13223,14 +13235,20 @@ static void Scene6_Loop(void) {
 				// Events
 				actor_tile_num = MAP_GetTileNumber(actor.pos_x + (gfx_sprite_stack[actor.sprite_num].width_px >> 1), actor.pos_y + (gfx_sprite_stack[actor.sprite_num].height_px >> 1));
 				switch ((map.layer[MAP_EVENT_HSPOT_LAYER][actor_tile_num] >> 8) & 0xFF) {
-					case 1:// Event 1.
+					case 1:// Event 1. Near final boss
 						if (event_enabling_room2[1]) {
 							event_enabling_room2[1] = false;
+
+							BOSS_SetBehavior(BOSS_STATUS_CHASE);
+
+							ACTOR_SetCombatMode(true);
 						}
 						break;
-					case 2:// Event 2.
+					case 2:// Event 2. Entry
 						if (event_enabling_room2[2]) {
 							event_enabling_room2[2] = false;
+
+							BOSS_Load("BOSS4.DAT", 14 << 4, 3 << 4, SPRITE_GRAPHICS_ID_ENEMY2_CHAT, SPRITE_GRAPHICS_ID_ENEMY2_PORTAIT, SPRITE_GRAPHICS_ID_ENEMY2_FEET, SPRITE_GRAPHICS_ID_ENEMY2_BODY, SPRITE_GRAPHICS_ID_ENEMY2_HEAD, SPRITE_GRAPHICS_ID_ENEMY2_LARM, SPRITE_GRAPHICS_ID_ENEMY2_RARM, ENEMY_FACING_DOWN, ENEMY_GUN_AK, SPRITE_GRAPHICS_ID_GUN2, SPRITE_GRAPHICS_ID_BULLET1, BOSS_STATUS_STATIC, BOSS_LIFE);
 						}
 						break;
 					case 3:// Event 3.
@@ -14119,8 +14137,8 @@ int main(int argc, char **argv) {
 
 	engine.exit_game = false;
 
-	engine.scene = 1;
-	engine.room = 1;
+	engine.scene = 6;
+	engine.room = 2;
 
 	MOUSE_InitCursorSprite(SPRITE_GRAPHICS_ID_CURSOR);// Initialize mouse cursor
 
@@ -14132,38 +14150,32 @@ int main(int argc, char **argv) {
 				break;
 			case 1:// scene 1 :: Mission 1 :: The travel. Pass: TRAVEL
 				Scene1_Intro();
-				//Scene1_Loop();
-				engine.scene = 2;
+				Scene1_Loop();
 				if (!actor.status_dead && !engine.exit_menu) Scene1_Outro();
 				break;
 			case 2:// scene 2 :: Mission 2 :: Down to the hell. Pass: GODOWN
 				Scene2_Intro();
-				//Scene2_Loop();
-				engine.scene = 3;
+				Scene2_Loop();
 				if (!actor.status_dead && !engine.exit_menu) Scene2_Outro();
 				break;
 			case 3:// scene 3 :: Mission 3 :: Behind enemy lines. Pass: INSIDE
 				Scene3_Intro();
-				//Scene3_Loop();
-				engine.scene = 4;
+				Scene3_Loop();
 				if (!actor.status_dead && !engine.exit_menu) Scene3_Outro();
 				break;
 			case 4:// scene 4 :: Mission 4 :: Praise for mercy
 				Scene4_Intro();
-				//Scene4_Loop();
-				engine.scene = 5;
+				Scene4_Loop();
 				if (!actor.status_dead && !engine.exit_menu) Scene4_Outro();
 				break;
 			case 5:// scene 5 :: Mission 5 :: Hit and run
 				Scene5_Intro();
-				//Scene5_Loop();
-				engine.scene = 6;
+				Scene5_Loop();
 				if (!actor.status_dead && !engine.exit_menu) Scene5_Outro();
 				break;
 			case 6:// scene 6 :: Mission 6 :: Bullet hell
 				Scene6_Intro();
-				//Scene6_Loop();
-				engine.scene = 7;
+				Scene6_Loop();
 				if (!actor.status_dead && !engine.exit_menu) Scene6_Outro();
 				break;
 			case 7:// scene 7 :: End scene

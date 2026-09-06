@@ -185,6 +185,9 @@ python3 "$PSScriptRoot/makedat.py" "BOSS2.DAT" "FACE.PCX" "PORTAIT.PCX" "FEET.PC
 Write-Host Generating boss3 sprites DAT file....
 Set-Location -Path "$parentPath\sprites\boss\boss3"
 python3 "$PSScriptRoot/makedat.py" "BOSS3.DAT" "FACE.PCX" "PORTAIT.PCX" "FEET.PCX" "BODY.PCX" "HEAD.PCX" "LARM.PCX" "RARM.PCX" "FEET.ANI" "BODY.ANI" "HEAD.ANI" "RARM.ANI" "LARM.ANI" "BOSS.CFG"
+Write-Host Generating boss4 sprites DAT file....
+Set-Location -Path "$parentPath\sprites\boss\boss4"
+python3 "$PSScriptRoot/makedat.py" "BOSS4.DAT" "FACE.PCX" "PORTAIT.PCX" "FEET.PCX" "BODY.PCX" "HEAD.PCX" "LARM.PCX" "RARM.PCX" "FEET.ANI" "BODY.ANI" "HEAD.ANI" "RARM.ANI" "LARM.ANI" "BOSS.CFG"
 
 Write-Host ////////////////////////////// NPC SPRITES /////////////////////////////////
 Write-Host Generating npc 1 DAT file....
