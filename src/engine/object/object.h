@@ -3,7 +3,7 @@
 
 #include "../types/types.h"
 
-#define OBJECT_MAX_OBJECTS 16
+#define OBJECT_MAX_OBJECTS 32
 
 #define OBJECT_BARREL_WIDTH 16
 #define OBJECT_BARREL_HEIGHT 32

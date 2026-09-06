@@ -38,9 +38,9 @@ python3 "$PSScriptRoot/makedat.py" "IMENU.DAT" "MENUBACK.PCX"
 Write-Host Generating intro images DAT file....
 Set-Location -Path "$parentPath\images\intro"
 python3 "$PSScriptRoot/makedat.py" "INTRO.DAT" "INTRO1.PCX" "INTRO2.PCX" "INTRO3.PCX"
-Write-Host Generating end images DAT file....
+Write-Host Generating ending images DAT file....
 Set-Location -Path "$parentPath\images\end"
-python3 "$PSScriptRoot/makedat.py" "END.DAT" "END1.PCX"
+python3 "$PSScriptRoot/makedat.py" "END.DAT" "END1H.PCX" "END2H.PCX" "END2L.PCX" "END3H.PCX" "END4H.PCX" "END4L.PCX" "END5H.PCX" "END6H.PCX" "END7H.PCX" "END8H.PCX" "END9H.PCX"
 
 Write-Host ////////////////////////////// SCENE IMAGES /////////////////////////////////
 Write-Host Generating scene 1 intro images DAT file....
@@ -75,10 +75,10 @@ Set-Location -Path "$parentPath\images\scn5"
 python3 "$PSScriptRoot/makedat.py" "OSCN5.DAT" "OUTRO1H.PCX" "OUTRO1L.PCX" "OUTRO2H.PCX" "OUTRO3H.PCX" "OUTRO3L.PCX" "OUTRO4H.PCX" "OUTRO5H.PCX" "OUTRO5L.PCX" "OUTRO6H.PCX" "OUTRO7H.PCX" "OUTRO7L.PCX" "OUTRO8H.PCX" "OUTRO9H.PCX" "OUTRO10H.PCX" "OUTRO11H.PCX"
 Write-Host Generating scene 6 intro images DAT file....
 Set-Location -Path "$parentPath\images\scn6"
-python3 "$PSScriptRoot/makedat.py" "ISCN6.DAT" "INTRO1H.PCX" "INTRO1L.PCX"
+python3 "$PSScriptRoot/makedat.py" "ISCN6.DAT" "INTRO1H.PCX" "INTRO2H.PCX"
 Write-Host Generating scene 6 outro images DAT file....
 Set-Location -Path "$parentPath\images\scn6"
-python3 "$PSScriptRoot/makedat.py" "OSCN6.DAT" "OUTRO1H.PCX" "OUTRO1L.PCX"
+python3 "$PSScriptRoot/makedat.py" "OSCN6.DAT" "OUTRO1H.PCX" "OUTRO1L.PCX" "OUTRO2H.PCX" "OUTRO3H.PCX"
 
 Write-Host ////////////////////////////// MAPS /////////////////////////////////
 Write-Host Generating scene 1-1 map DAT file....
@@ -118,7 +118,7 @@ python3 "$PSScriptRoot/makedat.py" "MAPSCN62.DAT" "m_back.csv" "m_fore.csv" "m_m
 Write-Host ////////////////////////////// PALETTES /////////////////////////////////
 Write-Host Generating palettes DAT file....
 Set-Location -Path "$parentPath\palettes"
-python3 "$PSScriptRoot/makedat.py" "PALETTES.DAT" "LDOSCLUB.PCX" "LMANOL.PCX" "LCONTEST.PCX" "INTRO.PCX" "MENU.PCX" "LOADING.PCX" "ISCN1.PCX" "SCN11.PCX" "SCN12.PCX" "OSCN1.PCX" "ISCN2.PCX" "SCN21.PCX" "OSCN2.PCX" "ISCN3.PCX" "SCN31.PCX" "SCN32.PCX" "OSCN3.PCX" "ISCN4.PCX" "SCN41.PCX" "SCN42.PCX" "OSCN4.PCX" "ISCN5.PCX" "SCN51.PCX" "SCN52.PCX" "OSCN5.PCX" "SCN61.PCX" "SCN62.PCX" "END.PCX"
+python3 "$PSScriptRoot/makedat.py" "PALETTES.DAT" "LDOSCLUB.PCX" "LMANOL.PCX" "LCONTEST.PCX" "INTRO.PCX" "MENU.PCX" "LOADING.PCX" "ISCN1.PCX" "SCN11.PCX" "SCN12.PCX" "OSCN1.PCX" "ISCN2.PCX" "SCN21.PCX" "OSCN2.PCX" "ISCN3.PCX" "SCN31.PCX" "SCN32.PCX" "OSCN3.PCX" "ISCN4.PCX" "SCN41.PCX" "SCN42.PCX" "OSCN4.PCX" "ISCN5.PCX" "SCN51.PCX" "SCN52.PCX" "OSCN5.PCX" "ISCN6.PCX" "SCN61.PCX" "SCN62.PCX" "OSCN6.PCX" "END.PCX"
 
 Write-Host ////////////////////////////// SOUND /////////////////////////////////
 Write-Host Generating music DAT file....
@@ -138,7 +138,7 @@ Set-Location -Path "$parentPath\sprites\actor"
 python3 "$PSScriptRoot/makedat.py" "ACTOR.DAT" "FEET.PCX" "BODY.PCX" "HEAD.PCX" "LARM1.PCX" "RARM1.PCX" "RARM2.PCX" "RARM3.PCX" "RARM4.PCX" "RARM5.PCX" "FEET.ANI" "BODY.ANI" "HEAD.ANI" "LARM.ANI" "RARM.ANI" "FACE.PCX" "PORTAIT.PCX" "FEET.ANI" "BODY.ANI" "HEAD.ANI" "RARM.ANI" "LARM.ANI"
 Write-Host Generating bullet sprites DAT file....
 Set-Location -Path "$parentPath\sprites\bullets"
-python3 "$PSScriptRoot/makedat.py" "BULLETS.DAT" "BULLET1.PCX" "BULLET2.PCX" "BULLET3.PCX" "PUKE.PCX" "WEB.PCX" "WEBS.PCX" "PUNCH1.PCX" "GRENADE1.PCX" "GRENADES.PCX"
+python3 "$PSScriptRoot/makedat.py" "BULLETS.DAT" "BULLET1.PCX" "BULLET2.PCX" "BULLET3.PCX" "PUKE.PCX" "WEB.PCX" "WEBS.PCX" "RAY.PCX" "PUNCH1.PCX" "GRENADE1.PCX" "GRENADES.PCX"
 
 Write-Host ////////////////////////////// ENEMIES SPRITES /////////////////////////////////
 Write-Host Generating enemy 1 sprites DAT file....
@@ -168,6 +168,12 @@ python3 "$PSScriptRoot/makedat.py" "ENEMY8.DAT" "FACE.PCX" "PORTAIT.PCX" "FEET.P
 Write-Host Generating enemy 9 sprites DAT file....
 Set-Location -Path "$parentPath\sprites\enemies\enemy9"
 python3 "$PSScriptRoot/makedat.py" "ENEMY9.DAT" "FACE.PCX" "PORTAIT.PCX" "FEET.PCX" "BODY.PCX" "HEAD.PCX" "LARM.PCX" "RARM.PCX" "FEET.ANI" "BODY.ANI" "HEAD.ANI" "RARM.ANI" "LARM.ANI" "ENEMY.CFG"
+Write-Host Generating enemy 10 sprites DAT file....
+Set-Location -Path "$parentPath\sprites\enemies\enemy10"
+python3 "$PSScriptRoot/makedat.py" "ENEMY10.DAT" "FACE.PCX" "PORTAIT.PCX" "FEET.PCX" "BODY.PCX" "HEAD.PCX" "LARM.PCX" "RARM.PCX" "FEET.ANI" "BODY.ANI" "HEAD.ANI" "RARM.ANI" "LARM.ANI" "ENEMY.CFG"
+Write-Host Generating enemy 11 sprites DAT file....
+Set-Location -Path "$parentPath\sprites\enemies\enemy11"
+python3 "$PSScriptRoot/makedat.py" "ENEMY11.DAT" "FACE.PCX" "PORTAIT.PCX" "FEET.PCX" "BODY.PCX" "HEAD.PCX" "LARM.PCX" "RARM.PCX" "FEET.ANI" "BODY.ANI" "HEAD.ANI" "RARM.ANI" "LARM.ANI" "ENEMY.CFG"
 
 Write-Host ////////////////////////////// BOSS SPRITES /////////////////////////////////
 Write-Host Generating boss1 sprites DAT file....
@@ -176,6 +182,9 @@ python3 "$PSScriptRoot/makedat.py" "BOSS1.DAT" "FACE.PCX" "PORTAIT.PCX" "FEET.PC
 Write-Host Generating boss2 sprites DAT file....
 Set-Location -Path "$parentPath\sprites\boss\boss2"
 python3 "$PSScriptRoot/makedat.py" "BOSS2.DAT" "FACE.PCX" "PORTAIT.PCX" "FEET.PCX" "BODY.PCX" "HEAD.PCX" "LARM.PCX" "RARM.PCX" "FEET.ANI" "BODY.ANI" "HEAD.ANI" "RARM.ANI" "LARM.ANI" "BOSS.CFG"
+Write-Host Generating boss3 sprites DAT file....
+Set-Location -Path "$parentPath\sprites\boss\boss3"
+python3 "$PSScriptRoot/makedat.py" "BOSS3.DAT" "FACE.PCX" "PORTAIT.PCX" "FEET.PCX" "BODY.PCX" "HEAD.PCX" "LARM.PCX" "RARM.PCX" "FEET.ANI" "BODY.ANI" "HEAD.ANI" "RARM.ANI" "LARM.ANI" "BOSS.CFG"
 
 Write-Host ////////////////////////////// NPC SPRITES /////////////////////////////////
 Write-Host Generating npc 1 DAT file....
@@ -213,6 +222,12 @@ python3 "$PSScriptRoot/makedat.py" "OBJECT2.DAT" "SPRITE.PCX" "PORTAIT.PCX" "OBJ
 Write-Host Generating object 3 sprite DAT file....
 Set-Location -Path "$parentPath\sprites\objects\object3"
 python3 "$PSScriptRoot/makedat.py" "OBJECT3.DAT" "SPRITE.PCX" "PORTAIT.PCX" "OBJECT.CFG"
+Write-Host Generating object 4 sprite DAT file....
+Set-Location -Path "$parentPath\sprites\objects\object4"
+python3 "$PSScriptRoot/makedat.py" "OBJECT4.DAT" "SPRITE.PCX" "PORTAIT.PCX" "OBJECT.CFG"
+Write-Host Generating object 5 sprite DAT file....
+Set-Location -Path "$parentPath\sprites\objects\object5"
+python3 "$PSScriptRoot/makedat.py" "OBJECT5.DAT" "SPRITE.PCX" "PORTAIT.PCX" "OBJECT.CFG"
 
 Write-Host ////////////////////////////// MISC SPRITES /////////////////////////////////
 Write-Host Generating intro sprites DAT file....
@@ -272,13 +287,13 @@ python3 "$PSScriptRoot/makedat.py" "TSCN62.DAT" "scn6_2_back.pcx" "scn6_2_fore.p
 Write-Host ////////////////////////////// DIALOGS /////////////////////////////////
 write-Host Generating spanish text dialog DAT file....
 Set-Location -Path "$parentPath\text\ES"
-python3 "$PSScriptRoot/makedat.py" "DIALOGES.DAT" "INTRO.TXT" "NAMES.TXT" "GLOBAL.TXT" "CREDITS.TXT" "SCN1I.TXT" "SCN1H.TXT" "SCN1D.TXT" "SCN2I.TXT" "SCN2H.TXT" "SCN2D.TXT" "SCN3I.TXT" "SCN3H.TXT" "SCN3D.TXT" "SCN4I.TXT" "SCN4H.TXT" "SCN4D.TXT" "SCN5I.TXT" "SCN5H.TXT" "SCN5D.TXT" "SCN6I.TXT" "SCN6H.TXT" "SCN6D.TXT" "SCN7D.TXT"
+python3 "$PSScriptRoot/makedat.py" "DIALOGES.DAT" "INTRO.TXT" "NAMES.TXT" "GLOBAL.TXT" "CREDITS.TXT" "SCN1I.TXT" "SCN1H.TXT" "SCN1D.TXT" "SCN2I.TXT" "SCN2H.TXT" "SCN2D.TXT" "SCN3I.TXT" "SCN3H.TXT" "SCN3D.TXT" "SCN4I.TXT" "SCN4H.TXT" "SCN4D.TXT" "SCN5I.TXT" "SCN5H.TXT" "SCN5D.TXT" "SCN6I.TXT" "SCN6H.TXT" "SCN6D.TXT" "END.TXT"
 write-Host Generating english text dialog DAT file....
 Set-Location -Path "$parentPath\text\EN"
-python3 "$PSScriptRoot/makedat.py" "DIALOGEN.DAT" "INTRO.TXT" "NAMES.TXT" "GLOBAL.TXT" "CREDITS.TXT" "SCN1I.TXT" "SCN1H.TXT" "SCN1D.TXT" "SCN2I.TXT" "SCN2H.TXT" "SCN2D.TXT" "SCN3I.TXT" "SCN3H.TXT" "SCN3D.TXT" "SCN4I.TXT" "SCN4H.TXT" "SCN4D.TXT" "SCN5I.TXT" "SCN5H.TXT" "SCN5D.TXT" "SCN6I.TXT" "SCN6H.TXT" "SCN6D.TXT" "SCN7D.TXT" 
+python3 "$PSScriptRoot/makedat.py" "DIALOGEN.DAT" "INTRO.TXT" "NAMES.TXT" "GLOBAL.TXT" "CREDITS.TXT" "SCN1I.TXT" "SCN1H.TXT" "SCN1D.TXT" "SCN2I.TXT" "SCN2H.TXT" "SCN2D.TXT" "SCN3I.TXT" "SCN3H.TXT" "SCN3D.TXT" "SCN4I.TXT" "SCN4H.TXT" "SCN4D.TXT" "SCN5I.TXT" "SCN5H.TXT" "SCN5D.TXT" "SCN6I.TXT" "SCN6H.TXT" "SCN6D.TXT" "END.TXT" 
 write-Host Generating french text dialog DAT file....
 Set-Location -Path "$parentPath\text\FR"
-python3 "$PSScriptRoot/makedat.py" "DIALOGFR.DAT" "INTRO.TXT" "NAMES.TXT" "GLOBAL.TXT" "CREDITS.TXT" "SCN1I.TXT" "SCN1H.TXT" "SCN1D.TXT" "SCN2I.TXT" "SCN2H.TXT" "SCN2D.TXT" "SCN3I.TXT" "SCN3H.TXT" "SCN3D.TXT" "SCN4I.TXT" "SCN4H.TXT" "SCN4D.TXT" "SCN5I.TXT" "SCN5H.TXT" "SCN5D.TXT" "SCN6I.TXT" "SCN6H.TXT" "SCN6D.TXT" "SCN7D.TXT"
+python3 "$PSScriptRoot/makedat.py" "DIALOGFR.DAT" "INTRO.TXT" "NAMES.TXT" "GLOBAL.TXT" "CREDITS.TXT" "SCN1I.TXT" "SCN1H.TXT" "SCN1D.TXT" "SCN2I.TXT" "SCN2H.TXT" "SCN2D.TXT" "SCN3I.TXT" "SCN3H.TXT" "SCN3D.TXT" "SCN4I.TXT" "SCN4H.TXT" "SCN4D.TXT" "SCN5I.TXT" "SCN5H.TXT" "SCN5D.TXT" "SCN6I.TXT" "SCN6H.TXT" "SCN6D.TXT" "END.TXT"
 
 
 write-Host Generating animation DAT file....

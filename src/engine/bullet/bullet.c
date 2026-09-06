@@ -266,6 +266,14 @@ int BULLET_CheckBulletColission(int number) {
 	return false;
 }
 
+void BULLET_UnloadBullet(int number) {
+	if (bullet[number].loaded) {
+		GFX_UnloadSprite(bullet[number].sprite_num);
+		bullet[number].loaded = false;
+		bullet[number].sprite_num = -1;
+	}
+}
+
 /** BULLET :: Update bullets	
  */
 void BULLET_Update(void) {
@@ -284,7 +292,7 @@ void BULLET_Update(void) {
 			bullet_counter++;
 
 			// debug
-			BULLET_DrawColissionPixels(bullet[i]);
+			//BULLET_DrawColissionPixels(bullet[i]);
 
 			// trace bullet path, even not drawing points
 			for (j = 0; j < bullet[i].speed; j++) {
@@ -301,6 +309,11 @@ void BULLET_Update(void) {
 					// Update sprite screen pos
 					gfx_sprite_stack[bullet[i].sprite_num].screen_pos_x = bullet[i].pos_x - camera.pos_x;
 					gfx_sprite_stack[bullet[i].sprite_num].screen_pos_y = bullet[i].pos_y - camera.pos_y;
+
+					if (gfx_sprite_stack[bullet[i].sprite_num].screen_pos_x < 0) BULLET_UnloadBullet(i);
+					if (gfx_sprite_stack[bullet[i].sprite_num].screen_pos_x > CAM_VISIBLE_WIDTH) BULLET_UnloadBullet(i);
+					if (gfx_sprite_stack[bullet[i].sprite_num].screen_pos_y < 0) BULLET_UnloadBullet(i);
+					if (gfx_sprite_stack[bullet[i].sprite_num].screen_pos_y > CAM_VISIBLE_HEIGHT) BULLET_UnloadBullet(i);
 
 					// Check if hits something breakable
 					bullet[i].hit_on = BULLET_CheckHitBreakableTile(i);

@@ -5,7 +5,7 @@
 
 #define BOSS_SPEED 5
 #define BOSS_RAMPAGE_SPEED 10
-#define BOSS_LIFE 200
+#define BOSS_LIFE 3000
 #define BOSS_ANIMATION_SPEED 5
 
 #define BOSS_PUNCH_RANGE 16

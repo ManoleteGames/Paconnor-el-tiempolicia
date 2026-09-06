@@ -37,9 +37,7 @@
 #define UI_TXT_SCN6D 19
 #define UI_TXT_SCN6H 20
 #define UI_TXT_SCN6I 21
-#define UI_TXT_SCN7D 22
-#define UI_TXT_SCN7H 23
-#define UI_TXT_SCN7I 24
+#define UI_TXT_END 22
 
 extern UI ui;
 extern Button ui_button[UI_MAX_BUTTONS];

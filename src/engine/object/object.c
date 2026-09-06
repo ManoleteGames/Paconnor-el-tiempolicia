@@ -128,6 +128,12 @@ void OBJECT_LoadObject(const char *dat_name, byte number, byte entity_id, byte s
 			object[number].steps = 2;
 			object[number].current_step = 1;
 			break;
+		case ENTITY_ID_NO_BREAK_OBJ:
+			object[number].max_life = 20;
+			object[number].life = 20;
+			object[number].steps = 1;
+			object[number].current_step = 1;
+			break;
 		default:
 			sprintf(engine.system_error_message1, "GFX_LoadObject function error");
 			sprintf(engine.system_error_message2, "Unknown object type %u ", entity_id);

@@ -182,6 +182,12 @@ add_custom_target(sprites
     ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/objects/object3/OBJECT3.DAT
     ${CMAKE_BINARY_DIR}/
     COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/objects/object4/OBJECT4.DAT
+    ${CMAKE_BINARY_DIR}/
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/objects/object5/OBJECT5.DAT
+    ${CMAKE_BINARY_DIR}/
+    COMMAND ${CMAKE_COMMAND} -E copy
     ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/misc/MISC.DAT
     ${CMAKE_BINARY_DIR}/
      COMMAND ${CMAKE_COMMAND} -E copy
@@ -224,10 +230,19 @@ add_custom_target(sprites
     ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/enemies/enemy9/ENEMY9.DAT
     ${CMAKE_BINARY_DIR}/
     COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/enemies/enemy10/ENEMY10.DAT
+    ${CMAKE_BINARY_DIR}/
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/enemies/enemy11/ENEMY11.DAT
+    ${CMAKE_BINARY_DIR}/
+    COMMAND ${CMAKE_COMMAND} -E copy
     ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/boss/boss1/BOSS1.DAT
     ${CMAKE_BINARY_DIR}/
     COMMAND ${CMAKE_COMMAND} -E copy
     ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/boss/boss2/BOSS2.DAT
+    ${CMAKE_BINARY_DIR}/
+    COMMAND ${CMAKE_COMMAND} -E copy
+    ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/boss/boss3/BOSS3.DAT
     ${CMAKE_BINARY_DIR}/
     COMMAND ${CMAKE_COMMAND} -E copy
     ${CMAKE_CURRENT_SOURCE_DIR}/assets/sprites/npcs/npc1/NPC1.DAT
