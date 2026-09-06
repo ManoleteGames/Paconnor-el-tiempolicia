@@ -14131,14 +14131,14 @@ int main(int argc, char **argv) {
 
 	Test();
 
-	//Logo();
+	Logo();
 
-	//Intro();
+	Intro();
 
 	engine.exit_game = false;
 
-	engine.scene = 6;
-	engine.room = 2;
+	engine.scene = 0;
+	engine.room = 1;
 
 	MOUSE_InitCursorSprite(SPRITE_GRAPHICS_ID_CURSOR);// Initialize mouse cursor
 
